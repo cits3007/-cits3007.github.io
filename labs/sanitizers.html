@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quick guide to Google sanitizers</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: sans-serif;
+font-size: 12pt;
+color: black;
+background-color: white;
+}
+body {
+margin: 0 auto;
+max-width: 50em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+background-color: hsl(0, 0%, 98%);
+padding: .2em .4em;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+background-color: hsl(0, 0%, 98%);
+padding: 1em;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+
+:not(pre) > code {
+padding: 2px 4px;
+font-size: 90%;
+word-break: normal !important;
+white-space: nowrap;
+color: hsl(344.8,69%,10%);
+background-color: hsl(342.9,37%,96%);
+border-radius: 4px;
+}
+.sourceCode {
+background-color: hsl(0, 0%, 98%);
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+th {
+border-top: 1px solid black;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style>
+div.solutions {
+border: solid 2pt hsla(120, 100%, 35%, 1);
+border-radius: 5pt;
+background-color: hsla(120, 100%, 50%, 0.1);
+padding: 1em;
+}
+.block-caption {
+display: block;
+font-family: sans-serif;
+font-weight: bold;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+details[open] summary *.only-open {
+opacity: 0.1;
+}
+</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Quick guide to Google sanitizers</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#what-are-the-google-sanitizers-why-use-them" id="toc-what-are-the-google-sanitizers-why-use-them">What are the Google
+sanitizers? Why use them?</a></li>
+<li><a href="#enabling-sanitizers-in-a-simple-c-program" id="toc-enabling-sanitizers-in-a-simple-c-program">Enabling sanitizers
+in a simple C program</a></li>
+<li><a href="#configuring-the-sanitizers" id="toc-configuring-the-sanitizers">Configuring the sanitizers</a></li>
+<li><a href="#why-not-always-enable-the-sanitizers" id="toc-why-not-always-enable-the-sanitizers">Why not always enable the
+sanitizers?</a></li>
+<li><a href="#other-tips" id="toc-other-tips">Other tips</a></li>
+</ul>
+</nav>
+<h2 id="what-are-the-google-sanitizers-why-use-them">What are the Google
+sanitizers? Why use them?</h2>
+<p>Some programming languages are <a href="https://en.wikipedia.org/wiki/Memory_safety">memory-safe</a>: the
+language runtime prevents us from accessing uninitialised memory, from
+reading or writing data beyond the bounds of an array, and from using an
+object after its memory has been reclaimed.</p>
+<p>Python and Java are examples of memory-safe languages – in those
+languages, if we accidentally try to access a position outside the
+bounds of an array or list, the language runtime will detect this, and
+throw an <a href="https://en.wikipedia.org/wiki/Exception_handling">exception</a>;
+assuming we do not catch it, the exception will cause the program to
+terminate, and an informative <a href="https://en.wikipedia.org/wiki/Stack_trace">stack trace</a> will be
+printed, showing where the original error occurred, and what function or
+method calls led up to that point.</p>
+<p>For example, suppose we write the following Python code in a file
+<code>example.py</code>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a>arr <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">def</span> print_eleventh_el():</span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="bu">print</span>(arr[<span class="dv">10</span>]) <span class="co"># try to access an out-of-bounds element</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a>print_eleventh_el()</span></code></pre></div>
+<p>If we run this code, we’ll get something like the following stack
+trace:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Traceback (most recent call last):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  File <span class="st">&quot;/home/user/example.py&quot;</span>, line <span class="dv">6</span>, <span class="kw">in</span> <span class="op">&lt;</span>module<span class="op">&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    print_eleventh_el()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  File <span class="st">&quot;/home/user/example.py&quot;</span>, line <span class="dv">4</span>, <span class="kw">in</span> print_eleventh_el</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(arr[<span class="dv">10</span>]) <span class="co"># try to access an out-of-bounds element</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="pp">IndexError</span>: <span class="bu">list</span> index out of <span class="bu">range</span></span></code></pre></div>
+<p>which shows exactly where the exception was thrown (line 4), and how
+we got there.</p>
+<p>In C, however, the language runtime does not check for memory-safety
+problems. By default, if we read or write outside the bounds of an
+array, we’ll be given no warning, but may silently corrupt our program’s
+data or <a href="https://en.wikipedia.org/wiki/Buffer_overflow">introduce security
+vulnerabilities</a>. Similarly, we may be given little or no warning if
+we read from uninitialised memory, or from memory that has been <a href="https://en.wikipedia.org/wiki/Dangling_pointer">deallocated and is
+no longer valid</a>. If we are lucky, our error might cause a program <a href="https://en.wikipedia.org/wiki/Segmentation_fault">segmentation
+fault</a>, but even if that does occur, the C runtime does not display a
+useful stack trace.</p>
+<p>For example, on many platforms, if we compile and run a C equivalent
+to the above Python code:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="dt">int</span> arr<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">5</span><span class="op">};</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="dt">void</span> print_eleventh_el<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>  printf<span class="op">(</span><span class="st">&quot;%d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> arr<span class="op">[</span><span class="dv">10</span><span class="op">]);</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="op">}</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>  print_eleventh_el<span class="op">();</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="op">}</span></span></code></pre></div>
+<p>we will be given no warning at all, nor will any any sort of error be
+shown: the program will simply run and produce an incorrect result (for
+instance, printing “0”).</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Code_sanitizer">Google
+sanitizers</a> offer a solution. First introduced in 2012, they are
+available in all the leading C compilers (GCC, Clang, XCode, and MSVC),
+and make diagnosing memory errors in C <em>almost</em> as easy as it is
+in Java or Python. The sanitizers work by adding extra data and
+machine-code instructions to your code when it is compiled (this is
+called “<em>instrumenting</em>” the code), which at runtime will detect
+issues such as memory misuse.</p>
+<p>There are several sanitizers available, each focusing on a different
+aspect of code safety:</p>
+<ul>
+<li><strong>AddressSanitizer (ASan)</strong> helps detect memory errors
+such as buffer overflows, use-after-free bugs, and memory leaks.</li>
+<li><strong>UndefinedBehaviorSanitizer (UBSan)</strong> identifies
+multiple sorts of <a href="https://en.wikipedia.org/wiki/Undefined_behavior">undefined
+behavior</a> (such as division by zero or null pointer dereferencing)
+that can lead to unpredictable results and potential security
+risks.</li>
+<li><strong>MemorySanitizer (MSan)</strong> detects reads from
+uninitialized memory.</li>
+<li><strong>ThreadSanitizer (TSan)</strong> detects data races,
+potential deadlocks and <a href="https://github.com/google/sanitizers/wiki/ThreadSanitizerDetectableBugs">other
+concurrency issues</a> in multi-threaded programs.</li>
+</ul>
+<p>With several of these sanitizers enabled, then instead of silently
+producing wrong output, our C program will diagnose the error and
+produce a helpful stack trace:</p>
+<pre><code>example.c:6:21: runtime error: index 10 out of bounds for type &#39;int [5]&#39;
+example.c:6:3: runtime error: load of address 0x55c7c36a4048 with insufficient space for an object of type &#39;int&#39;
+0x55c7c36a4048: note: pointer points here
+ 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 0b 00
+              ^
+=================================================================
+==575038==ERROR: AddressSanitizer: global-buffer-overflow on address 0x55c7c36a4048 at pc 0x55c7c36a12da bp 0x7ffc2c602990 sp 0x7ffc2c602980
+READ of size 4 at 0x55c7c36a4048 thread T0
+    #0 0x55c7c36a12d9 in print_eleventh_el /home/user/example.c:6
+    #1 0x55c7c36a130a in main /home/user/example.c:10
+    #2 0x7f78b1781d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #3 0x7f78b1781e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #4 0x55c7c36a1184 in _start (/home/user/example+0x1184)
+
+// ... more output follows but is omitted</code></pre>
+<h2 id="enabling-sanitizers-in-a-simple-c-program">Enabling sanitizers
+in a simple C program</h2>
+<p>In your preferred editor or IDE, create the file
+<code>example.c</code>, copy the C program above into the file, and save
+it. On a Linux system, if using the GCC compiler, you can enable the
+ASan and UBSan sanitizers by running the following commands to compile
+and link your code:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compile example.c to example.o</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> gcc <span class="at">-g</span> <span class="at">-fsanitize</span><span class="op">=</span>undefined,address <span class="at">-c</span> <span class="at">-o</span> example.o example.c</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># link example.o into an executable</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> gcc <span class="at">-fsanitize</span><span class="op">=</span>undefined,address <span class="at">-o</span> example example.o</span></code></pre></div>
+<p>The GCC option “<code>-fsanitize=undefined,address</code>” enables
+both UBSan and ASan in the <code>example</code> executable. UBSan and
+ASan can be run together, but this is not possible with all sanitizers.
+The sanitizers work by adding additional instructions to your code at
+compile time, and if two sanitizers do so in incompatible ways, they
+cannot be used together. An example of this is ASan and MSan: the two
+use incompatible sorts of instrumentation, and cannot be used
+together.</p>
+<p>The “<code>-g</code>” option instructs the compiler to add debugging
+information to the compiled code; this is what allows the stack trace to
+include line numbers. Without it, your stack traces will be more
+difficult to interpret.</p>
+<p>If you are using a different platform and/or a different compiler,
+you should consult your compiler documentation for information on how to
+enable the sanitizers.</p>
+<p>Once you’ve compiled and linked the program with sanitizers enabled,
+running it should produce the stack trace we saw before.</p>
+<h2 id="configuring-the-sanitizers">Configuring the sanitizers</h2>
+<p>Typically, a sanitizer’s default behaviour when encountering an error
+is to <a href="https://clang.llvm.org/docs/AddressSanitizer.html#usage">display
+an error message to standard error, and halt the program with a non-zero
+exit code</a>. Usually, this default behaviour is sufficient for our
+needs, but sometimes we might want to conigure different behaviour: for
+instance, we might want a <a href="https://en.wikipedia.org/wiki/Core_dump">core dump</a> to be
+generated when the program exits (for use in debugging), or we might
+want the program <em>not</em> to halt but instead attempt to continue,
+or we might want error messages sent to a different location.</p>
+<p>The behaviour of each sanitizer can be configured at runtime using an
+environment variable. For instance, the AddressSanitizer is configured
+using the <a href="https://github.com/google/sanitizers/wiki/AddressSanitizerFlags#run-time-flags">environment
+variable “<code>ASAN_OPTIONS</code>”</a>. On Linux, you can run your
+program as follows to find out what configuration options your version
+of AddressSanitizer supports:</p>
+<pre><code>ASAN_OPTIONS=help=1 /path/to/my-program</code></pre>
+<p>You can set multiple configuration options in the
+<code>ASAN_OPTIONS</code> variable by separating them with colons. For
+instance, if we wanted to generate a core dump on program exit, and for
+error messages to be sent to the file <code>my.log</code>, we would run
+our program as follows:</p>
+<pre><code>ASAN_OPTIONS=log_path=my.log:disable_coredump=0 /path/to/my-program</code></pre>
+<p>There are a set of common configuration options supported by all
+sanitizers, documented <a href="https://github.com/google/sanitizers/wiki/SanitizerCommonFlags">here</a>,
+and each sanitizer has a page on the <a href="https://github.com/google/sanitizers/wiki">Google sanitizers
+wiki</a> outlining any options specific to that sanitizer – for
+instance, the list of AddressSanitizer options is <a href="https://github.com/google/sanitizers/wiki/AddressSanitizerFlags#run-time-flags">here</a>.</p>
+<h2 id="why-not-always-enable-the-sanitizers">Why not always enable the
+sanitizers?</h2>
+<p>Having seen how effective the sanitizers are at detecting bugs in C
+programs, you might ask, Why not simply enable them all the time? The
+answer is that enabling the sanitizers does come at a cost.</p>
+<p>The extra instructions and data inserted by a sanitizer at
+compile-time mean that your program will run more slowly and use more
+memory – and if we are programming in C, it’s typically we because we
+want to make our program as time- and memory-efficient as possible, so
+the use of sanitizers in production is at odds with that goal. How much
+more slowly a program will run and how much more memory will be used
+depends on the sanitizer: the AddressSanitizer, for instance, makes
+programs run around <a href="https://github.com/google/sanitizers/wiki/AddressSanitizer#introduction">two
+times more slowly</a> and use around <a href="https://clang.llvm.org/docs/AddressSanitizer.html#limitations">three
+times as much stack memory</a>.</p>
+<p>For each sanitizer, the routines for detecting bugs and printing
+stack traces are contained in a library for that sanitizer which has to
+be linked into your program, and how it is linked is often
+compiler-specific. The compiler may only support static linking of the
+sanitizer (which will add extra size to your executable), or it may only
+support dynamic linking (which means any machine you run your program on
+has to have a compatible copy of the sanitizer libraries, and you will
+not be able to generate a <a href="https://en.wikipedia.org/wiki/Static_build">statically linked
+executable</a>).</p>
+<p>Finally, although the stack traces and error messages produced by the
+sanitizer as (hopefully) informative to you, they may not be helpful to
+an end-user.</p>
+<p>For all these reasons, we typically only enable the sanitizers while
+debugging and testing our programs; when code is compiled for
+production, we typically prefer to produce optimized, un-instrumented
+executables.</p>
+<h2 id="other-tips">Other tips</h2>
+<p>Here are a few tips on developing C programs which will help you get
+the most value out of the Google sanitizers:</p>
+<dl>
+<dt><strong>Enable compiler warnings</strong></dt>
+<dd>
+<p>All compilers can warn you about potential bugs in your program if
+invoked with the right options. If using GCC, consider always adding the
+options “<code>-Wall -Wextra -Wconversion</code>” to the command-line
+when compiling your code, which will alert you to a reasonably wide
+range of possible bugs. Combining these warnings with the use of the
+sanitizers will let you identify more bugs than either in isolation.</p>
+<p>To get even more warnings about potential bugs in your code, consider
+using a static analyser like <a href="https://clang.llvm.org/extra/clang-tidy/">clang-tidy</a>.</p>
+</dd>
+</dl>
+<dl>
+<dt><strong>Disable incompatible compiler protections</strong></dt>
+<dd>
+<p>Modern compilers often enable some security protections by default.
+For instance, GCC will automatically enable a form of <a href="https://en.wikipedia.org/wiki/Buffer_overflow_protection">buffer
+overflow protection</a> for certain arrays in your C program.</p>
+<p>However, GCC’s built-in protection isn’t designed to produce helpful
+stack traces, so at least while debugging and testing your program, you
+are better off disabling it in favour of the Google sanitizers. You can
+do this by adding the <code>-fno-stack-protector</code> option when
+compiling your code.</p>
+</dd>
+</dl>
+<dl>
+<dt><strong>Write tests for your code, and run them
+frequently</strong></dt>
+<dd>
+<p>Although the Google sanitizers do an excellent job of detecting
+errors at runtime, they can’t detect problems in code that is never
+actually executed. In order for the sanitizers to detect bugs in your
+code, you need to write tests that exercise your code thoroughly, and to
+run those tests frequently.</p>
+<p>You may find helpful <a href="https://www.khoury.northeastern.edu/home/skotthe/classes/cs5600/fall/2015/labs/intro-check.html">this
+introduction to writing tests for C code</a>, which uses the <a href="https://libcheck.github.io/check/">Check</a> testing framework. It
+also explains how to use the <a href="https://gcovr.com/en/stable/">Gcovr</a> tool to generate a
+coverage report for your code, showing which code your tests executed,
+and which code is yet to be tested.</p>
+<p><a href="https://interrupt.memfault.com/blog/unit-testing-basics">This blog
+post</a> by Tyler Hoffman of <a href="https://memfault.com">Memfault</a>
+examines some more advanced testing techniques, including the use of <a href="https://en.wikipedia.org/wiki/Mock_object">stubs, fakes, and
+mocks</a>.</p>
+</dd>
+<dt><strong>Learn how to use the debugger</strong></dt>
+<dd>
+<p>The stack traces produced by the Google sanitizers provide a great
+deal of helpful information on what led to errors occurring in your
+program. But to quickly pinpoint the source of those errors, it’s a good
+idea to become familiar with the <a href="https://en.wikipedia.org/wiki/Debugger">debugger</a> for your
+system and your compiler.</p>
+<p>Your editor or IDE may already offer a way of integrating with the
+debugger. If not, then on Linux, <a href="https://cgdb.github.io/docs/cgdb.html">CGDB</a> offers a
+convenient way to debug C code, providing a “split-screen”
+terminal-based interface which shows both your code, and the current
+debugger prompt.</p>
+</dd>
+<dt><strong>Alternatives to the sanitizers</strong></dt>
+<dd>
+<p>Sometimes, it’s either not possible or not convenient to compile and
+link your C code with the Google sanitizers. For instance, if you are
+writing a C extension library for another language (<a href="https://docs.python.org/3/extending/extending.html">such as
+Python</a>), then enabling the sanitizers might mean re-compiling and
+linking the entire Python interpreter, which is inconvenient.</p>
+<p>In cases like that, the <a href="https://valgrind.org/docs/manual/quick-start.html">Valgrind</a>
+tool suite offers a useful alternative to the Google sanitizers, since
+it can be run directly on a compiled binary file without the need to
+recompile. A drawback is that Valgrind often runs much more slowly than
+the sanitizers would, and its feedback in case of an error may be more
+difficult to interpret.</p>
+</dd>
+</dl>
+<!-- vim: syntax=markdown tw=92
+-->
+</body>
+</html>

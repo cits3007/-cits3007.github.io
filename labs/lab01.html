@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CITS3007 lab 1 – Development environment</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: sans-serif;
+font-size: 12pt;
+color: black;
+background-color: white;
+}
+body {
+margin: 0 auto;
+max-width: 50em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+background-color: hsl(0, 0%, 98%);
+padding: .2em .4em;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+background-color: hsl(0, 0%, 98%);
+padding: 1em;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+
+:not(pre) > code {
+padding: 2px 4px;
+font-size: 90%;
+word-break: normal !important;
+white-space: nowrap;
+color: hsl(344.8,69%,10%);
+background-color: hsl(342.9,37%,96%);
+border-radius: 4px;
+}
+.sourceCode {
+background-color: hsl(0, 0%, 98%);
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+th {
+border-top: 1px solid black;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style>
+div.solutions {
+border: solid 2pt hsla(120, 100%, 35%, 1);
+border-radius: 5pt;
+background-color: hsla(120, 100%, 50%, 0.1);
+padding: 1em;
+}
+.block-caption {
+display: block; font-family: sans-serif;
+font-weight: bold;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><p>CITS3007 lab 1 – Development environment</p></h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#c-devel-env" id="toc-c-devel-env">1. Setting up the C
+development environment</a>
+<ul>
+<li><a href="#virtualbox-and-vagrant" id="toc-virtualbox-and-vagrant">VirtualBox and Vagrant</a></li>
+</ul></li>
+<li><a href="#concept-review-questions" id="toc-concept-review-questions">2. Concept review questions</a>
+<ul>
+<li><a href="#definitions" id="toc-definitions">2.1.
+Definitions</a></li>
+<li><a href="#concepts" id="toc-concepts">2.2. Concepts</a></li>
+</ul></li>
+<li><a href="#auscert-security-bulletins" id="toc-auscert-security-bulletins">3. AusCERT security
+bulletins</a></li>
+<li><a href="#c-development" id="toc-c-development">4. C development</a>
+<ul>
+<li><a href="#c-questions" id="toc-c-questions">4.1. C
+questions</a></li>
+<li><a href="#building-and-modifying-c-programs" id="toc-building-and-modifying-c-programs">Building and modifying C
+programs</a></li>
+</ul></li>
+<li><a href="#moodle-signup-andor-login" id="toc-moodle-signup-andor-login">5. Moodle signup and/or
+login</a></li>
+</ul>
+</nav>
+<div style="border: solid 2pt orange; border-radius: 5pt; background-color: hsl(22.35, 100%, 85%, 1); padding: 1em;">
+<p><strong>Laptop and SDE requirement</strong></p>
+<p>When attending lab classes, you will need access to a laptop from
+which you can access the <a href="https://cits3007.github.io/faq/#cits3007-sde">CITS3007 standard
+development environment</a> (SDE), which is based on Ubuntu 20.04,
+running on version 5.4.0 of the Linux kernel on an x86-64 processor.</p>
+<p>The CITS3007 SDE will be used for the unit project, later in
+semester: all submissions are expected to compile and run correctly in
+this environment (though you may find it useful to test your code in
+other environments, as well).</p>
+<p>We may also refer to the SDE in tests or quizzes – you might be asked
+to write code which will compile in this environment, for instance.</p>
+<p>In the SDE, you are able to run commands as <code>root</code> (by
+using the <a href="https://linux.die.net/man/8/sudo"><code>sudo</code>
+command</a>), and to alter the parameters of the running kernel (using
+the <a href="https://linux.die.net/man/8/sysctl"><code>sysctl</code>
+command</a>). Being able to run <code>sudo</code> is important for many
+of the labs, so you’ll want to make sure it functions correctly for you.
+Being able to run the <code>sysctl</code> command is of lesser
+importance – you will likely only need to use it if you want to complete
+the extension tasks for lab 4 (on buffer overflows) and lab 8 (on race
+conditions).</p>
+<p>The preferred way of accessing the SDE is by running <a href="https://www.virtualbox.org">VirtualBox</a> and <a href="https://www.vagrantup.com">Vagrant</a> on your laptop, as outlined
+in this lab sheet. (Vagrant is widely used in industry to provide
+sandard development environments.) However, if you run into
+difficulties, there are a few other options, outlined below.</p>
+<p>Note that UWA provides <a href="https://www.uwa.edu.au/students/Support-services/Financial-assistance#:~:text=SOS%20IT%20Equipment%20Scheme">financial
+support</a> via the “SOS IT Equipment Scheme” to students who are unable
+to purchase a laptop due to financial hardship.</p>
+</div>
+<h2 id="c-devel-env">1. Setting up the C development environment</h2>
+<p>To access the CITS3007 standard development environment, the
+preferred option is:</p>
+<div style="margin-left: 1rem; border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<dl>
+<dt><strong>Use Virtualbox and Vagrant</strong></dt>
+<dd>
+<p>Install two open source tools (<a href="https://www.virtualbox.org">VirtualBox</a> and <a href="https://www.vagrantup.com">Vagrant</a>) on your Windows or Linux
+laptop. See <a href="#virtualbox-and-vagrant">VirtualBox and
+Vagrant</a>, below.</p>
+<p>You will need about 15 GB of disk space and a minimum of 4 GB of RAM
+on your laptop. (Note that 4 GB of RAM is likely to result in your VM
+running very slowly – 8 GB or more is preferable.)</p>
+</dd>
+</dl>
+</div>
+<p>However, VirtualBox is not available for M-series (Apple Silicon) mac
+laptops – in that case, you might like to try:</p>
+<div style="margin-left: 1rem; border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<dl>
+<dt><strong>Use UTM for Mac</strong></dt>
+<dd>
+<p>This involves installing UTM, virtualization software for the macOS
+operating system. See <a href="lab01-utm.html">Using UTM on M-series Mac
+laptops</a>. As explained on that page, you’ll need to pick one or more
+Linux virtual machine images. If compiling code for the project or the
+lab 4 and 8 extension tasks, you’ll need to make sure you are using an
+appropriate virtual machine.</p>
+<p>In general, the facilitators and unit coordinator won’t be able to
+assist you if you run into problems using UTM, but you should feel free
+to post on the Help3007 discussion forum, as other students using Macs
+may be able to assist.</p>
+</dd>
+</dl>
+</div>
+<p>Virtualbox also may not function properly on Windows laptops where
+you are already using the <a href="https://learn.microsoft.com/en-us/windows/wsl/about">Windows
+subsystem for Linux</a> (WSL).</p>
+<p>In that case, you might wish to:</p>
+<div style="margin-left: 1rem; border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<dl>
+<dt><strong>Use Ubuntu 20.04 from WSL on Windows</strong></dt>
+<dd>
+<p>In this case, we assume you are already familiar with how to install
+and access Ubuntu distributions using the WSL.</p>
+<p>In general, the facilitators and unit coordinator won’t be able to
+assist you if you run into problems using the WSL, but you can find
+general instructions on using it <a href="https://learn.microsoft.com/en-us/windows/wsl/install">here</a>.</p>
+<p>If you use the WSL, you <em>will</em> be able to run commands as root
+using <code>sudo</code>, but may not be able to alter kernel parameters
+using <code>sysctl</code>.</p>
+</dd>
+</dl>
+</div>
+<p>If none of the above options work for you, a remaining option is:</p>
+<div style="margin-left: 1rem; border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<dl>
+<dt><strong>Access the SDE using GitPod</strong></dt>
+<dd>
+<p><a href="https://gitpod.io/">GitPod</a> provides web-based access to
+development environments hosted in the cloud, and provides a quota of
+free hours each month (which most students will probably not
+exceed).</p>
+<p>We provide instructions on how to use GitPod <a href="lab01-gitpod.html">here</a>.</p>
+<p>If using GitPod, you <em>will</em> be able to run commands as root
+using <code>sudo</code>, but won’t be able to alter kernel parameters
+using <code>sysctl</code>.</p>
+</dd>
+</dl>
+</div>
+<h3 id="virtualbox-and-vagrant">VirtualBox and Vagrant</h3>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<p><strong>What are VirtualBox and Vagrant?</strong></p>
+<p><strong>VirtualBox</strong> is a type of <a href="https://en.wikipedia.org/w/index.php?title=Hardware_virtualization">virtualization
+software</a> which allows you to run other operating systems on your
+computer – even operating systems designed for completely different
+hardware (such as mobile phones, for instance). It allows precise
+control of what OS <a href="https://en.wikipedia.org/wiki/Kernel_(operating_system)">kernel</a>
+is run. (Other technologies for running Linux do exist – for instance,
+Docker and Windows Subsystem for Linux, or WSL – but they do not allow
+the precise control over kernel version that VirtualBox does.)</p>
+<p><strong>Vagrant</strong> is a tool for managing virtual environments.
+It can manage environments created using VirtualBox, Docker, VMWare,
+WSL, and many more. It handles tasks such as</p>
+<ul>
+<li>fetching virtual machine (VM) <a href="https://en.wikipedia.org/w/index.php?title=Disk_image">images</a>
+from the web and installing them in a standard location;</li>
+<li>checking whether any updates have been issued for an image, and
+prompting the user to download them, if so;</li>
+<li>allowing a user to easily manage multiple versions of the same basic
+VM image; and</li>
+<li>abstracting over the details of particular virtualization
+technologies.</li>
+</ul>
+<p>It’s widely used in industry to provide developers with a Standard
+Development Environment (SDE) for their team or organization, so it’s
+hoped that experience with Vagrant will prove useful beyond your
+university studies.</p>
+<p>Since the purpose of Vagrant is to manage VMs on a computer, vagrant
+commands need to be run from the <em>host</em> computer (for instance,
+your laptop), not from within a VM.</p>
+</div>
+<p>To install VirtualBox and Vagrant:</p>
+<ol type="1">
+<li><p>Visit <a href="https://www.virtualbox.org/wiki/Downloads" class="uri">https://www.virtualbox.org/wiki/Downloads</a>, download the
+appropriate VirtualBox package for your platform (Windows, MacOS or
+Linux), and install it.</p>
+<p>Note, if you are using a Mac: VirtualBox is only available for Macs
+using <strong>x86-64 processors</strong>. If you are using a more recent
+M-series (Apple Silicon) Mac, then it uses an ARM64 processor, and you
+should be using UTM, as described previously. If you don’t know which
+yours is: you can go to the ‘Apple’ at the top left of your screen and
+select ‘About this Mac’, and it will show whether your cpu is Apple
+silicon (ARM, M1 or M2) or x86/Intel.</p>
+<ul>
+<li>On Windows, the installer is an <code>.exe</code> file you can
+simply run by double-clicking.</li>
+<li>On MacOS, the installer is a <code>.dmg</code> file – double click
+on it for instructions.</li>
+<li>On Ubuntu distributions a <code>.deb</code> file is provided – we
+assume you already know how to install one of these. If you are using a
+non-Ubuntu distribution, consult the VirtualBox documentation for
+instructions on how to install.</li>
+</ul></li>
+<li><p>Visit <a href="https://www.vagrantup.com/downloads" class="uri">https://www.vagrantup.com/downloads</a>, download the
+appropriate Vagrant package for your platform, and install it.</p>
+<ul>
+<li>On Windows, the installer is an <code>.msi</code> file you can run
+by double-clicking.</li>
+<li>On MacOS, you can either download a <code>.dmg</code> file, or (if
+you have <a href="https://brew.sh">Homebrew</a> installed) there are
+instructions for adding Vagrant with a <code>brew install</code>
+command.</li>
+<li>On Ubuntu, it’s recommended you install Vagrant using the APT
+package manager (see “Package manager for Linux” on the Vagrant
+page).</li>
+</ul>
+<!--
+macos old intel: may hit network issue, just google and amend
+vagrantfile
+--></li>
+<li><p>Check that Vagrant has been successfully installed.</p>
+<p>On Windows, open a “Command Prompt” window. On MacOS or Linux, open a
+terminal window.</p>
+<p>Then type <code>vagrant --version</code>; Vagrant should display</p>
+<pre><code>Vagrant 2.3.7</code></pre>
+<p>(Or something similar – any version from 2.2.0 onwards should be
+fine.)</p></li>
+<li><p>Test a small virtual machine (VM) image.</p>
+<p>On your <em>host machine</em> (i.e. your laptop), create a new
+directory (called e.g. <code>vagrant-test</code>), open a terminal
+window and <code>cd</code> into the directory. (The <code>cd</code>
+command works on Linux, Mac and Windows.)</p>
+<p>Type <code>vagrant init generic/alpine316</code>, then
+<code>vagrant up --provider=virtualbox</code>. Vagrant should take about
+a minute to download a virtual machine containing <a href="https://www.alpinelinux.org">Alpine Linux</a> and configure it for
+use.</p>
+<p>If you type <code>vagrant ssh</code>, Vagrant will connect to the new
+virtual machine using <a href="https://www.ssh.com/academy/ssh"><code>ssh</code></a> and present
+you with a shell prompt:</p>
+<pre><code>$ vagrant ssh
+alpine316:~$</code></pre>
+<p>Note that the <a href="https://en.wikipedia.org/wiki/Command-line_interface#Command_prompt">command-line
+prompt</a> has now <strong>changed</strong> from the usual terminal
+prompt you see. The prompt <code>alpine316:~$</code> indicates that
+you’re running commands in an Alpine Linux VM. To be able to run
+commands from your host machine again, you need to exit from your SSH
+session to the VM. (Or alternatively, of course, you can simply open a
+new terminal window.)</p>
+<p>You can exit your current SSH session by typing <code>exit</code> or
+hitting <code>ctrl-D</code>.</p>
+<p>(It’s not strictly necessary, but it’s good practice to also
+<em>halt</em> VMs when you’re not using them – you can do so by issuing
+the command <code>vagrant halt</code> after you’ve exited the SSH
+session.)</p>
+<div style="border: solid 2pt orange; border-radius: 5pt; background-color: hsl(22.35, 100%, 85%, 1); padding: 1em;">
+<p><strong>Troubleshooting on Linux</strong></p>
+<p>Note that on Linux, if you happen to already have
+<code>libvirt</code> installed: <code>libvirt</code> and VirtualBox
+can’t both run at the same time. Ensure that <code>libvirt</code> isn’t
+running by typing <code>sudo systemctl stop libvirtd</code>.</p>
+</div></li>
+<li><p>Download a VM containing the standard CITS3007 development
+environment. Note that this will likely take <strong>around 5–10
+minutes</strong>, so once you’ve started the process, move onto the next
+exercise.</p>
+<p>On your <em>host machine</em> (i.e. your laptop), create a new
+directory (called e.g. <code>cits3007-test</code>), open a terminal
+window and <code>cd</code> into the directory.</p>
+<p>Type <code>vagrant init arranstewart/cits3007-ubuntu2004</code>, then
+<code>vagrant up --provider=virtualbox</code>. Vagrant should take
+around 5–10 minutes to download a virtual machine and configure it for
+use. The output from Vagrant should look something like the
+following:</p>
+<pre><code>Bringing machine &#39;default&#39; up with &#39;virtualbox&#39; provider...
+==&gt; default: Importing base box &#39;arranstewart/cits3007-ubuntu2004&#39;...
+==&gt; default: Matching MAC address for NAT networking...
+==&gt; default: Checking if box &#39;arranstewart/cits3007-ubuntu2004&#39; version &#39;0.1.2&#39; is up to date...
+==&gt; default: Setting the name of the VM: xxx-cits3007-test_1658816964468_16898
+==&gt; default: Clearing any previously set forwarded ports...
+==&gt; default: Fixed port collision for 22 =&gt; 2222. Now on port 2200.
+==&gt; default: Clearing any previously set network interfaces...
+==&gt; default: Preparing network interfaces based on configuration...
+    default: Adapter 1: nat
+==&gt; default: Forwarding ports...
+    default: 22 (guest) =&gt; 2200 (host) (adapter 1)
+==&gt; default: Booting VM...
+==&gt; default: Waiting for machine to boot. This may take a few minutes...
+    default: SSH address: 127.0.0.1:2200
+    default: SSH username: vagrant
+    default: SSH auth method: private key
+    default: Warning: Connection reset. Retrying...
+    default: Warning: Remote connection disconnect. Retrying...
+    default: Warning: Connection reset. Retrying...
+    default:
+    default: Vagrant insecure key detected. Vagrant will automatically replace
+    default: this with a newly generated keypair for better security.
+    default:
+    default: Inserting generated public key within guest...
+    default: Removing insecure key from the guest if it&#39;s present...
+    default: Key inserted! Disconnecting and reconnecting using new SSH key...
+==&gt; default: Machine booted and ready!
+==&gt; default: Checking for guest additions in VM...
+==&gt; default: Setting hostname...</code></pre>
+<p>Once it’s done, you can type <code>vagrant ssh</code> to get shell
+access to the new VM:</p>
+<pre><code>$ vagrant ssh
+vagrant@cits3007-ubuntu2004:~$</code></pre>
+<p>Note that again, your terminal prompt has changed – it sould look
+like this:</p>
+<pre><code>vagrant@cits3007-ubuntu2004:~$</code></pre>
+<p>(usually in bright green). The prompt indicates the name of the
+current user (“<code>vagrant</code>”)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, and the hostname for
+the machine you are connected to
+(“<code>cits3007-ubuntu2004</code>”).</p>
+<p>If you want to issue commands on your host machine again (that is, on
+your laptop), you’ll need to either</p>
+<ul>
+<li>exit your current SSH session, either by running the command
+<code>exit</code> or by typing <code>ctrl-D</code></li>
+<li>open a new terminal window, and issue your commands from there.</li>
+</ul>
+<p>In particular, trying to run Vagrant commands from within your VM
+will <em>not</em> work, since Vagrant has not been installed within the
+VM.</p></li>
+<li><p>Optional: install VS Code and the “Remote-SSH” extension.</p>
+<p>The standard CITS3007 development environment VM comes with the
+<code>vim</code> editor already installed, and for some tasks we do, it
+will be necessary to use <code>vim</code> or another terminal-based
+editor.</p>
+<p>However, if you already have VS Code installed and are familiar with
+it, we provide instructions on how to configure it for use with a
+Vagrant box <a href="lab01-vs-code.html">here</a>.</p></li>
+</ol>
+<h4 id="vagrant-cheat-sheet">Vagrant cheat sheet</h4>
+<p>You can find a useful “cheat sheet” of commands for managing Vagrant
+VMs here: <a href="https://cheatography.com/davbfr/cheat-sheets/vagrant-cheat-sheet/" class="uri">https://cheatography.com/davbfr/cheat-sheets/vagrant-cheat-sheet/</a>.</p>
+<h2 id="concept-review-questions">2. Concept review questions</h2>
+<p>If possible, it’s recommended you work on this section in pairs or
+small groups and compare answers.</p>
+<h3 id="definitions">2.1. Definitions</h3>
+<p>For each of the following concepts, review the definition given in
+the lecture slides, and explain it in your own words. If you can, give
+an example, based on your own experience or from recent news
+reports:</p>
+<ol type="a">
+<li>threat</li>
+<li>vulnerability</li>
+<li>confidentiality</li>
+<li>integrity</li>
+<li>availability</li>
+</ol>
+<h3 id="concepts">2.2. Concepts</h3>
+<ol type="a">
+<li><p>How would you describe the relationship between threats,
+vulnerabilities, and attacks? Give examples to illustrate the
+relationship.</p></li>
+<li><p>Is it possible for a <em>threat</em> and a <em>vulnerability</em>
+to both exist, without there being an attack? Explain why or why
+not.</p></li>
+<li><p>Consider an ATM, which requires users to provide a bank card and
+a PIN in order to perform transactions. Give examples of
+<em>confidentiality</em>, <em>integrity</em> and <em>availability</em>
+requirements associated with the system. How important do you think each
+requirement is – are they all equally important, or does the importance
+differ?</p></li>
+</ol>
+<h2 id="auscert-security-bulletins">3. AusCERT security bulletins</h2>
+<p>It’s recommended you complete this exercise in pairs or small groups.
+Security Bulletins are sometimes not easy to understand, at first
+glance, but by sharing ideas and comparing your understanding with other
+students, you should be able to complete the questions in this
+section.</p>
+<p><a href="http://www.auscert.org.au/">AusCERT</a> is a non-profit
+organisation that provides advice on cybersecurity threats and
+vulnerabilities. Some of its information is publicly available, and some
+is provided only to members.</p>
+<p>Visit its website at <a href="http://www.auscert.org.au/" class="uri">http://www.auscert.org.au/</a>, and from the “Resources”
+tab, select “Security Bulletins”. (The direct link is <a href="https://auscert.org.au/bulletins/" class="uri">https://auscert.org.au/bulletins/</a>.)</p>
+<p>Take a look at several, and try searching for
+<code>ASB-2022.0077</code> and <code>ESB-2022.3655</code>. All bulletins
+have the following features:</p>
+<ul>
+<li>They have an <em>ID number</em>. Bulletins with an ID number
+beginning with “ESB” are bulletins from external sources, being
+redistributed by AusCERT; those beginning with “ASB” are published by
+AusCERT itself. The ID number contains 4 digits indicating what year the
+bulletin was published, followed by the bulletin number within that
+year.</li>
+<li>They specify the product affected by some vulnerability, the
+operating system affected, and what the <em>resolution</em> (i.e. action
+to be taken, in order to mitigate or prevent the vulnerability) is.</li>
+<li>They refer to one or more <em>CVE</em> identifiers. The CVE (“Common
+Vulnerabilities and Exposures”) identification scheme is provided by the
+US-based MITRE organisation. For instance, Auscert’s bulletin
+<code>ASB-2022.0129</code> refers to <code>CVE-2022-30168</code>, the
+details of which can be found at <a href="https://www.cve.org/CVERecord?id=CVE-2022-30168" class="uri">https://www.cve.org/CVERecord?id=CVE-2022-30168</a>.</li>
+<li>They give a CVSS (Common Vulnerability Scoring System) score. This
+is a way of quantifying the severity of a vulnerability using a number
+from 0 to 10, where 0 is the least severe and 10 the most. Read more
+about these severity ratings at <a href="https://nvd.nist.gov/vuln-metrics/cvss" class="uri">https://nvd.nist.gov/vuln-metrics/cvss</a>.</li>
+</ul>
+<p>Now, find the <code>ESB-2022.1671</code> bulletin and read through
+it, and refer to the NIST page on severity ratings at <a href="https://nvd.nist.gov/vuln-metrics/cvss" class="uri">https://nvd.nist.gov/vuln-metrics/cvss</a>. Then answer the
+following questions:</p>
+<ol type="a">
+<li><p>The bulletin is for a patch which fixes a <em>vulnerability</em>.
+What is the vulnerability (give a CVE identifier and a description)? In
+what product does it occur?</p></li>
+<li><p>How severe is the vulnerability? If a vulnerability is severe,
+does that necessarily mean it is easy to exploit, and/or has a high
+probability of being exploited?</p></li>
+</ol>
+<p>Locate the CVE information page on <a href="https://www.cve.org" class="uri">https://www.cve.org</a> for this vulnerability, and follow
+the links there to find out more about it. Google for the definitions of
+any terms you do not know – <a href="https://en.wikipedia.org/">Wikipedia</a> has good summaries of
+most terms. Answer the following questions:</p>
+<ol start="3" type="a">
+<li><p>How could an attacker exploit this vulnerability? Describe a
+scenario in which this could occur.</p></li>
+<li><p>Of the “C I A” security goals – which ones could be compromised
+if this vulnerability were exploited?</p></li>
+</ol>
+<h2 id="c-development">4. C development</h2>
+<div style="border: solid 2pt orange; border-radius: 5pt; background-color: hsl(22.35, 100%, 85%, 1); padding: 1em;">
+<p><strong>C language familiarity</strong></p>
+<p>Ideally, you should be doing this unit in your 3rd year, and have
+familiarity with the C programming language.</p>
+<p>You need to either</p>
+<ul>
+<li>have access to a <strong>good C programming textbook</strong> – see
+the CITS3007 <a href="https://cits3007.github.io/resources/#c-programming">“Resources”
+page</a> for one recommendation – or</li>
+<li>be comfortable searching through and interpreting the C language
+pages at <strong><a href="https://en.cppreference.com/" class="uri">https://en.cppreference.com/</a></strong>.</li>
+</ul>
+<p>Note that YouTube tutorials will <strong>not</strong> be sufficient
+as a C reference for this unit – you <strong>will</strong> need a
+textbook (or to make use of the cppreference.com site). The lab
+facilitators will not be able to assist you if you are using video
+tutorials instead of a C language reference.</p>
+<p>If you are still in the process of purchasing a textbook, the
+following sites may provide a helpful refresher:</p>
+<ul>
+<li>Carl Burch, <a href="http://www.cburch.com/books/cpy/index.html"><em>C for Python
+programmers</em></a>
+<ul>
+<li>Slides based on <a href="https://web.cs.hacettepe.edu.tr/~bbm101/fall16/lectures/w12-c-for-python-programmers.pdf"><em>C
+for Python programmers</em></a></li>
+</ul></li>
+<li>Steven Simpson, <a href="https://ssjools.hopto.org/java2c/alldiffs"><em>Learning C from
+Java</em></a></li>
+<li>Daniel Weller and Sharat Chikkerur, <a href="https://ocw.mit.edu/courses/6-087-practical-programming-in-c-january-iap-2010/pages/lecture-notes/">Practical
+Programming in C</a> (lecture slides)</li>
+</ul>
+</div>
+<h3 id="c-questions">4.1. C questions</h3>
+<ol type="a">
+<li><p>What is the difference between the C literal values
+<code>3</code>, <code>&#39;3&#39;</code>, <code>&quot;3&quot;</code> and <code>3.0</code>?
+What is the type of each?</p></li>
+<li><p>Consider the following C code:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span> str <span class="op">=</span> <span class="st">&quot;test&quot;</span><span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> c <span class="op">=</span> str<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>c <span class="op">&gt;=</span> <span class="dv">65</span> <span class="op">&amp;&amp;</span> c <span class="op">&lt;=</span> <span class="dv">90</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  printf<span class="op">(</span><span class="st">&quot;high</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>c <span class="op">&gt;=</span> <span class="dv">97</span> <span class="op">&amp;&amp;</span> c <span class="op">&lt;=</span><span class="dv">122</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  printf<span class="op">(</span><span class="st">&quot;low</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  printf<span class="op">(</span><span class="st">&quot;other</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>If this code is executed, what will be printed to the
+terminal?</p></li>
+<li><p>What is the output of the question (b) code if we change the
+string <code>&quot;test&quot;</code> to <code>&quot;TEST&quot;</code>?</p></li>
+<li><p>What is the output of the question (b) code if we change the
+string <code>&quot;test&quot;</code> to <code>&quot;???&quot;</code>?</p></li>
+</ol>
+<h3 id="building-and-modifying-c-programs">Building and modifying C
+programs</h3>
+<ol type="1">
+<li><p>Download the <code>lab-01-code.zip</code> file from the “Labs”
+section of the CITS3007 <a href="https://cits3007.github.io/resources/#labs">Resources
+page</a>.</p>
+<p>The best way to do so is from <em>within</em> your CITS3007
+development environment (i.e. from within the virtual machine).</p>
+<p>You can do so by running</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> wget https://cits3007.github.io/labs/lab-01-code.zip</span></code></pre></div></li>
+<li><p>Unzip the zip file into a directory of your choosing, using the
+<code>unzip</code> command. (See <code>man unzip</code> if you need
+details of how to use the <code>unzip</code> command.)</p></li>
+<li><p>Build the <code>test_leap</code> program by typing
+<code>make</code>, then try running it with various different
+command-line arguments:</p>
+<pre><code>$ ./test_leap 1901
+$ ./test_leap 1900
+$ ./test_leap 2000
+$ ./test_leap -1
+$ ./test_leap -0
+$ ./test_leap 9223372036854775807
+$ ./test_leap 9223372036854775808
+$ ./test_leap foo
+$ ./test_leap foo bar</code></pre>
+<p>What results do you get? Take a look at the code in
+<code>test_leap.c</code>, read the documentation for the
+<code>strtol</code> function (by running <code>man strtol</code>), and
+explain what is happening in each case.</p></li>
+<li><p>The code in <code>test_leap.c</code> contains an error. The
+correct algorithm for determining whether a year is a leap year is
+outlined at <a href="https://en.wikipedia.org/wiki/Leap_year#Algorithm" class="uri">https://en.wikipedia.org/wiki/Leap_year#Algorithm</a>, but
+the code in <code>test_leap.c</code> incorrectly reports that (for
+instance) 1900 is a leap year, when it is not. (Can you spot any other
+errors? Feel free to post in the Help3007 forum if you can.)</p>
+<p>Fix the code in <code>test_leap.c</code> and test your changes by
+trying the values from step 3 again.</p>
+<p>Compare your changes with another student’s – are there any
+differences between how you fixed the program?</p></li>
+</ol>
+<h2 id="moodle-signup-andor-login">5. Moodle signup and/or login</h2>
+<p>For upcoming quizzes and tests, we’ll be using the CSSE Moodle
+server, available at <a href="https://quiz.jinhong.org" class="uri">https://quiz.jinhong.org</a>.</p>
+<p>There is currently one Moodle quiz available – it is not assessed,
+but you should attempt it, as the material covered is examinable later.
+You can use that quiz to revise or refresh your knowledge of C.</p>
+<p>Visit <a href="https://quiz.jinhong.org" class="uri">https://quiz.jinhong.org</a> and sign up with your UWA email
+address, then attempt the quiz in your own time, if you don’t finish it
+in the lab.</p>
+<!-- vim: syntax=markdown tw=92 smartindent :
+-->
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Conventionally, all Vagrant VMs have a user account
+named “vagrant” on them, with the password for the account also set to
+“vagrant”. This makes it very easy to log into them. Normally, using a
+well-known, easy-to-guess, hard-coded user ID and password would be a <a href="https://en.wikipedia.org/wiki/Default_Credential_vulnerability"><em>poor</em>
+security practice</a>.<br />
+  But in this case: the VM is only being used for development purposes,
+rather than deployed in production; it should only be possible to
+connect to the VM from your local computer; and the VM is unlikely to
+contain any confidential data of yours. This being so, the use of
+default credentials is usually an acceptable risk.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>

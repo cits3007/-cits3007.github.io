@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CITS3007 project marking rubric</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: sans serif;
+      font-size: 12pt;
+      color: black;
+      background-color: white;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 50em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      background-color: hsl(0, 0%, 98%);
+      padding: .2em .4em;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      background-color: hsl(0, 0%, 98%);
+      padding: 1em;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    /* Inline code */
+    :not(pre) > code {
+      padding: 2px 4px;
+      font-size: 90%;
+      word-break: normal !important;
+      white-space: nowrap;
+      color: hsl(344.8,69%,10%);
+      background-color: hsl(342.9,37%,96%);
+      border-radius: 4px;
+    }
+    .sourceCode {
+     background-color: hsl(0, 0%, 98%);
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid black;
+      border-bottom: 1px solid black;
+    }
+    th {
+      border-top: 1px solid black;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    div.solutions {
+      border: solid 2pt hsla(120, 100%, 35%, 1);
+      border-radius: 5pt;
+      background-color: hsla(120, 100%, 50%, 0.1);
+      padding: 1em;
+    }
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">CITS3007 project marking rubric</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#part-a-rubric">Part A rubric</a></li>
+<li><a href="#part-b-rubric">Part B rubric</a>
+<ul>
+<li><a href="#general-marks-breakdown">General marks breakdown</a></li>
+<li><a href="#possible-ways-to-get-very-low-marks">Possible ways to get
+very low marks</a></li>
+<li><a href="#ways-to-get-high-marks">Ways to get high marks</a></li>
+</ul></li>
+<li><a href="#general-project-advice">General project advice</a>
+<ul>
+<li><a href="#making-use-of-the-lab-facilitation-staff">Making use of
+the lab facilitation staff</a></li>
+</ul></li>
+</ul>
+</nav>
+<h2 id="part-a-rubric">Part A rubric</h2>
+<p>Regarding marks allocation for the writing/research portion of the
+project: the same rubric is used as for “long answer” questions in the
+mid-semester test. (See <a href="https://secure.csse.uwa.edu.au/run/help3007?p=np&amp;opt=B104">here</a>.)</p>
+<h2 id="part-b-rubric">Part B rubric</h2>
+<p>Regarding marks allocation for the coding portion of the project: the
+key thing being assessed is, Can you implement the spec correctly, while
+adhering to good secure coding practices? (On top of general
+expectations about code clarity and quality, already mentioned in the
+spec.)</p>
+<h3 id="general-marks-breakdown">General marks breakdown</h3>
+<ul>
+<li><strong>Implementation of the spec</strong>. Code implements the
+spec: 40 marks.</li>
+<li><strong>Secure coding best practices</strong>. Code follows secure
+coding best practices: 10 marks.</li>
+<li><strong>Code clarity and style</strong>. Code is clear, easy to
+read, and follows general coding best practices (a list is contained in
+the spec, under “Items to submit” / “C files”): 20 marks.</li>
+</ul>
+<h3 id="possible-ways-to-get-very-low-marks">Possible ways to get very
+low marks</h3>
+<dl>
+<dt><strong>Incomplete projects</strong>.</dt>
+<dd>
+<p>Marks for implementation of the spec (40 marks), secure coding best
+practices (10 marks) and code style and clarity (10 marks) are
+predicated on the project actually being <em>attempted</em>. If the code
+is mostly or wholly incomplete (e.g. empty function definitions, or
+function definitions containing complete nonsense/no serious attempt),
+then you won’t be able to get more than X% of the marks for those
+components for an X%-complete project.</p>
+</dd>
+<dt><strong>Projects that don’t compile</strong></dt>
+<dd>
+<p>There is ample opportunity to compile, test and run your code with
+the exact same compiler (<code>gcc</code>) and the exact same flags
+(minimum of <code>-std=c11 -pedantic -Wall -Wextra</code>) on the exact
+same platform (the CITS3007 standard development environment) we will
+use, so there is no good reason to submit non-compiling code. Projects
+that don’t compile will receive at most 5 marks for implementation (out
+of 40).</p>
+<p>The marks for secure coding best practices (10 marks) and code style
+and clarity (10 marks) are predicated on your actually submitting
+compilable code, so at most 1 mark each will be awarded for those if
+code doesn’t compile.</p>
+</dd>
+<dt><strong>Projects that segfault/fail to pass minimum
+tests</strong></dt>
+<dd>
+<p>Uploaded on the website is a basic “submission checker” (here: <a href="https://cits3007.github.io/assessment/#project" class="uri">https://cits3007.github.io/assessment/#project</a>) which
+can be downloaded and run within a CITS3007 development environment.
+It’s a setuid program, and <strong>NOT EVEN REMOTELY SECURE</strong>, so
+don’t run it outside a development VM.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+You’ll need to run <code>sudo tar xf submission-checker.txz</code>
+within a VM to unpack it.</p>
+<p>Given an <code>adjust_score.c</code> file, the submission-checker
+will:</p>
+<ul>
+<li>unpack the contents of a filesystem which can be used as an isolated
+environment</li>
+<li>mount that filesystem and copy in your code</li>
+<li>compile and link it against a sample <code>main.c</code></li>
+<li>run a minimal test (incrementing the score of a user who doesn’t yet
+have a record in a valid scores file).</li>
+</ul>
+<p>At a bare minimum, your code should be able to result in a valid
+“scores” file with the correct contents, as checked for by this program.
+(Actually, it should do more: to keep the implementation small and
+simple, this submission-checker doesn’t instrument your code with the
+Google AddressSanitizer, UBSanitizer and MemorySanitizer sanitizers,
+which we will do when testing your code.)</p>
+<p>Code that can’t do so will be awarded at most 10 marks out of 40 for
+implementation, at most 3 marks for secure coding best practices, and at
+most 5 marks for code clarity and style.</p>
+<p>(NB: You can also use the submission checker to tell you, in case
+you’re unsure, if you’re about to submit something that looks like a
+report file [PDF or Markdown], <code>answers.txt</code> file and
+<code>adjust_score.c</code> file. Invoke it as
+<code>./submission-checker /path/to/report_file /path/to/answers_file /path/to/c_file</code>.)</p>
+</dd>
+</dl>
+<h3 id="ways-to-get-high-marks">Ways to get high marks</h3>
+<p>Assuming your code doesn’t fall into one of these 3 unfortunate
+categories, marks are awarded as follows:</p>
+<ul>
+<li><p><strong>Implementation of the spec</strong> (40 marks).</p>
+<p>Note that all programs will be instrumented with Google sanitizers
+(AddressSan, MemorySan and UBSan), and marks will only be awarded if
+tests pass <em>with those sanitizers enabled</em>.</p>
+<p>Program produces correct results when run on scores files containing
+typical data: 20 marks.</p>
+<p>Program produces correct results when run on scores files containing
+unusual and/or edge-case data: 15 marks.</p>
+<p>Program is robust (does not segfault or crash) even in the face of
+malformed or otherwise incorrect scores files and other unusual
+circumstances: 5 marks. The program may terminate execution by calling
+functions intended to exit the program, but should print an error
+message before doing so.</p></li>
+<li><p><strong>Secure coding best practices</strong> (10 marks).</p>
+<p>There’ll be specific things we’re looking for here.</p>
+<p>Note that in an ideal project, we’d aim to not just detect errors and
+halt execution (as outlined above), but also ensure any errors are
+propagated up to the part of the program best equipped to
+diagnose/handle them. But for this project we won’t require that. (My
+code doesn’t do it.)</p></li>
+<li><p><strong>Code clarity and style</strong> (20 marks). When writing
+code that aims to be secure, it’s <em>especially</em> important that
+your code is easily auditable and readable, and that (where relevant)
+you’ve justified particular approaches to security that you’ve taken. So
+ensuring your code is easy to read, well-formatted, and follows general
+coding best practices (there’s a list in the spec) is worth quite a bit
+(around 30%, compared to the 10% that is often typical for CSSE
+projects).</p>
+<p>If your code contains known bugs / small portions are incomplete,
+document those using the Doxygen <code>\bug</code> command in a
+documentation block for the relevant function or the file as a whole. It
+won’t mean you get marks for them, but it will count towards good code
+clarity and style: documenting known bugs is good style.</p>
+<p>It’s not necessary for every function to include a documentation
+block, but major functions should; and even the most minor functions
+should at least have a couple of lines of comment above them explaining
+what they do.</p>
+<p>Excessive <em>inline</em> comments (comments in the body of a
+function) are poor coding style, as they make your code harder to read –
+they will result in a low mark for code clarity and style.</p>
+<p>If your code emits excessive warnings on compilation, that’s often
+(though not always) a sign that you’ve done something that’s poor
+style/not best practice. Good C textbooks should contain advice on
+reducing warnings.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p></li>
+</ul>
+<h2 id="general-project-advice">General project advice</h2>
+<h3 id="making-use-of-the-lab-facilitation-staff">Making use of the lab
+facilitation staff</h3>
+<p>The lab teaching stuff will usually be happy to give general advice
+on overcoming difficulties with C programming. If you’re running into
+problems, then taking your code along to a lab to discuss is definitely
+a good idea. But bear in mind that they are unlikely to</p>
+<ul>
+<li>clarify the project spec for you (you’re expected to interpret the
+spec yourself, or post in the forum if the spec is
+unclear/inconsistent/incomplete)</li>
+<li>tell you exactly what secure programming practices to adopt (it’s up
+to you to work out what’s relevant, based on what we’ve covered in
+class), or</li>
+<li>teach you the basics of C (that’s assumed prior knowledge).</li>
+</ul>
+<p>Assistance with the project is also a lower priority than covering
+any required exercise material.</p>
+<!-- vim: syntax=markdown tw=72
+-->
+<section class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>It’s fairly unlikely to do anything
+terribly dreadful to a system, or to be targetted by attackers.
+Nevertheless, it operates at a privileged level, and assumes it’s being
+run in a virtual environment where it can do little damage or expose
+confidential information, so it would be best not run it outside a VM.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>In the event of a dispute about what
+constitutes a “good C textbook”: any text that contradicts basic advice
+given in Seacord, <em>Effective C: An Introduction to Professional C
+Programming</em> (2020) is not a good textbook.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CITS3007 lab 10 (week 11) – Cryptography – solutions</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: sans-serif;
+font-size: 12pt;
+color: black;
+background-color: white;
+}
+body {
+margin: 0 auto;
+max-width: 50em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+background-color: hsl(0, 0%, 98%);
+padding: .2em .4em;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+background-color: hsl(0, 0%, 98%);
+padding: 1em;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+
+:not(pre) > code {
+padding: 2px 4px;
+font-size: 90%;
+word-break: normal !important;
+white-space: nowrap;
+color: hsl(344.8,69%,10%);
+background-color: hsl(342.9,37%,96%);
+border-radius: 4px;
+}
+.sourceCode {
+background-color: hsl(0, 0%, 98%);
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+th {
+border-top: 1px solid black;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style>
+div.solutions {
+border: solid 2pt hsla(120, 100%, 35%, 1);
+border-radius: 5pt;
+background-color: hsla(120, 100%, 50%, 0.1);
+padding: 1em;
+}
+.block-caption {
+display: block;
+font-family: sans-serif;
+font-weight: bold;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+details[open] summary *.only-open {
+opacity: 0.1;
+}
+</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">CITS3007 lab 10 (week
+11) – Cryptography – solutions</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#cryptography-libraries" id="toc-cryptography-libraries">1.
+Cryptography libraries</a>
+<ul>
+<li><a href="#generating-a-key-pair" id="toc-generating-a-key-pair">1.1.
+Generating a key pair</a></li>
+<li><a href="#using-the-key-pair-to-encrypt" id="toc-using-the-key-pair-to-encrypt">1.2. Using the key pair to
+encrypt</a></li>
+<li><a href="#using-the-key-pair-to-decrypt" id="toc-using-the-key-pair-to-decrypt">1.3. Using the key pair to
+decrypt</a></li>
+<li><a href="#challenge-task" id="toc-challenge-task">1.4. Challenge
+task</a></li>
+</ul></li>
+<li><a href="#cryptography-questions-and-exercises" id="toc-cryptography-questions-and-exercises">2. Cryptography questions
+and exercises</a></li>
+<li><a href="#cits3007-project" id="toc-cits3007-project">3. CITS3007
+project</a></li>
+</ul>
+</nav>
+<h2 id="cryptography-libraries">1. Cryptography libraries</h2>
+<p>We will investigate how to perform basic encryption tasks using a
+cryptography library called <a href="https://doc.libsodium.org">Sodium</a>, which is written in C. It
+is well-documented (you can find the documentation <a href="https://doc.libsodium.org/">here</a>), well-tested, highly
+portable, and used by many other projects. It allows us to perform tasks
+like encryption, decryption, signature checking, and password
+hashing.</p>
+<p>Although Sodium is a C library, we will use it from the Python
+language, as that requires much less boilerplate code. In the CITS3007
+SDE, we need to install the Python library <a href="https://github.com/pyca/pynacl">PyNaCl</a>, which “wraps” the C
+Sodium library, and provides a “Pythonic” interface to it (the
+documentation for PyNaCl is available <a href="https://pynacl.readthedocs.io/en/latest/">here</a>).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Run
+the following commands in your development VM:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sudo apt-get update</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sudo apt-get install python3-pip</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> pip install pynacl</span></code></pre></div>
+<p>This ensures we have the <code>pip</code> command available for
+managing Python libraries, then uses it to install PyNaCl. We’ll show
+how to use the PyNaCl library to create a public–private key pair (like
+those used by GitHub to allow repositories to be cloned or pushed
+without using a password). The lecture slides contain more information
+about public key cryptosystems like this, as does the PyNaCl
+documentation, <a href="https://pynacl.readthedocs.io/en/latest/public/">here</a>.</p>
+<dl>
+<dt><strong>Exercise</strong></dt>
+<dd>
+<p>Suppose Alice and Bob are both using a <a href="https://en.wikipedia.org/wiki/Public-key_cryptography">public-key
+cryptosystem</a>, and both make their public keys available on the Web
+for anyone to access. Explain how could they use their keys so that
+Alice can securely send an encrypted message or file which can only be
+read by Bob.</p>
+</dd>
+</dl>
+<h3 id="generating-a-key-pair">1.1. Generating a key pair</h3>
+<p>In this section and the following ones, we will generate
+public–private key pairs, and use them to transfer encrypted content in
+exactly the way Alice and Bob could, in the previous exercise.</p>
+<p>Save the following as <code>keygen.py</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="im">import</span> nacl.utils</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="im">from</span> nacl.public <span class="im">import</span> PrivateKey</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="im">from</span> nacl.encoding <span class="im">import</span> HexEncoder</span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">def</span> write(name, <span class="bu">hex</span>, suffix):</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    filename <span class="op">=</span> <span class="st">&#39;key_&#39;</span> <span class="op">+</span> name <span class="op">+</span> suffix </span>
+<span id="cb2-7"><a href="#cb2-7"></a>    <span class="cf">with</span> <span class="bu">open</span>(filename, <span class="st">&#39;wb&#39;</span>) <span class="im">as</span> ofp:</span>
+<span id="cb2-8"><a href="#cb2-8"></a>      ofp.write(<span class="bu">hex</span>)</span>
+<span id="cb2-9"><a href="#cb2-9"></a></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="kw">def</span> make_keys(name):</span>
+<span id="cb2-11"><a href="#cb2-11"></a>    secretKey <span class="op">=</span> PrivateKey.generate()</span>
+<span id="cb2-12"><a href="#cb2-12"></a>    write(name, secretKey.encode(encoder<span class="op">=</span>HexEncoder), <span class="st">&#39;.sk&#39;</span>)</span>
+<span id="cb2-13"><a href="#cb2-13"></a>    publicKey <span class="op">=</span> secretKey.public_key</span>
+<span id="cb2-14"><a href="#cb2-14"></a>    write(name, publicKey.encode(encoder<span class="op">=</span>HexEncoder), <span class="st">&#39;.pk&#39;</span>)</span>
+<span id="cb2-15"><a href="#cb2-15"></a></span>
+<span id="cb2-16"><a href="#cb2-16"></a>key_name <span class="op">=</span> <span class="bu">input</span>(<span class="st">&quot;Enter a name for the key pair to generate: &quot;</span>)</span>
+<span id="cb2-17"><a href="#cb2-17"></a></span>
+<span id="cb2-18"><a href="#cb2-18"></a>make_keys(key_name)</span></code></pre></div>
+<p>Run it by executing <code>python3 keygen.py</code>, and entering a
+name (this could be a particular purpose you’re generating the key pair
+for – for instance,
+<code>secret-hushmoney-communications-with-my-accountant</code> – or
+just your own name).</p>
+<p>This will generate two files, <code>key_[NAME].sk</code> and
+<code>key_[NAME].pk</code>, which hold our private and public keys,
+respectively. If you inspect those files (e.g. by using
+<code>less</code>) you will see that they simply contain a long sequence
+of hexadecimal digits.</p>
+<p>In detail, here’s how the code works:</p>
+<ul>
+<li><p>Lines 1-4 import several modules:</p>
+<ul>
+<li><code>nacl.utils</code>: This module provides general utility
+functions for working with libsodium.</li>
+<li><code>nacl.public.PrivateKey</code>: This is a class from the
+<code>nacl.public</code> module used to generate a pair of public and
+private keys for encryption.</li>
+<li><code>nacl.encoding.HexEncoder</code>: This class from the
+<code>nacl.encoding</code> module is used to encode binary data as
+hexadecimal strings.</li>
+</ul></li>
+<li><p>The code defines two functions:</p>
+<ul>
+<li><code>write(name, hex, suffix)</code>: This function is responsible
+for writing the hexadecimal representation of a key (either a secret key
+or a public key) to a file with a specific name and suffix.</li>
+<li><code>make_keys(name)</code>: This function generates a pair of
+public and private keys, writes them to separate files, and takes a
+user-provided name for the key pair.</li>
+</ul></li>
+<li><p>Lines 11-15:</p>
+<ul>
+<li>Inside the <code>make_keys(name)</code> function, a secret key is
+generated using <code>PrivateKey.generate()</code>. This secret key will
+be used for encryption and decryption by you (the user creating the key
+pair).</li>
+<li>The secret key is encoded as a hexadecimal string using
+<code>HexEncoder</code> and written to a file with the <code>.sk</code>
+suffix.</li>
+<li>The public key is extracted from the secret key and similarly
+encoded and written to a file with the <code>.pk</code> suffix.</li>
+</ul></li>
+<li><p>Lines 17–19:</p>
+<p>The code uses <code>input()</code> to prompt the user to enter a name
+for the key pair they want to generate, then calls
+<code>make_keys</code> to do the generation.</p></li>
+</ul>
+<p>The secret key (in the “.sk” file) can be used by the user, you, to
+encrypt, decrypt and sign messages. The public key (in the “.pk” file)
+can be published to others, and can be used by other people to encrypt
+messages written to you, or decrypt messages written by you.</p>
+<h3 id="using-the-key-pair-to-encrypt">1.2. Using the key pair to
+encrypt</h3>
+<p>If possible, get another person in the lab to generate a key pair,
+and exchange public keys. Alternatively, create a second key pair with a
+different name (e.g. “other”), and choose this to be the “other
+person”.</p>
+<p>Encrypt a message using the recipient’s public key and your private
+key. Save the following script as <code>encrypt.py</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="im">import</span> nacl.utils</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="im">from</span> nacl.public <span class="im">import</span> PrivateKey, PublicKey, Box</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="im">from</span> nacl.encoding <span class="im">import</span> HexEncoder</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="kw">class</span> EncryptFile :</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, sender, receiver):</span>
+<span id="cb3-7"><a href="#cb3-7"></a>        <span class="va">self</span>.sender <span class="op">=</span> sender</span>
+<span id="cb3-8"><a href="#cb3-8"></a>        <span class="va">self</span>.receiver <span class="op">=</span> receiver</span>
+<span id="cb3-9"><a href="#cb3-9"></a>        <span class="va">self</span>.sk <span class="op">=</span> PrivateKey(<span class="va">self</span>.get_key(sender, <span class="st">&#39;.sk&#39;</span>), encoder<span class="op">=</span>HexEncoder)</span>
+<span id="cb3-10"><a href="#cb3-10"></a>        <span class="va">self</span>.pk <span class="op">=</span> PublicKey(<span class="va">self</span>.get_key(receiver, <span class="st">&#39;.pk&#39;</span>), encoder<span class="op">=</span>HexEncoder)</span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a>    <span class="kw">def</span> get_key(<span class="va">self</span>, name, suffix):</span>
+<span id="cb3-13"><a href="#cb3-13"></a>        filename <span class="op">=</span> <span class="st">&#39;key_&#39;</span> <span class="op">+</span> name <span class="op">+</span> suffix</span>
+<span id="cb3-14"><a href="#cb3-14"></a>        <span class="bu">file</span> <span class="op">=</span> <span class="bu">open</span>(filename, <span class="st">&#39;rb&#39;</span>)</span>
+<span id="cb3-15"><a href="#cb3-15"></a>        data <span class="op">=</span> <span class="bu">file</span>.read()</span>
+<span id="cb3-16"><a href="#cb3-16"></a>        <span class="bu">file</span>.close()</span>
+<span id="cb3-17"><a href="#cb3-17"></a>        <span class="cf">return</span> data</span>
+<span id="cb3-18"><a href="#cb3-18"></a></span>
+<span id="cb3-19"><a href="#cb3-19"></a>    <span class="kw">def</span> encrypt(<span class="va">self</span>, textfile, encfile):</span>
+<span id="cb3-20"><a href="#cb3-20"></a>        box <span class="op">=</span> Box(<span class="va">self</span>.sk, <span class="va">self</span>.pk)</span>
+<span id="cb3-21"><a href="#cb3-21"></a>        tfile <span class="op">=</span> <span class="bu">open</span>(textfile, <span class="st">&#39;rb&#39;</span>)</span>
+<span id="cb3-22"><a href="#cb3-22"></a>        text <span class="op">=</span> tfile.read()</span>
+<span id="cb3-23"><a href="#cb3-23"></a>        tfile.close()</span>
+<span id="cb3-24"><a href="#cb3-24"></a>        etext <span class="op">=</span> box.encrypt(text)</span>
+<span id="cb3-25"><a href="#cb3-25"></a>        efile <span class="op">=</span> <span class="bu">open</span>(encfile, <span class="st">&#39;wb&#39;</span>)</span>
+<span id="cb3-26"><a href="#cb3-26"></a>        efile.write(etext)</span>
+<span id="cb3-27"><a href="#cb3-27"></a>        efile.close()</span>
+<span id="cb3-28"><a href="#cb3-28"></a></span>
+<span id="cb3-29"><a href="#cb3-29"></a>sender <span class="op">=</span> <span class="bu">input</span>(<span class="st">&quot;Enter the name for your key pair: &quot;</span>)</span>
+<span id="cb3-30"><a href="#cb3-30"></a>recip <span class="op">=</span> <span class="bu">input</span>(<span class="st">&quot;Enter the name for the recipient&#39;s key pair: &quot;</span>)</span>
+<span id="cb3-31"><a href="#cb3-31"></a>encrypter <span class="op">=</span> EncryptFile(sender, recip)</span>
+<span id="cb3-32"><a href="#cb3-32"></a>target_file <span class="op">=</span> <span class="bu">input</span>(<span class="st">&quot;Enter a file to encrypt: &quot;</span>)</span>
+<span id="cb3-33"><a href="#cb3-33"></a>encrypter.encrypt(target_file, <span class="ss">f&#39;</span><span class="sc">{</span>target_file<span class="sc">}</span><span class="ss">.enc&#39;</span>)</span>
+<span id="cb3-34"><a href="#cb3-34"></a><span class="bu">print</span>(<span class="st">&#39;Done!&#39;</span>)</span></code></pre></div>
+<p>Run it with the command <code>python3 encrypt.py</code>. You will
+need to provide the name of your key pair (from the previous exercise),
+the recipient’s key pair, and a file to encrypt (you can just choose the
+<code>encrypt.py</code> script if you have no other text file
+handy).</p>
+<p>The script should create a binary file <code>ORIG_FILE.enc</code>
+(where <code>ORIG_FILE</code> is whatever the name of the original file
+was) – this is the encrypted file.</p>
+<p>In more detail, here is what the script does:</p>
+<ul>
+<li><p>Define a class <code>EncryptFile</code>.</p>
+<ul>
+<li>The code defines a Python class named <code>EncryptFile</code>. This
+class is designed to handle file encryption operations.</li>
+<li>The constructor (<code>__init__</code>) of this class initializes
+the sender and receiver names and loads the sender’s private key (with
+extension <code>.sk</code>) and the receiver’s public key (with
+extension <code>.pk</code>) from files.</li>
+<li>The <code>get_key</code> method is used to read the contents of a
+key file (either a <code>.sk</code> or <code>.pk</code> file) and return
+it as binary data.</li>
+<li>The <code>encrypt</code> method is used to encrypt a file. It loads
+the contents of a text file specified by <code>textfile</code>, encrypts
+it using the sender’s private key (<code>sk</code>) and the recipient’s
+public key (<code>pk</code>), and then writes the encrypted data to a
+new file specified by <code>encfile</code>.</li>
+</ul></li>
+<li><p>lines 29–34:</p>
+<ul>
+<li>The code prompts the user to enter the names for their key pair
+(<code>sender</code>) and the recipient’s key pair (<code>recip</code>)
+and a file to encrypt.</li>
+<li>An instance of the <code>EncryptFile</code> class is created with
+the sender’s name and the recipient’s name.</li>
+<li>The <code>encrypt</code> method of the <code>EncryptFile</code>
+instance is called with the target file and the name of the encrypted
+output file (the encrypted file will have a <code>.enc</code>
+extension).</li>
+</ul></li>
+</ul>
+<h3 id="using-the-key-pair-to-decrypt">1.3. Using the key pair to
+decrypt</h3>
+<p>Save the following as <code>decrypt.py</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nacl.utils</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nacl.public <span class="im">import</span> PrivateKey, PublicKey, Box</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nacl.encoding <span class="im">import</span> HexEncoder</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DecryptFile:</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, sender, receiver):</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.sender <span class="op">=</span> sender</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.receiver <span class="op">=</span> receiver</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.sk <span class="op">=</span> PrivateKey(<span class="va">self</span>.get_key(receiver, <span class="st">&#39;.sk&#39;</span>), encoder<span class="op">=</span>HexEncoder)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.pk <span class="op">=</span> PublicKey(<span class="va">self</span>.get_key(sender, <span class="st">&#39;.pk&#39;</span>), encoder<span class="op">=</span>HexEncoder)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_key(<span class="va">self</span>, name, suffix):</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        filename <span class="op">=</span> <span class="st">&#39;key_&#39;</span> <span class="op">+</span> name <span class="op">+</span> suffix</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> <span class="bu">open</span>(filename, <span class="st">&#39;rb&#39;</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                data <span class="op">=</span> <span class="bu">file</span>.read()</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> data</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">FileNotFoundError</span>:</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f&quot;Key file &#39;</span><span class="sc">{</span>filename<span class="sc">}</span><span class="ss">&#39; not found.&quot;</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            sys.exit(<span class="dv">1</span>)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> decrypt(<span class="va">self</span>, encfile, textfile):</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        box <span class="op">=</span> Box(<span class="va">self</span>.sk, <span class="va">self</span>.pk)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> <span class="bu">open</span>(encfile, <span class="st">&#39;rb&#39;</span>) <span class="im">as</span> efile:</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                etext <span class="op">=</span> efile.read()</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>            dtext <span class="op">=</span> box.decrypt(etext)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> <span class="bu">open</span>(textfile, <span class="st">&#39;wb&#39;</span>) <span class="im">as</span> tfile:</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                tfile.write(dtext)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f&quot;Decrypted file saved as &#39;</span><span class="sc">{</span>textfile<span class="sc">}</span><span class="ss">&#39;&quot;</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">FileNotFoundError</span>:</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f&quot;Encrypted file &#39;</span><span class="sc">{</span>encfile<span class="sc">}</span><span class="ss">&#39; not found.&quot;</span>)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>            sys.exit(<span class="dv">1</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>sender <span class="op">=</span> <span class="bu">input</span>(<span class="st">&quot;Enter the name for the sender&#39;s key pair: &quot;</span>)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>recip <span class="op">=</span> <span class="bu">input</span>(<span class="st">&quot;Enter your name for your key pair: &quot;</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>decrypter <span class="op">=</span> DecryptFile(sender, recip)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>enc_file <span class="op">=</span> <span class="bu">input</span>(<span class="st">&quot;Enter the name of the encrypted file to decrypt: &quot;</span>)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>target_file <span class="op">=</span> <span class="bu">input</span>(<span class="st">&quot;Enter the name for the decrypted output file: &quot;</span>)</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>decrypter.decrypt(enc_file, target_file)</span></code></pre></div>
+<p>To use the script, you need to have an encrypted file (with a
+<code>.enc</code> extension) generated by the “encrypt.py” script in the
+same directory – ideally, swap with another person and attempt to
+decrypt their <code>.enc</code> file – together with your private key
+(with an <code>.sk</code> extension), and the other person’s public key
+(with a <code>.pk</code> extension).</p>
+<p>Run <code>python3 decrypt.py</code> and follow the prompts: enter the
+sender’s key pair name, your key pair name, the name of the encrypted
+file to decrypt, and the name for the decrypted output file.</p>
+<p>The script will decrypt the file using the private key associated
+with your name and the sender’s public key and save the decrypted
+content to the specified output file.</p>
+<h3 id="challenge-task">1.4. Challenge task</h3>
+<p>As a challenge task, you might like to research how to use libsodium
+to <em>sign</em> a message with your key pair so that other users can
+verify a (plaintext) message came from you.</p>
+<h2 id="cryptography-questions-and-exercises">2. Cryptography questions
+and exercises</h2>
+<p>See if you can answer the following questions, after reviewing the
+material on cryptography in the lectures.</p>
+<dl>
+<dt><strong>Question 2(a)</strong></dt>
+<dd>
+<p>Suppose in the CITS3007 SDE you create the MD5 hash of some password,
+using a command like:</p>
+<pre><code>$ printf mypassword | md5sum</code></pre>
+<p>In what format is the hash displayed? How large is the hash, in
+bytes? How would you write it in C syntax?</p>
+</dd>
+</dl>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solution</p>
+</div>
+<p>If we run the commands, we get output like the following:</p>
+<pre><code>$ printf mypassword | md5sum
+d8578edf8458ce06fbc5bb76a58c5ca4  -</code></pre>
+<p>The first “word” of output is the actual hash; the “-” represents the
+name of the file being hashed (in this case, “-” represents standard
+input).</p>
+<p>The hash is a sequence of hexadecimal digits, and represents 16 bytes
+(or 128 bits).</p>
+<p>Each pair of characters in the original hash represents one byte, so
+if stored in C as an array of bytes, we could write it as follows:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">// fragment 1</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> somehash<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="bn">0xd8</span><span class="op">,</span> <span class="bn">0x57</span><span class="op">,</span> <span class="bn">0x8e</span><span class="op">,</span> <span class="bn">0xdf</span><span class="op">,</span> <span class="bn">0x84</span><span class="op">,</span> <span class="bn">0x58</span><span class="op">,</span> <span class="bn">0xce</span><span class="op">,</span> <span class="bn">0x6</span><span class="op">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                     <span class="bn">0xfb</span><span class="op">,</span> <span class="bn">0xc5</span><span class="op">,</span> <span class="bn">0xbb</span><span class="op">,</span> <span class="bn">0x76</span><span class="op">,</span> <span class="bn">0xa5</span><span class="op">,</span> <span class="bn">0x8c</span><span class="op">,</span> <span class="bn">0x5c</span><span class="op">,</span> <span class="bn">0xa4</span><span class="op">};</span></span></code></pre></div>
+<p>Strings in C also allow us to use hexadecimal escape sequences, so we
+could also write the following:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">// fragment 2</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> somehash<span class="op">[]</span> <span class="op">=</span> <span class="st">&quot;</span><span class="sc">\xd8\x57\x8e\xdf\x84\x58\xce\x6</span><span class="st">&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;</span><span class="sc">\xfb\xc5\xbb\x76\xa5\x8c\x5c\xa4</span><span class="st">&quot;</span><span class="op">;</span></span></code></pre></div>
+<p>The difference is that in fragment 1, <code>somehash</code> is a
+“plain” array or buffer, of size 16 elements, but in fragment 2,
+<code>somehash</code> is a null-terminated C string, so the array will
+be of size 17.</p>
+</div>
+<dl>
+<dt><strong>Question 2(b)</strong></dt>
+<dd>
+<p>What is the purpose of salting passwords, when creating a password
+hash?</p>
+</dd>
+</dl>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solution</p>
+</div>
+<p>Salting passwords prevents several common attacks on passwords.</p>
+<p>If a password is used unsalted, directly as is, then every user in
+the world who happens to use the password “qwerty”, for instance, will
+have exactly the same hash for their password (assuming the same
+algorithm is used). If we used the MD5 hashing algorithm,<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>
+then every user who uses the password “qwerty” will get the hash
+<code>d8578edf8458ce06fbc5bb76a58c5ca4</code>:</p>
+<pre><code>$ printf qwerty | md5sum
+d8578edf8458ce06fbc5bb76a58c5ca4  -</code></pre>
+<p>That means if an attacker happens to get hold of the list of hashed
+passwords, it’s extremely easy for them to find out what the user’s
+password is – <em>despite</em> the fact that hashes are “difficult to
+reverse”.</p>
+<p>The attacker knows that many people choose <a href="https://en.wikipedia.org/wiki/Wikipedia:10,000_most_common_passwords">very
+common passwords</a> and that “qwerty” is one of these, and that the MD5
+hash of “qwerty” is <code>d8578edf8458ce06fbc5bb76a58c5ca4</code>. So if
+the attacker has a list of the hashes of common passwords, they’ll
+easily recognize them whenever they appear. (A <a href="https://en.wikipedia.org/wiki/Rainbow_table">rainbow table</a> is
+used by hackers when attacking lists of hashes, and is simply a data
+structure designed to efficiently store many precomputed password/hash
+pairs.)</p>
+<p>Adding a random salt to the password destroys this straightforward
+correspondence between password and hash.</p>
+</div>
+<dl>
+<dt><strong>Question 2(c)</strong></dt>
+<dd>
+<p>Look up Wikipedia to refresh your memory of what a <em>hash
+collision</em> is. Explain why hash collisions necessarily occur. That
+is, why must there always be two different plaintexts that have the same
+hash value?</p>
+</dd>
+</dl>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solution</p>
+</div>
+<p>Every hash function outputs results which are of some exact, fixed
+size; the exact size will depend on the function. (For instance, we’ve
+seen above that the MD5 algorithm always outputs hashes of 16
+bytes.)</p>
+<p>The <em>input</em> to a hash function, however, is a sequence
+(usually of bytes) of arbitrary length. The input domain is therefore
+infinite, but the output range of the function is finite: hence, for any
+one hash value, there must always be an infinite number of plaintexts
+which produce that hash value.</p>
+<p>We can see this more straightforwardly if we imagine a hash function
+that produces outputs of only <em>one</em> byte in length. Such a
+function would not be very useful for cryptography purposes (can you
+explain why?), but we could use it for example to distribute items
+across a hash table of size less than 256.</p>
+<p>The output of the function is one byte (256 different values), but it
+will operate on any arbitrary sequence of input bytes. It therefore
+follows that for each of the 256 output results, there must be an
+infinite number of inputs which produce it.</p>
+</div>
+<h2 id="cits3007-project">3. CITS3007 project</h2>
+<p>You can use your lab time to work on the CITS3007 project. You may
+wish to discuss your project tests and code design with other students
+or the lab facilitators (although the actual code you submit must be
+your own, individual work).</p>
+<!-- vim: syntax=markdown tw=92 :
+-->
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>There are actually multiple Python libraries which
+provide access to the C Sodium library, which can be confusing, but they
+have quite different purposes. PyNaCl, which we use, provides a fairly
+<em>high-level</em> interface to Sodium, and allows Python programmers
+to use Python types (such as classes and lists) which they are familiar
+with.<br />
+    Two other Python libraries are <a href="https://github.com/stef/pysodium">pysodium</a> and <a href="https://github.com/saltstack/libnacl">libnacl</a>. These are
+<em>not</em> high-level – they pretty directly wrap the exact C
+functions exposed by the C Sodium library, and allow them to be called
+from Python.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Note that as per the lectures, MD5 should
+<strong>not</strong> be used in practice as a password hashing function;
+a dedicated function like SCrypt should be used instead.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>
