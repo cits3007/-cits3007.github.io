@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CITS3007 lab 8 (week 9) – Race conditions – solutions</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: sans-serif;
+font-size: 12pt;
+color: black;
+background-color: white;
+}
+body {
+margin: 0 auto;
+max-width: 50em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+background-color: hsl(0, 0%, 98%);
+padding: .2em .4em;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+background-color: hsl(0, 0%, 98%);
+padding: 1em;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+
+:not(pre) > code {
+padding: 2px 4px;
+font-size: 90%;
+word-break: normal !important;
+white-space: nowrap;
+color: hsl(344.8,69%,10%);
+background-color: hsl(342.9,37%,96%);
+border-radius: 4px;
+}
+.sourceCode {
+background-color: hsl(0, 0%, 98%);
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+th {
+border-top: 1px solid black;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style>
+div.solutions {
+border: solid 2pt hsla(120, 100%, 35%, 1);
+border-radius: 5pt;
+background-color: hsla(120, 100%, 50%, 0.1);
+padding: 1em;
+}
+.block-caption {
+display: block;
+font-family: sans-serif;
+font-weight: bold;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+details[open] summary *.only-open {
+opacity: 0.1;
+}
+</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">CITS3007 lab 8 (week 9) – Race
+conditions – solutions</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#background" id="toc-background">0. Background</a></li>
+<li><a href="#data-races-and-threadsanitizer" id="toc-data-races-and-threadsanitizer">1. Data races and
+ThreadSanitizer</a></li>
+<li><a href="#protection-against-symlink-attacks" id="toc-protection-against-symlink-attacks">2. Protection against
+symlink attacks</a>
+<ul>
+<li><a href="#a-setuid-program" id="toc-a-setuid-program">2.2. A setuid
+program</a></li>
+</ul></li>
+</ul>
+</nav>
+<h2 id="background">0. Background</h2>
+<p>This lab explores <em>race condition</em> vulnerabilities. A race
+condition is any situation where the timing or order of events affects
+the correctness of programs or code. For a race condition to occur, some
+form of <em>concurrency</em> must exist – e.g., multiple processes or
+threads of control running at the same time – as well as some sort of
+mutable resource. A race condition occurs when the same data is accessed
+and written by multiple threads of control or processes.</p>
+<p>A common sort of resource for programs to use is files in the
+filesystem. If a <code>setuid</code> program that uses files has a race
+condition vulnerability, attackers may be able to run a parallel process
+and attempt to subvert the program behaviour.</p>
+<dl>
+<dt><strong>Question 1(a)</strong></dt>
+<dd>
+<p>Is a program with a race condition always guaranteed to work
+correctly? Is an attack on a program with a race condition always
+guaranteed to succeed?</p>
+</dd>
+</dl>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solution</p>
+</div>
+<p>The answer to both questions is “No”. By definition, a program with a
+race condition only works correctly when events occur in the “right”
+order, and they are not guaranteed to do so. An attack on such a program
+depends on events ocurring in the “right” order for the attacker, and
+this, also, is not guaranteed to happen.</p>
+</div>
+<dl>
+<dt><strong>Question 1(b)</strong></dt>
+<dd>
+<p>What is a symlink attack? See if you can find out how they are
+typically defined, and how they can be protected against. How do they
+relate to race conditions? If a race condition is involved, identify the
+resource being altered.</p>
+</dd>
+</dl>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solution</p>
+</div>
+<p>Symlink attacks were described in lab 4, on <code>setuid</code>
+vulnerabilities, and further information is available <a href="https://capec.mitre.org/data/definitions/132.html">in the CAPEC
+database</a> which describes different attack patterns. They occur when
+an attacker creates a symbolic link so that a vulnerable program
+accesses the link’s endpoint (say,
+<code>/etc/some_sensitive_file</code>) on the mistaken assumption it is
+accessing a file at the link’s source path. The result is that the
+vulnerable program reads from or writes to an incorrect file.</p>
+<p>Symlink attacks need not involve race conditions: <em>any</em> attack
+where the attacker induces a program to read from or write to an
+incorrect file by using a symbolic link counts as a symlink attack.
+However, a common sort of vulnerability is where:</p>
+<ol type="i">
+<li>some privileged (e.g. <code>setuid</code>) program checks to see
+whether it should access some file <em>F</em></li>
+<li>the program later does access file <em>F</em> (either reading or
+writing it) based on the check in step (i), and steps (i) and (ii) are
+not atomic</li>
+<li>an attacker can unlink file <em>F</em> and replace it with a
+symbolic link to a different file (call it <em>E</em>) which the
+attacker should not have access to.</li>
+</ol>
+<p>This counts as a race condition because correct operation of the
+program will only happen if the file is not replaced between steps (i)
+and (ii); but since they are not guaranteed to be atomic, there is an
+interval between the steps, and the file can be replaced during that
+interval. This sort of vulnerability is sometimes called a <a href="https://en.wikipedia.org/wiki/Symlink_race">symlink race</a>, and
+it is an example of a TOCTOU vulnerability (which we have covered
+earlier).</p>
+<p>How to defend against the attack varies on the logic of the
+vulnerable program, but the general approaches are:</p>
+<ul>
+<li>Avoid the TOCTOU bug by only accessing the file path <em>once</em>:
+obtain a file handle by opening the file, and check permissions using
+the open file handle.</li>
+<li>Protect the target file <em>F</em> by putting it in a directory an
+attacker does not have access to.</li>
+</ul>
+<p>The resource being accessed as part of the race condition is the file
+<em>F</em>.</p>
+</div>
+<!--
+This lab covers the following topics:
+
+- Race condition vulnerability
+- Sticky symlink protection
+- Principle of least privilege
+
+-->
+<!--
+lab questions to add
+
+Checkpoint 1. What is a race condition?
+Checkpoint 2. What is the general target for race condition attacks?
+Checkpoint 3. What is the TOCTTOU (Time Of Check To Time Of Use) design flaw?
+Checkpoint 4. What is the relationship between TOCTTOU design flaw and the race condition attack?
+Checkpoint 5. Explain if a race condition is always guaranteed to succeed.
+Checkpoint 6. What is a symlink / path attack?
+Checkpoint 7. How is a symlink / path attack related to a race condition?
+-->
+<h2 id="data-races-and-threadsanitizer">1. Data races and
+ThreadSanitizer</h2>
+<p>In multithreaded programs, it may be possible for multiple threads to
+access some memory location. If two threads access the same variable
+concurrently and at least one of the accesses is a write, then that is a
+<em>data race</em>, and it is undefined behaviour in C.</p>
+<p>Save the following program as <code>race1.c</code>, and compile it
+with:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-std</span><span class="op">=</span>c11 <span class="at">-pedantic-errors</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> <span class="at">-pthread</span> <span class="at">-o</span> race1 race1.c</span></code></pre></div>
+<p>Program <code>race1.c</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;pthread.h&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="dt">long</span> GLOBAL<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="op">*</span>operation1<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>x<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  GLOBAL<span class="op">++;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> NULL<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="op">*</span>operation2<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>x<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  GLOBAL<span class="op">--;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> NULL<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  pthread_t t<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  pthread_create<span class="op">(&amp;</span>t<span class="op">[</span><span class="dv">0</span><span class="op">],</span> NULL<span class="op">,</span> operation1<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  pthread_create<span class="op">(&amp;</span>t<span class="op">[</span><span class="dv">1</span><span class="op">],</span> NULL<span class="op">,</span> operation2<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  pthread_join<span class="op">(</span>t<span class="op">[</span><span class="dv">0</span><span class="op">],</span> NULL<span class="op">);</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  pthread_join<span class="op">(</span>t<span class="op">[</span><span class="dv">1</span><span class="op">],</span> NULL<span class="op">);</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This program uses the Pthreads library to control program threads.
+Two threads are created using the <code>pthread_create</code> function,
+and <code>main</code> waits for them to finish by calling
+<code>pthread_join</code>. One of the threads increments
+<code>GLOBAL</code>, the other decrements it. However, they are doing so
+without any sort of synchronization, so this counts as a data race and
+is undefined behaviour. If the program operates as the programmer might
+expect, then one thread increments <code>GLOBAL</code>, another
+decrements it, and the end result should be that <code>GLOBAL</code> is
+0 at the end of the program. However, because our program invokes
+undefined behaviour, any result is possible: the variable could end up
+with other values (i.e. data corruption).</p>
+<p>We can detect this race condition using <a href="https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual">ThreadSanitizer</a>
+(TSan, for short). Compile again with the following command. (When
+compiling, we add the <code>-g</code> option to improve error messages
+printed by TSan, but you can also leave it off.)</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-g</span> <span class="at">-std</span><span class="op">=</span>c11 <span class="at">-pedantic-errors</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> <span class="at">-fsanitize</span><span class="op">=</span>thread <span class="at">-pthread</span> <span class="at">-o</span> race1 race1.c</span></code></pre></div>
+<p>Then run the program. You should see output something like the
+following:</p>
+<pre class="plain"><code>==================
+WARNING: ThreadSanitizer: data race (pid=590418)
+  Read of size 4 at 0x561c214a7014 by thread T2:
+    #0 operation2 /home/vagrant/race1.c:12 (race1+0x12f1)
+
+  Previous write of size 4 at 0x561c214a7014 by thread T1:
+    #0 operation1 /home/vagrant/race1.c:7 (race1+0x12ac)
+
+  Location is global &#39;GLOBAL&#39; of size 4 at 0x561c214a7014 (race1+0x000000004014)
+
+  Thread T2 (tid=590421, running) created by main thread at:
+    #0 pthread_create ../../../../src/libsanitizer/tsan/tsan_interceptors_posix.cpp:969 (libtsan.so.0+0x605b8)
+    #1 main /home/vagrant/race1.c:19 (race1+0x1388)
+
+  Thread T1 (tid=590420, finished) created by main thread at:
+    #0 pthread_create ../../../../src/libsanitizer/tsan/tsan_interceptors_posix.cpp:969 (libtsan.so.0+0x605b8)
+    #1 main /home/vagrant/race1.c:18 (race1+0x1367)
+
+SUMMARY: ThreadSanitizer: data race /home/vagrant/race1.c:12 in operation2
+==================
+0
+ThreadSanitizer: reported 1 warnings</code></pre>
+<p>When we compile with ThreadSanitizer, our program is instrumented
+(i.e., extra instructions are added) so that it keeps track of the
+accesses each thread makes to memory. By default, the last <span class="math inline">2<sup>17</sup></span>, or roughly 128,000, accesses
+are tracked. It is possible to alter this number when your program is
+invoked. The following invocation</p>
+<pre><code>$ TSAN_OPTIONS=&quot;history_size=3&quot; ./race1</code></pre>
+<p>will double the number of accesses tracked. If the ThreadSanitizer
+finds that more than one of those accesses is to the same memory
+location, and at least one of those accesses was a write, then this will
+be flagged as being a race condition.</p>
+<dl>
+<dt><strong>Question 1(a)</strong></dt>
+<dd>
+<p>Find out what resources are used by a program with TSan enabled,
+compared with a program which does not have it enabled.</p>
+</dd>
+</dl>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solution</p>
+</div>
+<p>According to the documentation at <a href="https://clang.llvm.org/docs/ThreadSanitizer.html" class="uri">https://clang.llvm.org/docs/ThreadSanitizer.html</a>, a
+sanitized program uses more memory:</p>
+<blockquote>
+<p>At the default settings the memory overhead is 5x plus 1Mb per each
+thread.</p>
+</blockquote>
+</div>
+<p>However, ThreadSanitizer is not infallible, as we will demonstrate.
+Here is a second program – save it as <code>race2.c</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;pthread.h&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> GLOBAL<span class="op">;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span><span class="op">*</span> operation1<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>x<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  GLOBAL <span class="op">=</span> <span class="dv">99</span><span class="op">;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> x<span class="op">;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  pthread_t t<span class="op">;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  pthread_create<span class="op">(&amp;</span>t<span class="op">,</span> NULL<span class="op">,</span> operation1<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  GLOBAL <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  pthread_join<span class="op">(</span>t<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>GLOBAL <span class="op">==</span> <span class="dv">99</span><span class="op">)</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> EXIT_SUCCESS<span class="op">;</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> EXIT_FAILURE<span class="op">;</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Compile it as follows:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> gcc <span class="at">-g</span> <span class="at">-std</span><span class="op">=</span>c11 <span class="at">-pedantic-errors</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> <span class="at">-pthread</span> <span class="at">-o</span> race2 race2.c</span></code></pre></div>
+<p>In this program, a thread is spawned which sets the value of
+<code>GLOBAL</code> to 99, while the <code>main</code> function
+concurrently sets it to 100 – this again, is a data race. Typically, the
+<code>main</code> function will “win”, and the value will be 100, but
+sometimes not. We can demonstrate this by running the following Bash
+code:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> i=0 <span class="kw">;</span> <span class="cf">while</span> <span class="ex">./race2</span> <span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="va">$i</span> <span class="kw">;</span> <span class="va">i</span><span class="op">=</span><span class="va">$((i</span><span class="op">+</span><span class="dv">1</span><span class="va">))</span> <span class="kw">;</span> <span class="cf">done</span></span></code></pre></div>
+<p>In the cases where the <code>main</code> function “wins”,
+<code>race2</code> will exit with exit code 1, and the while loop will
+continue. However, if the thread “wins”, <code>race2</code> will exit
+with exit code 0, and the while loop will halt. If you run the program,
+you should see the <code>main</code> function “win” many times, but
+eventually, the thread will succeed instead – and the value of
+<code>i</code> will show how many times we had to run the program before
+this happened. (Typical values are somewhere in the thousands, but it
+could sometimes be higher or lower.)</p>
+<p>Now compile the program and run it with ThreadSanitizer enabled:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> gcc <span class="at">-g</span> <span class="at">-std</span><span class="op">=</span>c11 <span class="at">-pedantic-errors</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> <span class="at">-fsanitize</span><span class="op">=</span>thread <span class="at">-pthread</span> <span class="at">-o</span> race2 race2.c</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> i=0<span class="kw">;</span> <span class="cf">while</span> <span class="kw">(</span><span class="ex">./race2</span> <span class="kw">;</span> <span class="bu">[</span> <span class="va">$?</span> <span class="ot">-ne</span> 66 <span class="bu">]</span><span class="kw">);</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="va">$i</span><span class="kw">;</span> <span class="va">i</span><span class="op">=</span><span class="va">$((i</span><span class="op">+</span><span class="dv">1</span><span class="va">))</span><span class="kw">;</span> <span class="cf">done</span></span></code></pre></div>
+<p>By default, if TSan detects a race condition, the program exits with
+exit code 66 (see the <a href="https://github.com/google/sanitizers/wiki/ThreadSanitizerFlags">TSan
+options documentation</a>). (We could alter this by invoking our program
+with, say, <code>TSAN_OPTIONS=&quot;exitcode=3&quot; ./race2</code> if we wanted
+to force the exit code to be 3 instead.) Our <code>while</code> loop
+continues to run until TSan does detect a race condition.</p>
+<p>You will typically see that TSan does not always detect a race
+condition, but eventually does. Why does TSan not always detect the
+race? Because sometimes,<br />
+the line <code>GLOBAL = 100</code> is executed before the operating
+system has finished creating a new thread at all. In that case, TSan
+does not “kick in” until the thread is created, and doesn’t realize that
+the thread is altering a variable which was also altered in
+<code>main</code>.</p>
+<dl>
+<dt><strong>Exercise</strong></dt>
+<dd>
+<p>The traditional way to protect against a data race in this program
+would be to either use <em>atomic types</em> (i.e. alter the type of
+<code>GLOBAL</code>), or to use <em>locks</em> (e.g. mutexes – “mutual
+exclusion locks”). See if you can amend the program to use one of these
+two approaches. Which of these approaches can successfully fix the
+issue?</p>
+</dd>
+</dl>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solution</p>
+</div>
+<p>One approach is to use atomic types. They were introduced in C11, and
+you can read about them <a href="https://en.cppreference.com/w/c/atomic">here</a>. We can write the
+program in that case as follows:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;pthread.h&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdatomic.h&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>atomic_int GLOBAL<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span><span class="op">*</span> operation1<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>x<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  GLOBAL <span class="op">=</span> <span class="dv">99</span><span class="op">;</span> </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> x<span class="op">;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  pthread_t t<span class="op">;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  pthread_create<span class="op">(&amp;</span>t<span class="op">,</span> NULL<span class="op">,</span> operation1<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  GLOBAL <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  pthread_join<span class="op">(</span>t<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>GLOBAL <span class="op">==</span> <span class="dv">99</span><span class="op">)</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> EXIT_SUCCESS<span class="op">;</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> EXIT_FAILURE<span class="op">;</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>We have added the use of the <code>&lt;stdatomic.h&gt;</code> header,
+and changed <code>GLOBAL</code> to be of type
+<code>atomic_int</code>.</p>
+<p>We can run the following bash code to see if TSan detects a data race
+(hit ctrl-c to stop it):</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="va">i</span><span class="op">=</span>0<span class="kw">;</span> <span class="cf">while</span> <span class="kw">(</span><span class="ex">./race2-atomic</span> <span class="kw">;</span> <span class="bu">[</span> <span class="va">$?</span> <span class="ot">-ne</span> 66 <span class="bu">]</span><span class="kw">);</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="va">$i</span><span class="kw">;</span> <span class="va">i</span><span class="op">=</span><span class="va">$((i</span><span class="op">+</span><span class="dv">1</span><span class="va">))</span><span class="kw">;</span> <span class="cf">done</span></span></code></pre></div>
+<p>But no data race should be detected; by using atomics, we have
+removed the data race, and our program is well-defined.</p>
+<div class="block-caption">
+<p>Mutexes</p>
+</div>
+<p>Alternatively, we can use the mutex types from the Pthreads library
+to protect our <code>GLOBAL</code> variable.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;pthread.h&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> GLOBAL<span class="op">;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>pthread_mutex_t mutex <span class="op">=</span> PTHREAD_MUTEX_INITIALIZER<span class="op">;</span> <span class="co">// initialize</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span><span class="op">*</span> operation1<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>x<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    pthread_mutex_lock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// request lock before accessing shared variable</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    GLOBAL <span class="op">=</span> <span class="dv">99</span><span class="op">;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    pthread_mutex_unlock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// release lock</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x<span class="op">;</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    pthread_t t<span class="op">;</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    pthread_create<span class="op">(&amp;</span>t<span class="op">,</span> NULL<span class="op">,</span> operation1<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    pthread_mutex_lock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// request lock before accessing shared variable</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    GLOBAL <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    pthread_mutex_unlock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// release lock</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    pthread_join<span class="op">(</span>t<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    pthread_mutex_lock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// request lock before accessing shared variable</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> tmp <span class="op">=</span> GLOBAL<span class="op">;</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    pthread_mutex_unlock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// release lock</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>tmp <span class="op">==</span> <span class="dv">99</span><span class="op">)</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> EXIT_SUCCESS<span class="op">;</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> EXIT_FAILURE<span class="op">;</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>We can compile and test this with TSan, and again, no data race
+should be detected.</p>
+<div class="block-caption">
+<p>“Native” C11 locks</p>
+</div>
+<p>C11 introduces a “native” type of thread which doesn’t use the
+Pthreads API. We can rewrite our program using the new API, which is
+found in <code>&lt;threads.h&gt;</code>.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;threads.h&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> GLOBAL<span class="op">;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>mtx_t mutex<span class="op">;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> operation1<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>x<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    mtx_lock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// request lock before accessing shared variable</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    GLOBAL <span class="op">=</span> <span class="dv">99</span><span class="op">;</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    mtx_unlock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// release lock</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    thrd_t t<span class="op">;</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    mtx_init<span class="op">(&amp;</span>mutex<span class="op">,</span> mtx_plain<span class="op">);</span> <span class="co">// Initialize the mutex</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    thrd_create<span class="op">(&amp;</span>t<span class="op">,</span> operation1<span class="op">,</span> NULL<span class="op">);</span> <span class="co">// Create a thread</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    mtx_lock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// request lock before accessing shared variable</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    GLOBAL <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    mtx_unlock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// release lock</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    thrd_join<span class="op">(</span>t<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    mtx_lock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// request lock before accessing shared variable</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> global_value <span class="op">=</span> GLOBAL<span class="op">;</span> <span class="co">// Read the value of GLOBAL</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    mtx_unlock<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// Unlock the mutex after reading the shared variable</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Check the value of GLOBAL</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>global_value <span class="op">==</span> <span class="dv">99</span><span class="op">)</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">&quot;Exit Success</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">&quot;Exit Failure</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>    mtx_destroy<span class="op">(&amp;</span>mutex<span class="op">);</span> <span class="co">// Destroy the mutex</span></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Unfortunately, the TSan sanitizer may not work with C11 “native”
+threads – see <a href="https://github.com/google/sanitizers/issues/1195">here</a>.</p>
+</div>
+<h2 id="protection-against-symlink-attacks">2. Protection against
+symlink attacks</h2>
+<p>Recent versions of Ubuntu (10.10 and later) come with a built-in
+protection against some race condition attacks. Specifically, they
+mitigate against some symbolic link (symlink) attacks (which we saw in
+lectures).</p>
+<p>In the CITS3007 development environment, we will create a new user
+(in addition to the “<code>vagrant</code>” user we log in as) with their
+own home directory:</p>
+<pre><code>$ sudo adduser --disabled-password --gecos &#39;&#39; user2</code></pre>
+<p>As that user, we’ll create a new file and a symlink to it:</p>
+<pre><code>$ sudo su user2 -c &#39;echo hello &gt; /home/user2/file&#39;
+$ sudo su user2 -c &#39;ln -s /home/user2/file /home/user2/link&#39;</code></pre>
+<p>By default, a user’s new files are world readable, so the
+<code>vagrant</code> user can read the file and the symlink:</p>
+<pre><code>$ ls -l ~user2
+total 4
+-rw-rw-r-- 1 user2 user2  6 Sep 27 00:31 file
+lrwxrwxrwx 1 user2 user2 16 Sep 27 00:32 link -&gt; /home/user2/file
+$ cat /home/user2/file
+hello </code></pre>
+<p>Note that the permissions of the symlink are “<code>rwx</code>” for
+user, group and the “world” – this is because on Linux, symlinks have no
+“permissions” of their own; permissions are taken from the file being
+linked to.</p>
+<p>As <code>user2</code>, we’ll try removing “world” permissions from
+the symlink:</p>
+<pre><code>$ sudo su user2 -c &#39;chmod o-r /home/user2/link&#39;</code></pre>
+<p>Does this make a difference to the permissions of the
+<code>link</code> file, as displayed by <code>ls</code>? Can the
+<code>vagrant</code> user still access it?</p>
+<div class="solutions">
+<p><strong>Sample solutions</strong></p>
+<p>You should observe that the listed permissions stay exactly the same,
+and the <code>vagrant</code> user can still read the file contents.</p>
+</div>
+<p>Now we’ll try making a symlink again, but putting it in the
+<code>/tmp</code> directory:</p>
+<pre><code>$ sudo su user2 -c &#39;ln -s /home/user2/file /tmp/link&#39;</code></pre>
+<p>What happens if you execute the command <code>cat /tmp/link</code>
+(as the <code>vagrant user</code>)?</p>
+<div class="solutions">
+<p><strong>Sample solutions</strong></p>
+<p>You should observe that a “Permission denied” error occurs.</p>
+</div>
+<p>The <code>tmp</code> directory has special permissions, on Unix-like
+systems. Run <code>ls -ld /tmp</code>, and you should see output like
+the following:</p>
+<pre><code>$ ls -ld /tmp
+drwxrwxrwt 12 root root 4096 Sep 27 00:38 /tmp</code></pre>
+<p>The “<code>t</code>” at the end of the permissions means a permission
+bit called the “sticky bit” has been set for the <code>/tmp</code>
+directory. When this bit is set on a directory, and some user creates a
+file in it, other users (except for the owner of the directory, and of
+course <code>root</code>) are prevented from deleting or renaming the
+file.</p>
+<!--
+  TODO: exercise showing this
+-->
+<p>The sticky bit is set on the <code>/tmp</code> directory to ensure
+one user’s temporary files can’t be renamed or deleted by other users.
+In addition to this, the Linux kernel introduced <a href="https://lwn.net/Articles/390323/">additional protections</a>:
+symbolic links in world-writable sticky directories (such as
+<code>/tmp</code>) can <em>only be followed</em> if the follower (i.e.,
+the user executing a command) and the directory owner (that is,
+<code>root</code>, in the case of the <code>/tmp</code> directory) match
+the symlink owner.</p>
+<!--
+  TODO: exercise showing this
+-->
+<p>(Note that these built-in protections are <strong>not</strong>
+sufficient security for safely creating temporary files. It’s usually
+best to ensure that only the actual user of a process can even list or
+read temporary files: a program should create its own temporary
+<em>directory</em> under <code>/tmp</code>, to which only the actual
+user has read, write or execute access, and then create needed temporary
+files within that directory.)</p>
+<p>This protection can be removed by running the following command,
+which alters kernel parameters:</p>
+<pre><code>$ sudo sysctl -w fs.protected_symlinks=0</code></pre>
+<p>If you try the previous exercises again, you should see that this
+time, the <code>vagrant</code> user <em>can</em> run
+<code>cat /tmp/link</code> without a “permission denied” error.</p>
+<p>Another protection was added in Ubuntu 20.04: even root cannot write
+to files in <code>/tmp</code> that are owned by others. That can be
+disabled by running the following command:</p>
+<pre><code>$ sudo sysctl fs.protected_regular=0</code></pre>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Linux security modules</p>
+</div>
+<p>In earlier versions of the Linux kernel (for instance, on Ubuntu
+12.04), the “symlinks in sticky-bit directories” protection was provided
+by a Linux security module called “Yama”, and could be disabled using
+the following command:</p>
+<pre><code>$ sudo sysctl -w kernel.yama.protected_sticky_symlinks=0</code></pre>
+<p>If you aren’t able to easily run the CITS3007 standard development
+environment (e.g. because you are using an M-series MacOS computer), and
+are using an earlier version of Ubuntu instead, then the “yama” version
+of the command might work instead.</p>
+<p>The Linux kernel provides a security framework consisting of various
+“hooks” which can be used by Linux security <em>modules</em>. For
+instance, normally in the Linux kernel, read permissions for a file are
+only checked when a file is opened. However, the security framework
+provides “file hooks” which allow security modules to specify checks
+which should be made whenever a read or write is performed on a file
+descriptor (for example, to revalidate the file permissions in case they
+have changed).</p>
+<p>We will not look in detail at how the security framework and modules
+work, but if you are interested, the architecture of the framework is
+described in a <a href="https://www.usenix.org/legacy/event/sec02/wright.html">2002
+paper</a>, and a guide to some of the modules is provided <a href="https://www.starlab.io/blog/a-brief-tour-of-linux-security-modules">here</a>.</p>
+<!--
+  "Yama" appears to be named after the Hindu deity: <https://lwn.net/Articles/393008/>
+-->
+<p>A list of the currently enabled Linux security modules can be printed
+by running</p>
+<pre><code>$ cat /sys/kernel/security/lsm</code></pre>
+<p>In more recent kernels, the “symlinks in sticky-bit directories”
+protection is built into the kernel.</p>
+</div>
+<h3 id="a-setuid-program">2.2. A setuid program</h3>
+<p>Consider the following program, <code>append.c</code>:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> <span class="op">*</span> filename <span class="op">=</span> <span class="st">&quot;/tmp/XYZ&quot;</span><span class="op">;</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> buffer<span class="op">[</span><span class="dv">60</span><span class="op">];</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">FILE</span> <span class="op">*</span>fp<span class="op">;</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">// get user input</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  printf<span class="op">(</span><span class="st">&quot;text to append to &#39;%s&#39;: &quot;</span><span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  fflush<span class="op">(</span>stdout<span class="op">);</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  scanf<span class="op">(</span><span class="st">&quot;%50s&quot;</span><span class="op">,</span> buffer <span class="op">);</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="co">// does `filename` exist, and can the actual user write</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">// to it?</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(!</span>access<span class="op">(</span>filename<span class="op">,</span> W_OK<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    fp <span class="op">=</span> fopen<span class="op">(</span>filename<span class="op">,</span> <span class="st">&quot;a+&quot;</span><span class="op">);</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    fwrite<span class="op">(</span><span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">),</span> <span class="dv">1</span><span class="op">,</span> fp<span class="op">);</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    fwrite<span class="op">(</span>buffer<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">),</span> strlen<span class="op">(</span>buffer<span class="op">),</span> fp<span class="op">);</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    fclose<span class="op">(</span>fp<span class="op">);</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  printf<span class="op">(</span><span class="st">&quot;No permission</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>It’s intended to be a root-owned setuid program, which takes a string
+of input from a user, and appends it to the end of a temporary file
+<code>/tmp/XYZ</code> (if that file exists) – but only if the user who
+runs the program would normally have permissions to write to the file.
+Because the program runs with root privileges (i.e., has an effective
+user ID of <code>0</code>), it normally could overwrite any file.
+Therefore, the code above uses the <code>access</code> function
+(discussed in lectures) to ensure the <em>actual</em> user running the
+program has the correct permissions.</p>
+<p>Save the program as <code>append.c</code>, and compile it with
+<code>make append.o append</code>. Then make it a root-owned setuid
+program:</p>
+<pre><code>$ sudo chown root:root append
+$ sudo chmod u+s append</code></pre>
+<dl>
+<dt><strong>Question</strong></dt>
+<dd>
+<p>At first glance the program may not seem to have any problem.
+However, there is a race condition vulnerability in the program – can
+you describe what it is? How might an attacker try to exploit this
+program?</p>
+</dd>
+</dl>
+<div class="solutions">
+<p><strong>Sample solution</strong></p>
+<p>This program has a “TOCTOU” vulnerability, and uses the deprecated
+<code>access()</code> function.</p>
+<p>Due to the time window between the file permissions check
+(<code>access()</code>) and the file use (<code>fopen()</code>), there
+is a possibility that the file used by <code>access()</code> is
+different from the file used by <code>fopen()</code>, even though they
+have the same file name <code>/tmp/XYZ</code>. If a malicious attacker
+can somehow make <code>/tmp/XYZ</code> a symbolic link pointing to a
+protected file, such as <code>/etc/passwd</code>, inside the time
+window, the attacker can cause the user input to be appended to
+<code>/etc/passwd</code> and as a result gain root privileges.</p>
+<p>How might an attacker exploit this?</p>
+<p>If they can alter <code>/etc/passwd</code>, they could add an extra
+line that looks something like this:</p>
+<pre><code>  sploit:x:0:0::/root:/bin/bash</code></pre>
+<p>Here, a new <code>sploit</code> account is created, which has root
+privileges since it has userid 0.</p>
+<p>On its own, this is not quite enough, because the attacker still
+needs a password to access the new <code>sploit</code> account.</p>
+<p>On Ubuntu systems, however, a particular “magic” password value is
+used for [passwordless guest accounts][guest], and the magic value is
+<code>U6aMy0wojraho</code> (the 6th character is zero, not letter O). If
+the attacker puts this value in the password field of a user entry, they
+can just hit the return key when prompted for a password, and then can
+log into the user’s account.</p>
+<p>The attacker would still need to unlink the <code>/tmp/XYZ</code>
+file and replace it with a symlink to <code>/etc/passwd</code> in the
+narrow time window between the “check” (<code>access()</code>) and use
+of the file. Typically, they would do so by running <code>append</code>
+many times,</p>
+</div>
+<dl>
+<dt><strong>Question</strong></dt>
+<dd>
+<p>Would the ThreadSanitizer help in detecting this problem? Why or why
+not?</p>
+</dd>
+</dl>
+<div class="solutions">
+<p><strong>Sample solution</strong></p>
+<p>It would not. TSan assists in detecting data races, which are to do
+with multithreaded access to a program variable (where at least one
+thread performs a write).</p>
+<p>But the race condition here is not a data race – the “resource” being
+contended for is not a variable in a program, but a file on the file
+system. TSan cannot assist us in preventing such vulnerabilities.</p>
+</div>
+<!-- vim: syntax=markdown tw=92
+-->
+</body>
+</html>

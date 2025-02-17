@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CVSS scores</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: sans-serif;
+font-size: 12pt;
+color: black;
+background-color: white;
+}
+body {
+margin: 0 auto;
+max-width: 50em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+background-color: hsl(0, 0%, 98%);
+padding: .2em .4em;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+background-color: hsl(0, 0%, 98%);
+padding: 1em;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+
+:not(pre) > code {
+padding: 2px 4px;
+font-size: 90%;
+word-break: normal !important;
+white-space: nowrap;
+color: hsl(344.8,69%,10%);
+background-color: hsl(342.9,37%,96%);
+border-radius: 4px;
+}
+.sourceCode {
+background-color: hsl(0, 0%, 98%);
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+th {
+border-top: 1px solid black;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style>
+div#agreement img {
+border: solid 0.5pt hsl(0 0% 80% / 0.5);
+}
+</style>
+<script data-external="1" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript">
+</script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><p>CVSS scores</p></h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#what-is-cvss-are-there-alternatives" id="toc-what-is-cvss-are-there-alternatives">What is CVSS? Are there
+alternatives?</a></li>
+<li><a href="#where-can-cvss-scores-be-obtained-from" id="toc-where-can-cvss-scores-be-obtained-from">Where can CVSS scores be
+obtained from?</a></li>
+<li><a href="#why-do-different-organisations-publish-different-cvss-scores" id="toc-why-do-different-organisations-publish-different-cvss-scores">Why
+do different organisations publish different CVSS scores?</a></li>
+<li><a href="#what-are-the-temporal-and-environmental-scores" id="toc-what-are-the-temporal-and-environmental-scores">What are the
+“Temporal” and “Environmental” scores?</a></li>
+<li><a href="#are-the-nvd-scores-the-most-reliable" id="toc-are-the-nvd-scores-the-most-reliable">Are the NVD scores the
+most reliable?</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
+</ul>
+</nav>
+<h2 id="what-is-cvss-are-there-alternatives">What is CVSS? Are there
+alternatives?</h2>
+<p>CVSS is a methodology for assessing vulnerability severity, but
+others exist – any individual or organisation is free to make estimates
+of CVE severity using any scale they wish. Red Hat, for instance, rates
+the severity of security issues found in their products using a
+four-point scale (Red Hat, 2022).</p>
+<h2 id="where-can-cvss-scores-be-obtained-from">Where can CVSS scores be
+obtained from?</h2>
+<p>Any person or company can publish their own CVSS score (for instance,
+Oracle provides its own CVSS assessments - <a href="https://www.oracle.com/security-alerts/cvssscoringsystem.html" class="uri">https://www.oracle.com/security-alerts/cvssscoringsystem.html</a>),
+but one common source of CVSS scores is the National Vulnerability
+Database (NVD), a database of vulnerabilities which uses the CVE as a
+source and adds additional information (MITRE Corporation, 2020).</p>
+<p>The NVD publishes CVSS scores using both version 2 and version 3 of
+the CVSS standard. Security industry participants had made many
+criticisms of version 2 of the CVSS (see, for instance, Eiram &amp;
+Martin, 2013), and version 3 was developed in response to this feedback
+and released in June 2015. CVSS version 3 aims to be less ambiguous and
+easier to apply than version 2, and to allow more granular scoring.</p>
+<h2 id="why-do-different-organisations-publish-different-cvss-scores">Why do
+different organisations publish different CVSS scores?</h2>
+<p>Different organisations may come up with different estimates of
+severity when applying the CVSS.</p>
+<p>For instance, consider CVE-2022-1271. AusCERT publishes a CVSS score
+of 7.1 (see <a href="https://auscert.org.au/bulletins/ESB-2022.2760" class="uri">https://auscert.org.au/bulletins/ESB-2022.2760</a>), but the
+NVD website has the severity as being 8.8 (see <a href="https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator?name=CVE-2022-1271" class="uri">https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator?name=CVE-2022-1271</a>).</p>
+<p>AusCERT are using Red Hat’s assessment of the CVSS:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="an">Comment:</span><span class="co"> CVSS (Max):  7.1 CVE-2022-1271 (CVSS:3.1/AV:N/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">         CVSS Source: Red Hat</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">         Calculator:  https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H</span></span></code></pre></div>
+<p>The bit of text in parentheses after the CVE on the first line is
+called a CVSS “vector”, and is a compact listing of the metrics used to
+calculate the CVSS score. (The “calculator” link on the last line breaks
+down and explains the components of this vector.)</p>
+<p>If we visit the NVD, we’ll see that NIST has used a different
+vector:</p>
+<pre><code>AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H</code></pre>
+<p>This can be interpreted by visiting <a href="https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H" class="uri">https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H</a>:</p>
+<ul>
+<li>“AV” means “Attack Vector”, and “AV:N” means that the attacker only
+needs network access to exploit the vulnerability (as opposed to, for
+instance, physical access).</li>
+<li>“AC” means “Attack Complexity”, and “AC:L” means the complexity of
+the attack is “Low” – the vulnerability is relatively easy to
+exploit.</li>
+<li>“PR” means “Privileges Required”, and “PR:L” means “Low”: some low
+level of authorization is required in order to mount the attack.</li>
+<li>“UI” means “User Interaction”, and “UI:N” means the vulnerability
+can be exploited without an end user having to take any sort of action.
+(Compare this with, say, a phishing email, where an end user
+<em>does</em> have to take some sort of action for the attack to be
+successful – they have to click on a link in the phishing email).</li>
+<li>“S” means “Scope”, and “S:U” (“Scope: Unchanged”) basically means
+that exploiting this vulnerability does not give an attacker access to
+other components.</li>
+<li>“C” means “Confidentiality”, and “C:H” (“Confidentiality: High”)
+means there is a <em>total</em> loss of confidentiality – typically
+meaning that all information resources within the vulnerable component
+are now accessible to the attacker.</li>
+<li>“I” means “Integrity”, and “I:H” (“Integrity: None”) means there is
+a complete loss of intergrity.</li>
+<li>Finally, “A” means “Availability”, and “A:H” (“Availability: High”)
+means there is a “total loss of availability, resulting in the attacker
+being able to fully deny access to resources in the impacted component”
+(FIRST.Org, Inc., 2019).</li>
+</ul>
+<p>Notice that NIST and Red Hat come to different conclusions about some
+factors. For instance, Attack Complexity (AC) is rated by the NVD as
+“Low”, meaning easier for an attacker to exploit, whereas Red Hat rate
+it as “High”.</p>
+<p>Notice also that on the calculator page, the vector string only fills
+in boxes in the section labelled “base” score. There are two other
+sections for “Temporal Score”, and “Environmental Score”, but the boxes
+here are all set to “Not Defined (X)”.</p>
+<h2 id="what-are-the-temporal-and-environmental-scores">What are the
+“Temporal” and “Environmental” scores?</h2>
+<p>Often, the CVSSv3 score an organisation publishes is just a “Base”
+score. The metrics going into the “Base” score assess how difficult it
+is for an attacker to exploit a vulnerability.</p>
+<p>However, a fuller CVSS score could also assess to what degree
+exploits or fixes for the vulnerability are available (these fall into
+what are called the “Temporal” metrics, as they can change with time),
+and what security goals, requirements and controls exist for a
+particular user’s environment (these fall into what are called the
+“Environmental” metrics).</p>
+<p>The idea is that published “Base” scores will be supplemented with
+information about prevalence and fixes (as these change), and that a
+consumer of CVSS scores should supplement them with “Environmental”
+information relevant to that consumer’s organization.</p>
+<p>So, for instance: if some particular confidential information
+resource is particularly critical to an organisation that uses CVSS
+scores, or if the chance of a vulnerability being exploited is lower due
+to particular defences that have been put in place, then those factors
+would go into the calculation of the “Environmental” metrics.</p>
+<h2 id="are-the-nvd-scores-the-most-reliable">Are the NVD scores the
+most reliable?</h2>
+<p>Not necessarily. NIST have been known to <a href="https://vulncheck.com/blog/cvss-accuracy-issues">make mistakes</a>
+in their assessments. It’s arguable that the publishers of a particular
+software package (Microsoft, say) are better positioned than NIST to
+understand how severe a vulnerability is and how easy it is to exploit.
+But this would vary from organisation to organisation – if a particular
+publisher has a terrible security track record, you might prefer NIST’s
+rating (or ideally, reconsider using their products at all).</p>
+<p>An interesting report on applying CVSS was published earlier this
+year by a security tools vendor, JFrog (report linked from <a href="https://portswigger.net/daily-swig/cvss-system-criticized-for-failure-to-address-real-world-impact">this
+article</a>). Their recommendations included:</p>
+<ul>
+<li>If the organisation that reported a vulnerability gives a different
+CVSS to the NVD, then <em>in general</em> the reporting organisation’s
+score is probably the result of a more in-depth analysis than
+NIST’s</li>
+<li>If the organisation publishing your OS/distro (e.g. Ubuntu, Red Hat)
+has provided a CVSS score that differs from NIST’s, then it probably
+includes factors specific to your distro and is more reliable.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><p>Eiram, Carsten, and Brian Martin. “The CVSSv2 Shortcomings,
+Faults, and Failures Formulation.” Open letter, 2013. Accessed August 1,
+2022. <a href="https://www.riskbasedsecurity.com/reports/CVSS-ShortcomingsFaultsandFailures.pdf" class="uri">https://www.riskbasedsecurity.com/reports/CVSS-ShortcomingsFaultsandFailures.pdf</a>.</p></li>
+<li><p>FIRST.Org, Inc. “CVSS v3.1 Specification Document.” FIRST.Org,
+Inc., June 2019. Accessed August 1, 2022. <a href="https://www.first.org/cvss/v3.1/specification-document" class="uri">https://www.first.org/cvss/v3.1/specification-document</a>.</p></li>
+<li><p>MITRE Corporation. “CVE and NVD Relationship.” <em>CVE</em>. Last
+modified December 11, 2020. Accessed August 1, 2022. <a href="https://cve.mitre.org/about/cve_and_nvd_relationship.html" class="uri">https://cve.mitre.org/about/cve_and_nvd_relationship.html</a>.</p></li>
+<li><p>Red Hat. “Severity Ratings.” <em>Red Hat Customer Portal</em>.
+Last modified September 27, 2022. Accessed August 1, 2022. <a href="https://access.redhat.com/security/updates/classification" class="uri">https://access.redhat.com/security/updates/classification</a>.</p></li>
+</ul>
+<!-- vim: syntax=markdown tw=72 smartindent :
+-->
+</body>
+</html>

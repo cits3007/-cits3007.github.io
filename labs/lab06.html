@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CITS3007 lab 6 (week 7) – Static analysis</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: sans-serif;
+font-size: 12pt;
+color: black;
+background-color: white;
+}
+body {
+margin: 0 auto;
+max-width: 50em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+background-color: hsl(0, 0%, 98%);
+padding: .2em .4em;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+background-color: hsl(0, 0%, 98%);
+padding: 1em;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+
+:not(pre) > code {
+padding: 2px 4px;
+font-size: 90%;
+word-break: normal !important;
+white-space: nowrap;
+color: hsl(344.8,69%,10%);
+background-color: hsl(342.9,37%,96%);
+border-radius: 4px;
+}
+.sourceCode {
+background-color: hsl(0, 0%, 98%);
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+th {
+border-top: 1px solid black;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style>
+div.solutions {
+border: solid 2pt hsla(120, 100%, 35%, 1);
+border-radius: 5pt;
+background-color: hsla(120, 100%, 50%, 0.1);
+padding: 1em;
+}
+.block-caption {
+display: block;
+font-family: sans-serif;
+font-weight: bold;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><p>CITS3007 lab 6 (week 7) – Static analysis</p></h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#introduction" id="toc-introduction">0.
+Introduction</a></li>
+<li><a href="#setup" id="toc-setup">1. Setup</a></li>
+<li><a href="#building-and-analysis" id="toc-building-and-analysis">2.
+Building and analysis</a>
+<ul>
+<li><a href="#building" id="toc-building">2.1. Building</a></li>
+<li><a href="#static-analysis" id="toc-static-analysis">2.2. Static
+analysis</a></li>
+</ul></li>
+<li><a href="#dynamic-analysis" id="toc-dynamic-analysis">2.3. Dynamic
+analysis</a></li>
+<li><a href="#further-reading" id="toc-further-reading">3. Further
+reading</a></li>
+</ul>
+</nav>
+<h2 id="introduction">0. Introduction</h2>
+<p>The aim of this lab is to familiarize you with some of the <a href="https://en.wikipedia.org/wiki/Static_program_analysis">static
+analysis tools</a> available for analysing C and C++ code, and to try a
+dynamic analysis/fuzzing tool (AFL).</p>
+<p><strong>Static analysis tools</strong> analyse a program for defects
+<em>without</em> running it, whereas <em>dynamic</em> analyses are done
+at runtime. You already have experience with one sort of static analysis
+tool – compilers. Compilers are an example of a static analysis tool,
+because (in addition to producing compiled output) nearly all compilers
+attempt to detect one sort of defect, namely <a href="https://en.wikipedia.org/wiki/Type_system#Type_errors"><em>type
+errors</em></a>: cases where the programmer performs operations on a
+data item which are not appropriate for its type. (C is sometimes
+referred to as <a href="https://en.wikipedia.org/wiki/Strong_and_weak_typing">“weakly
+typed”</a> because it is possible to implicitly convert between many
+types – for instance, to treat unsigned integral types as signed, or
+vice versa.) Compilers operate on the source code of a program, but
+static analysis tools also exist that analyse binary artifacts (such as
+binary executables or libraries) – the <a href="https://github.com/NationalSecurityAgency/ghidra">Ghidra</a>
+reverse engineering framework is an example of one of these.</p>
+<p>Compilers typically only perform a fairly limited range of checks for
+possible defects, so it’s often useful to augment them other other
+static analysis tools.</p>
+<p>When completing the unit project, it will be up to you to run static
+analysis tools on your code in order to find defects and possible
+vulnerabilities.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p>Useful tools and settings</p>
+</div>
+<p>In this lab, we experiment with the static analysis tools
+<strong>Flawfinder</strong> and <strong>clang-tidy</strong>. However,
+these should not be the only tools you use to analyse your code. In
+practice, different tools will detect different possible defects, so
+it’s important to use a <strong>range</strong> of tools to reduce the
+chances of defects creeping into your code.</p>
+<p>It’s therefore recommended you try other static analysis tools as
+part of your own study. Some suggested tools include:</p>
+<dl>
+<dt><a href="https://cppcheck.sourceforge.io"><strong>Cppcheck</strong></a></dt>
+<dd>
+<p>Cppcheck aims to have a low false-positive rate, and performs what is
+called “flow analysis” – it can detect when a construct in your code
+could cause problems later (or earlier) in the program.</p>
+</dd>
+<dt><a href="https://clang-analyzer.llvm.org"><strong>Clang static
+analyzer</strong></a></dt>
+<dd>
+<p>This is a different tool to clang-tidy – the Clang project has a
+number of distinct static analysis tools associated with it. The clang
+static analyser not only performs extensive static analysis of your
+code, but is capable of describing the problems using easy-to-understand
+diagrams produced from your code, like this one:</p>
+<p><img src="data:image/png;base64,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" /></p>
+<p>The simplest way to run the static analyser is usually <a href="https://clang-analyzer.llvm.org/command-line.html">from the
+command-line</a>.</p>
+</dd>
+</dl>
+<p>Other static analysis tools for C you might like to try include</p>
+<ul>
+<li><a href="https://sparse.docs.kernel.org/en/latest/">Sparse</a>, used
+for analysing the Linux kernel</li>
+<li><a href="https://github.com/NASA-SW-VnV/ikos">Ikos</a>, developed by
+NASA</li>
+</ul>
+<p>Feel free to post on the <a href="https://secure.csse.uwa.edu.au/run/help3007">Help3007 discussion
+forum</a> if you need any assistance getting these tools to work.</p>
+</div>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p>Compiler options</p>
+</div>
+<p>It’s important to ensure you’re making good use of the static
+analysis already included in your C compiler.</p>
+<p>At a minimum, the compiler options you use for CITS3007 work should
+include the following:</p>
+<pre><code>  -std=c11 -pedantic-errors -Wall -Wextra -Wconversion</code></pre>
+<p>You can find a list of all GCC’s warning-related options <a href="https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html">here</a>.
+You can easily find recommendations for more extensive warning options
+than the minimum ones above by Googling for them (one set of
+recommendations can be found <a href="https://stackoverflow.com/questions/154630/recommended-gcc-warning-options-for-c">here</a>).</p>
+<p>Other important practices to bear in mind are:</p>
+<dl>
+<dt><em>Compile at multiple optimization levels</em></dt>
+<dd>
+<p>You should make sure to compile at <strong>multiple levels</strong>
+of optimization. GCC can perform different analyses, and thus output
+different warnings, depending on what level of optimization you ask it
+for. The <code>-O0</code> option disables all optimizations (GCC’s
+default behaviour), and <code>-O1</code> and <code>-O2</code> enable
+progressively more optimizations.</p>
+<p>You can get documentation on all of GCC’s optimization options <a href="https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">here</a>,
+and obtain a brief list by running
+<code>gcc --help=optimizers</code>.</p>
+</dd>
+<dt><em>Compile with and without debugging symbols</em></dt>
+<dd>
+<p>Compiling with debug symbols enabled (GCC’s <code>-g</code> option)
+can <strong>prevent</strong> some bugs from appearing – so, even if you
+use debug symbols to assist you in debugging your code, it’s important
+to compile and test your code <em>without</em> symbols added, as
+well.</p>
+</dd>
+<dt><em>Compile and test with and without sanitizers</em></dt>
+<dd>
+<p>In later classes we will look at the <a href="https://github.com/google/sanitizers">sanitizers</a> included with
+GCC – these perform <a href="https://en.wikipedia.org/wiki/Dynamic_program_analysis">dynamic
+analysis</a> of your program, and therefore require your program to be
+run in order to work. They operate by injecting extra instructions into
+your program at compile time, deliberately altering the way your program
+behaves. It’s a good idea to test your code both with and without
+sanitizers enabled (the ASan and UBSan sanitizers are particularly
+effective at detecting errors).</p>
+</dd>
+<dt><em>Compile with different compilers</em></dt>
+<dd>
+<p>It can be helpful to try compiling your code using different
+compilers – although all C compilers should detect errors mandated by
+the C standard, what other sorts of analyses they do and warnings they
+produce can vary from tool to tool. On the CITS3007 standard development
+environment (CDE), the GCC and Clang compilers are both available.</p>
+</dd>
+<dt><em>Compile on different platforms</em></dt>
+<dd>
+<p>This will not apply to all projects, but for some it can be useful to
+ensure your code is compiled and run on multiple platforms – for
+example, MacOS, Windows, and <a href="https://en.wikipedia.org/wiki/OpenBSD">BSD Unixes</a>, in addition
+to Linux. (The CITS3007 unit project, however, usually is only required
+to compile and operate correctly on Linux systems.)</p>
+</dd>
+</dl>
+</div>
+<div style="border: solid 2pt orange; background-color: hsl(22.35, 100%, 85%, 1); padding: 1em;">
+<div class="block-caption">
+<p>Project tip</p>
+</div>
+<p>The CITS3007 unit project is submitted using <a href="https://quiz.jinhong.org">Moodle</a>, and will provide
+<em>some</em> feedback on problems that are detected with your code.</p>
+<p>However, the Moodle submission process deliberately only compiles
+your code with <em>minimal</em> compiler warnings enabled, and does not
+run other static analyses on your code – it’s up to <strong>you</strong>
+to demonstrate that you can do that yourself.</p>
+<p>Failing to remove defects that could easily be detected by static
+analysis tools has been a freqent reason for submitted CITS3007 projects
+losing marks in previous years.</p>
+</div>
+<p>We’ll be using purely <strong>terminal-based tools</strong> in this
+lab. Many static analysis tools can also be used from graphical IDEs or
+editors (such as VS Code), but not infrequently analysis and debugging
+have to be performed in an environment with no graphical console – for
+instance, from within a cloud-based virtual machine. (Even if you are
+working with a virtual machine which does have GUI tools available,
+you’ll find that GUI programs run within a virtual machine tend to be
+<em>much</em> slower than those run from the terminal – especially if
+your virtualisation software is already trying to emulate a different
+computer architecture. Rendering graphics in a VM can be very
+processor-intensive.)</p>
+<h2 id="setup">1. Setup</h2>
+<p>In the CITS3007 standard development environment (CDE), download the
+source code for the <code>dnstracer</code> program, which we’ll be
+analysing, and extract it:</p>
+<pre><code>$ wget http://www.mavetju.org/download/dnstracer-1.9.tar.gz
+$ tar xf dnstracer-1.9.tar.gz
+$ cd dnstracer-1.9</code></pre>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<p>Note that the <code>dnstracer</code> download link is an “http” link
+rather than an “https” link – what problems could this cause? You can
+read more about <code>dnstracer</code> by following the relevant links
+at <a href="http://www.mavetju.org/unix/general.php" class="uri">http://www.mavetju.org/unix/general.php</a>. It is used to
+graphically depict the chain of servers involved in a <a href="https://en.wikipedia.org/wiki/Domain_Name_System?useskin=vector">Domain
+Name System</a> (DNS) query. The DNS protocol is an important part of
+the modern Internet, but we won’t be examining it in detail –
+<code>dnstracer</code> is just a sample program used here to test
+analysis tools on.</p>
+</div>
+<p>We’ll also use several Vim plugins, including <a href="https://github.com/dense-analysis/ale">ALE</a> – the “Asynchronous
+Lint Engine” for Vim – which runs linters (another name for static
+analysers) over our code. Run the following commands in your development
+environment to install the plugins:</p>
+<pre><code>$ mkdir -p ~/.vim/pack/git-plugins/start
+$ git clone --depth 1 https://github.com/dense-analysis/ale.git ~/.vim/pack/git-plugins/start/ale
+$ git clone --depth 1 https://github.com/preservim/tagbar.git   ~/.vim/pack/git-plugins/start/tagbar</code></pre>
+<p>Set up a Vim configuration by then running the following (you may
+need to hit the <code>enter</code> key an extra time afterwards):</p>
+<pre><code>tee -a ~/.vimrc &lt;&lt;EOF
+set number
+let g:ale_echo_msg_format = &#39;[%linter%] %s [%severity%]&#39;
+let g:ale_c_gcc_options = &#39;-std=c11 -Wall -Wextra -DHAVE_CONFIG_H -I. -Wno-pointer-sign&#39;
+let g:ale_c_clang_options = &#39;-std=c11 -Wall -Wextra -DHAVE_CONFIG_H -I. -Wno-pointer-sign&#39;
+let g:ale_c_clangtidy_checks =  [&#39;-clang-diagnostic-pointer-sign&#39;, &#39;cert-*&#39;]
+let g:ale_c_clangtidy_options =  &#39;--extra-arg=&quot;-DHAVE_CONFIG_H -I. -Wno-pointer-sign&quot;&#39;
+EOF</code></pre>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p>Installing vim plugins</p>
+</div>
+<p>Vim plugins can be installed by cloning a Git repository into a
+sub-directory of <code>~/.vim/pack/git-plugins/start</code>, and can be
+updated by <code>cd</code>-ing into those directories and running
+<code>git pull</code>.</p>
+<p>The Vim settings in <code>~/.vimrc</code> specify how the ALE plugin
+should obtain and display alerts from analysis tools, including:</p>
+<ul>
+<li>the format to use when showing alerts from analysis tools
+(<code>g:ale_echo_msg_format</code>)</li>
+<li>what options to pass to the <code>gcc</code> and <code>clang</code>
+compilers, and the <code>clangtidy</code> analysis tool.</li>
+</ul>
+<p>The full documentation for ALE is available from its Git repository
+at <a href="https://github.com/dense-analysis/ale/blob/master/doc/ale.txt" class="uri">https://github.com/dense-analysis/ale/blob/master/doc/ale.txt</a>,
+but for the purposes of this unit, you do not need to know most of the
+details.</p>
+</div>
+<h2 id="building-and-analysis">2. Building and analysis</h2>
+<h3 id="building">2.1. Building</h3>
+<p>We will be analysing the Dsntracer program, which is subject to a
+known vulnerability, <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-9430">CVE-2017-9430</a>.
+You can read more about the <code>dnstracer</code> program at <a href="https://www.mavetju.org/unix/general.php" class="uri">https://www.mavetju.org/unix/general.php</a>.</p>
+<p>You can build <code>dnstracer</code> by running the following
+commands in your development environment:</p>
+<pre><code>$ ./configure
+$ make</code></pre>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p><code>./configure</code> and the GNU Autotools</p>
+</div>
+<p>If we want to write a C program that can be compiled and run on many
+systems, we need some platform-independent way of <em>detecting</em>
+what operating system we are running on, what tools (compilers, linkers,
+and scripting tools) are available, and exactly what options they
+support – unfortunately, these can vary widely from platform to
+platform.</p>
+<p>How can we detect these things, and use that knowledge when compiling
+our program? One way is to use the suite of tools known as <a href="https://en.wikipedia.org/wiki/GNU_Autotools">GNU Autotools</a>.
+Rather than write a Makefile ourselves, we create a <em>template</em>
+for a Makefile – named <code>Makefile.in</code> – and use the GNU
+Autotools to create a <code>./configure</code> script which will gather
+details about the system it is running on, and use those details to
+generate:</p>
+<ol type="1">
+<li>a proper Makefile from the template, and</li>
+<li>a <code>config.h</code> file which should be <code>#include</code>d
+in our C source files – this incorporates information about the system
+being compiled on, and defines symbols that let us know what functions
+and headers are available on that target system.</li>
+</ol>
+<p>(Specifically, <code>dnstracer</code> is using the tools <a href="https://en.wikipedia.org/wiki/Autoconf">Autoconf and Automake</a>
+– GNU Autotools contains other tools as well which are outside the scope
+of this lab.)</p>
+<p>The GNU Autotools are sometimes criticised as not being very easy to
+use. Alternatives to the GNU Autotools for writing platform-independent
+code and building on a range of platforms include the tools <a href="https://mesonbuild.com">Meson</a> and <a href="https://cmake.org">Cmake</a>.</p>
+</div>
+<p>The <code>./configure</code> script generates two files, a
+<code>Makefile</code> and <code>config.h</code>, which incorporate
+information about the system being compiled on. However, the content of
+those two files is only as good as the developer makes it – if they
+don’t enable the compiler warnings and checks that they should, then the
+final executable can easily be buggy. The output of the
+<code>make</code> command above should show us the final compilation
+command being run:</p>
+<pre><code>gcc -DHAVE_CONFIG_H -I. -I. -I.     -g -O2 -c `test -f &#39;dnstracer.c&#39; || echo &#39;./&#39;`dnstracer.c</code></pre>
+<p>and a warning about a possible vulnerability (marked with
+<code>-Wformat-overflow</code>).</p>
+<p>We know from earlier classes that invoking GCC without specifying a C
+standard (like C11) and enabling extra warnings can easily result in
+code that contains bugs and security vulnerabilities – so the current
+version of the Makefile is insufficient.</p>
+<p>How can we enable extra warnings from GCC? If you run
+<code>./configure --help</code>, you’ll see that we can supply a number
+of arguments to <code>./configure</code>, and some of these are
+incorporated into the Makefile and use to invoke GCC. Let’s try to
+increase the amount of checking our compiler does (and improve error
+messages) by switching our compiler to <code>clang</code>, and enabling
+more compiler warnings:</p>
+<pre><code>$ CC=clang CFLAGS=&quot;-pedantic -Wall -Wextra&quot; ./configure
+$ make clean all</code></pre>
+<p>If you look through the output, you’ll now see many warnings that
+include the following:</p>
+<pre><code>passing &#39;unsigned char *&#39; to parameter of type &#39;char *&#39; converts between pointers to integer types with different sign [-Wpointer-sign]</code></pre>
+<p>Although this is useful information, there are so many of these
+warnings it’s difficult to see other potentially serious issues. (And
+many of them may be harmless – an example of <em>false positives</em>
+from the compiler warnings). So we’ll disable those. GCC tells us that
+they’re enabled using the flag <code>-Wpointer-sign</code>, so we can
+use the flag <code>-Wno-pointer-sign</code> to <em>dis</em>able them.
+Run:</p>
+<pre><code>$ CC=clang CFLAGS=&quot;-pedantic -std=c11 -Wall -Wextra -Wno-pointer-sign&quot; ./configure
+$ make clean all</code></pre>
+<p>The <code>-pedantic</code> flag tells the compiler to adhere strictly
+to the C11 standard (<code>-std=c11</code>); compilation now fails,
+however: the author of <code>dnstracer</code> did not write properly
+compliant C code. In particular:</p>
+<ul>
+<li>proper <code>#include</code>s for <code>strncasecmp</code>,
+<code>strdup</code> and <code>getaddrinfo</code> are missing</li>
+<li>proper <code>#include</code>s for the <code>struct addrinfo</code>
+type are missing</li>
+</ul>
+<p>Check <code>man strncasecmp</code>, and you’ll see it requires
+<code>#include &lt;strings.h&gt;</code>, which is missing from the C
+code. <code>man strdup</code> tells us that this is a Linux/POSIX
+function, not part of the C standard library; to inform the compiler we
+want to use POSIX functions, we should add a line
+<code>#define _POSIX_C_SOURCE 200809L</code> to our C code. Furthermore,
+it’ll be useful to make use of <em>static asserts</em>, so we should
+include the <code>assert.h</code> header. Edit the
+<code>dnstracer.c</code> file, and add the following near the top of the
+file (e.g. just after the first block comment):</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define _POSIX_C_SOURCE 200809L</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define _DEFAULT_SOURCE</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;assert.h&gt;</span></span></code></pre></div>
+<p>The <code>#define</code>s need to appear <em>before</em> we start
+<code>include</code>-ing header files. If we now run
+<code>make clean all</code>, we should have got rid of many
+compiler-generated warnings. But many more problems exist.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p>Writing portable C code – non-standard extensions to C</p>
+</div>
+<p>If we want to write portable C code – code that will work with other
+C compilers and/or other operating systems – it’s important to specify
+what <em>C standard</em> we’re wanting to adhere to (in this case, C11),
+and to request that the compiler strictly adhere to that standard.</p>
+<p>When we invoke <code>gcc</code> or <code>clang</code> with the
+arguments “<code>-std=c11 -pedantic</code>”, this disables many
+compiler-specific extensions. For example: the C standard says it’s
+impermissible to declare a zero-length array
+(e.g. <code>int myarray[0]</code>), but by default, <code>gcc</code>
+will let you do so without warning. In general, disabling
+compiler-specific extensions is a good thing: it ensures we don’t
+accidentally use <code>gcc</code>-only features, and makes our code more
+portable to other compilers.</p>
+<p>One reason some people don’t add those arguments is because (as we
+saw above) doing so may make their programs stop compiling. But this is
+because they haven’t been sufficiently careful about distinguishing
+between functions that are part of the <a href="https://en.wikipedia.org/wiki/C_standard_library">C standard
+library</a>, and functions which are extensions to C provided by their
+compiler, or are specific to the operating system they happen to be
+compiling on.</p>
+<p>For example, <code>fopen</code> is part of the C standard library; if
+you run <code>man fopen</code>, you’ll see it’s include in the
+<code>stdio.h</code> header file. (And if you look under the “Conforming
+to” heading in the man page, you’ll see it says
+<code>POSIX.1-2001, POSIX.1-2008, C89, C99</code> – <code>fopen</code>
+is part of the C99 (and later) versions of the C standard.)</p>
+<p>On the other hand, <code>strncasecmp</code> is <em>not</em> part of
+the C standard library: it was originally introduced by BSD (the
+“Berkeley Standard Distribution”), a previously popular flavour of Unix,
+and is now a GCC extension. It is part of the <a href="https://en.wikipedia.org/wiki/POSIX">POSIX standard</a> for
+Unix-like operating systems. (If you look under the “Conforming to”
+heading in the man page, you’ll see it says
+<code>4.4BSD, POSIX.1-2001, POSIX.1-2008</code>.)</p>
+<p>Using <code>-std=c11 -pedantic</code> encourages you to be more
+explicit about what compiler- or OS-specific functions you’re using.
+<code>strncasecmp</code> is usually only found on Unix-like operating
+systems. It isn’t available, for instance, when compiling on Windows
+with the MSVC compiler; if you want similar functionality, you need the
+<a href="https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/strnicmp-wcsnicmp-mbsnicmp-strnicmp-l-wcsnicmp-l-mbsnicmp-l?view=msvc-170"><code>_strnicmp</code>
+function</a>.</p>
+<p>Sometimes when using a function from a standard other than the C
+standards, your compiler will require you to specify exactly what
+extensions and standards you want to enable. For instance,
+<code>man strdup</code> (rather obliquely) tells you that adding</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define _POSIX_C_SOURCE 200809L</span></span></code></pre></div>
+<p>to your C code is one way of making the <code>strdup</code> function
+available.</p>
+<p><strong>Note that</strong> you should put the above
+<code>#define</code> <strong>before any</strong> <code>#include</code>s:
+the <code>#define</code> is acting as a sort of signal to the compiler,
+telling it what parts of any later-appearing header files to process,
+and what to ignore.</p>
+<p>Using <code>-std=c11 -pedantic</code> doesn’t <em>guarantee</em> your
+code conforms with the C standard (though it does help). Even with those
+flags enabled, it’s still quite possible to write non-conforming
+programs. As the <a href="https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#Warning-Options"><code>gcc</code>
+manual says</a>:</p>
+<blockquote>
+<p>Some users try to use <code>-Wpedantic</code> to check programs for
+strict ISO C conformance. They soon find that it does not do quite what
+they want: it finds some non-ISO practices, but not all – only those for
+which ISO C requires a diagnostic, and some others for which diagnostics
+have been added.</p>
+</blockquote>
+<p>From a security point of view, it’s easier to audit code that’s
+explicit about what libraries it’s using, than code which leaves that
+implicit; so specifying a C standard and <code>-pedantic</code> is
+usually desirable.</p>
+</div>
+<div style="border: solid 2pt orange; background-color: hsl(22.35, 100%, 85%, 1); padding: 1em;">
+<div class="block-caption">
+<p>Project tip</p>
+</div>
+<p>Failing to use non-standard functions correctly is a
+<strong>frequent</strong> source of lost marks in the unit project. Make
+sure you understand how to use non-standard functions correctly and
+experiment with them on your own.</p>
+</div>
+<h3 id="static-analysis">2.2. Static analysis</h3>
+<p>We’ll identify some problems with <code>dnstracer</code> using
+Flawfinder – read “How does Flawfinder Work?”, here: <a href="https://dwheeler.com/flawfinder/#how_work" class="uri">https://dwheeler.com/flawfinder/#how_work</a>. Flawfinder is
+a linter or static analysis tool that checks for known problematic code
+(e.g. code that calls unsafe functions like <code>strcpy</code> and
+<code>strcat</code>). Install Flawfinder by running the command
+<code>sudo apt install flawfinder</code> in your development
+environment, and then try using it by running:</p>
+<pre><code>$ flawfinder *.c
+# ... many lines omitted ...
+Not every hit is necessarily a security vulnerability.
+You can inhibit a report by adding a comment in this form:
+// flawfinder: ignore
+Make *sure* it&#39;s a false positive!
+You can use the option --neverignore to show these.</code></pre>
+<p>You’ll see a <em>lot</em> of output. Good static analysis tools allow
+us to ignore particular bits of code that would be marked problematic,
+either temporarily, or because we can prove to our satisfaction that the
+code is safe.</p>
+<p>The output of flawfinder is not especially convenient for browsing;
+we’ll use Vim to navigate the problems, instead. Run
+<code>vim dnstracer.c</code>, then type</p>
+<pre><code>:Tagbar</code></pre>
+<p>and</p>
+<pre><code>:lopen</code></pre>
+<p>in Vim. “Tagbar” makes it easier to navigate our code, by showing the
+functions and types of our program in a new Vim pane.
+<code>:lopen</code> opens the “Location” pane, which reports the
+locations of problematic code (as reported by linters on our system).
+Use <code>ctrl-W</code> and then an arrow key to navigate between window
+panes. In the Tagbar pane, the <code>enter</code> key will expand or
+collapse sections (try it on <code>macros</code>), and if we go to the
+name of a function or field (e.g. the field <code>next</code> in an
+<code>answer</code> struct), hitting <code>enter</code> will go to the
+place in our C code where it’s defined. Switch to the “Location” pane;
+navigating onto a line and hitting <code>enter</code> will take us to
+the problematic bit of code. Navigating to the “Location” pane and
+entering <code>:resize 20</code> resizes the height of the pane to 20
+lines.</p>
+<p>We can now much more easily match up problematic bits of code with
+the warnings from <code>flawfinder</code>. We’ll take a look at one of
+those now.</p>
+<p>In the Tagbar pane, search for “<code>rr_types</code>”. (A forward
+slash, “<code>/</code>”, in Vim will do a search for us.) Navigate to it
+with <code>enter</code>, and observe a yellow highlight on the line,
+telling us there’s a warning for it. Switch to the location list, and
+search for that line (188 in my editor). Flawfinder is giving us a
+general warning about <em>any</em> array with static bounds (which is,
+really, all arrays in C11). However, there’s another issue here – what
+is it?</p>
+<p>The declared size of the array, and the number of the elements should
+match up; if someone changes one but not the other, that could introduce
+problems. We’ll add a more reliable way of checking this.</p>
+<ul>
+<li><p><em>Remove</em> the size <code>256</code> from the array
+declaration.</p></li>
+<li><p>Below it, add</p>
+<pre><code>static_assert(sizeof(rr_types) / sizeof(rr_types[0]) == 256,
+                 &quot;rr_types should have 256 elements&quot;);</code></pre></li>
+</ul>
+<p>We’re now statically checking that the number of elements in
+<code>rr_types</code> (i.e., the size of the array in bytes, divided by
+the size of one element) is always 256.</p>
+<p>In the locations pane, you’ll also see warnings from a program called
+<code>clang-tidy</code>. It can also be run from the command-line (see
+<code>man clang-tidy</code> for details); try running</p>
+<pre><code>$ clang-tidy --checks=&#39;-clang-diagnostic-pointer-sign&#39; --extra-arg=&quot;-DHAVE_CONFIG_H -I. -Wno-pointer-sign&quot; dnstracer.c --</code></pre>
+<p>We need to give <code>clang-tidy</code> correct compilation arguments
+(like <code>-I.</code>), or it won’t know where the
+<code>config.h</code> header is and will mis-report errors. We want it
+not to report problems with pointers being coerced from signed to
+unsigned or vice versa (i.e., the same issue flagged by <code>gcc</code>
+with <code>-Wno-pointer-sign</code>), so we disable that check by
+putting a minus in front of <code>clang-diagnostic-pointer-sign</code>.
+(For some reason, though, the “pointer sign” warnings still get reported
+in Vim by ALE – if anyone works out how they can be disabled, feel free
+to let me know.)</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p>Integrating linter warnings with editors and IDEs</p>
+</div>
+<p>As you can see, the output of linters and other static analysers is
+much more usable when it can be integrated with our editor or IDE, but
+it’s often not obvious how to make sure our editor/IDE is calling the C
+compiler and linters with the command-line arguments we want.</p>
+<p>In GUI tools like <a href="https://www.eclipse.org/ide/">Eclipse
+IDE</a> and <a href="https://code.visualstudio.com">VS Code</a>, these
+configurations are often “hidden” in deeply-nested menu options. In Vim,
+the configurations are instead included as commands in your
+<code>~/.vimrc</code> file (<code>vimrc</code> stands for “Vim run
+commands” – commands which are to be run when Vim starts up). What
+commands are needed for Vim plugins like ALE to work properly may still
+not be straightforward to work out – we ended up needing</p>
+<pre><code>let g:ale_c_gcc_options = &#39;-std=c11 -Wall -Wextra -DHAVE_CONFIG_H -I. -Wno-pointer-sign&#39;
+let g:ale_c_clang_options = &#39;-std=c11 -Wall -Wextra -DHAVE_CONFIG_H -I. -Wno-pointer-sign&#39;
+let g:ale_c_clangtidy_checks =  [&#39;-clang-diagnostic-pointer-sign&#39;, &#39;cert-*&#39;]
+let g:ale_c_clangtidy_options =  &#39;--extra-arg=&quot;-DHAVE_CONFIG_H -I. -Wno-pointer-sign&quot;&#39;</code></pre>
+<p>– but once you <em>have</em> worked out what they are, at least
+they’re always in a consistent place.</p>
+</div>
+<h2 id="dynamic-analysis">2.3. Dynamic analysis</h2>
+<p>Let’s see how <code>dnstracer</code> is supposed to be used. It will
+tell us the chain of <a href="https://en.wikipedia.org/wiki/Name_server">DNS name servers</a>
+that needs to be followed to find the IP address of a host. For
+instance, try</p>
+<pre><code>$ ./dnstracer -4 -s ns.uwa.edu.au www.google.com
+$ ./dnstracer -4 -s ns.uwa.edu.au www.arranstewart.io</code></pre>
+<p>These commands say to use a local UWA nameserver (ns.uwa.edu.au) and
+to follow the chain of nameservers needed to get IP addresses for two
+hosts (www.google.com and www.arranstewart.io). The “Google” host is
+fairly dull; it seems the UWA nameserver stores that IP address directly
+itself. The second is a little more interesting, as it requires name
+servers run by <a href="http://he.net">Hurricane Electric</a> to be
+queried.</p>
+<p>Now re-compile with <code>gcc</code> at the <code>O2</code>
+optimization level, and try some specially selected input:</p>
+<pre><code>$ CC=gcc CFLAGS=&quot;-pedantic -g -std=c11 -Wall -Wextra -Wno-pointer-sign -O2&quot; ./configure
+$ make clean all
+$ ./dnstracer -v $(python3 -c &#39;print(&quot;A&quot;*1025)&#39;)</code></pre>
+<p>You should see the message</p>
+<pre><code>*** buffer overflow detected ***: terminated
+Aborted (core dumped)</code></pre>
+<p>This is the “denial of service” problem reported in <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-9430">CVE-2017-9430</a>.
+A buffer overflow occurs, but gets caught by gcc’s inbuilt protections
+and causes the problem to crash. This is better than a buffer overflow
+being allowed to execute unchecked, but is still a problem: in general,
+a user should <em>not</em> be able to make a program segfault or throw
+an exception based on data they provide. Doing so for e.g. a server
+program – e.g. if a server ran code like <code>dnstracer</code>’s and
+allowed users to provide input via, say, a web form – could result in
+one user being able to force the program to crash, and create a denial
+of service for other users. (In the present case, <code>dnstracer</code>
+<em>isn’t</em> a server, though, so the risk is actually very
+minimal.)</p>
+<p>Note that the problem doesn’t show up when compiling with
+<code>clang</code>, and only appears at the <code>O2</code> optimization
+level (which is often applied when software is being built for
+distribution to users). Recall that at higher optimization levels, the
+compiler tends to make stronger and stronger assumptions that no
+Undefined Behaviour ever occurs, and this can lead to
+vulnerabilities.</p>
+<p>One can analyse the dumped <code>core</code> file in <code>gdb</code>
+to find the problematic code.</p>
+<p>We need to run the following to ensure core dumps work properly on
+Ubuntu:</p>
+<pre><code>$ ulimit -c unlimited
+$ sudo systemctl stop apport.service
+$ sudo systemctl disable apport.service</code></pre>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p>ulimit and systemctl</p>
+</div>
+<p>User accounts on Linux have limits placed on things like how many
+files they can have open at once, and the maximum size of the stack in
+programs the user runs. You can see all the limits by running
+<code>ulimit -a</code>.</p>
+<p>Some of these are “soft” limits which an unprivileged user can change
+– running <code>ulimit -c unlimited</code> says there should be no limit
+on the size of core files which programs run by the user may dump.
+Others have “hard” limits, like the number of open files. You can run
+<code>ulimit -n 2048</code> to change the maximum number of open files
+for your user to 2048, but if you try a number above that, or try
+running <code>ulimit -n unlimited</code>, you will get an error
+message:</p>
+<pre><code>bash: ulimit: open files: cannot modify limit: Operation not permitted</code></pre>
+<p>The <code>systemctl</code> command is used to start and stop system
+services – programs which are always running in the background. In this
+case, we want to stop the <code>apport</code> service: it intercepts
+segfaulting programs, and tries to send information about the crash to
+Canonical’s servers. But we don’t want that – we want to let the program
+crash, and we want the default behaviour for segfaulting programs, which
+is to produce a memory-dump in a <code>core</code> file.</p>
+</div>
+<p>Run the bad input again, and you should get a message about a core
+dump being generated; then run <code>gdb</code>. The commands are as
+follows:</p>
+<pre><code>$ ./dnstracer -v $(python3 -c &#39;print(&quot;A&quot;*1025)&#39;)
+$ gdb -tui ./dnstracer ./core</code></pre>
+<p>In GDB, run the commands <code>backtrace</code>, then
+<code>frame 7</code>: you should see that a call to <code>strcpy</code>
+on about line 1628 is the cause.</p>
+<p>We’ll try to find this flaw using a particular <em>dynamic</em>
+analysis technique called “fuzzing”. Static analysis analyses the static
+artifacts of a system (like the code source files); dynamic analysis
+actually runs the program. We’ll use a program called
+<code>afl-fuzz</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> to find that bug for us, and
+identify input that will trigger it.</p>
+<p>Fuzzers are very effective at finding code that can trigger program
+crashes, and <code>afl-fuzz</code> would normally be able to find this
+vulnerability (and probably many others) by itself if we just let it run
+for a couple of days. To speed things up, however – because in this case
+we already <em>know</em> what the vulnerability is – we’ll give the
+fuzzer some hints.</p>
+<p>By default, <code>afl-fuzz</code> requires our program take its input
+from standard input (though there are ways of altering this behaviour).
+So to get our program working with <code>afl-fuzz</code>, we’ll add the
+following code at the start of <code>main</code> (search in Vim for
+<code>argv</code> to find it, or use the Tagbar pane and search for
+<code>main</code>):</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1"></a>    <span class="dt">int</span>  new_argc <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a>    <span class="dt">char</span> <span class="op">**</span>new_argv<span class="op">;</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a>    <span class="op">{</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a>    new_argv <span class="op">=</span> malloc<span class="op">(</span><span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">*)</span> <span class="op">*</span> new_argc <span class="op">+</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a></span>
+<span id="cb24-6"><a href="#cb24-6"></a>    <span class="co">// copy argv[0]</span></span>
+<span id="cb24-7"><a href="#cb24-7"></a>    <span class="dt">size_t</span> argv0_len <span class="op">=</span> strlen<span class="op">(</span>argv<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a>    new_argv<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> malloc<span class="op">(</span>argv0_len <span class="op">+</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb24-9"><a href="#cb24-9"></a>    strncpy<span class="op">(</span>new_argv<span class="op">[</span><span class="dv">0</span><span class="op">],</span> argv<span class="op">[</span><span class="dv">0</span><span class="op">],</span> argv0_len<span class="op">);</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a>    new_argv<span class="op">[</span>argv0_len<span class="op">]</span> <span class="op">=</span> <span class="ch">&#39;\0&#39;</span><span class="op">;</span></span>
+<span id="cb24-11"><a href="#cb24-11"></a></span>
+<span id="cb24-12"><a href="#cb24-12"></a>    <span class="co">// read in argv[1] from file</span></span>
+<span id="cb24-13"><a href="#cb24-13"></a>    <span class="dt">const</span> <span class="dt">size_t</span> BUF_SIZE <span class="op">=</span> <span class="dv">4096</span><span class="op">;</span></span>
+<span id="cb24-14"><a href="#cb24-14"></a>    <span class="dt">char</span> buf<span class="op">[</span>BUF_SIZE<span class="op">];</span></span>
+<span id="cb24-15"><a href="#cb24-15"></a>    <span class="dt">ssize_t</span> res <span class="op">=</span> read<span class="op">(</span><span class="dv">0</span><span class="op">,</span> buf<span class="op">,</span> BUF_SIZE <span class="op">-</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb24-16"><a href="#cb24-16"></a>    <span class="cf">if</span> <span class="op">(</span>res <span class="op">&gt;</span> BUF_SIZE<span class="op">)</span></span>
+<span id="cb24-17"><a href="#cb24-17"></a>      res <span class="op">=</span> BUF_SIZE<span class="op">;</span></span>
+<span id="cb24-18"><a href="#cb24-18"></a>    buf<span class="op">[</span>res<span class="op">]</span> <span class="op">=</span> <span class="ch">&#39;\0&#39;</span><span class="op">;</span></span>
+<span id="cb24-19"><a href="#cb24-19"></a></span>
+<span id="cb24-20"><a href="#cb24-20"></a>    new_argv<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> malloc<span class="op">(</span><span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>res <span class="op">+</span> <span class="dv">1</span><span class="op">));</span></span>
+<span id="cb24-21"><a href="#cb24-21"></a>    strncpy<span class="op">(</span>new_argv<span class="op">[</span><span class="dv">1</span><span class="op">],</span> buf<span class="op">,</span> res<span class="op">);</span></span>
+<span id="cb24-22"><a href="#cb24-22"></a>    new_argv<span class="op">[</span><span class="dv">1</span><span class="op">][</span>res<span class="op">]</span> <span class="op">=</span> <span class="ch">&#39;\0&#39;</span><span class="op">;</span></span>
+<span id="cb24-23"><a href="#cb24-23"></a></span>
+<span id="cb24-24"><a href="#cb24-24"></a>    <span class="co">// set argv[2] to NULL terminator</span></span>
+<span id="cb24-25"><a href="#cb24-25"></a>    new_argv<span class="op">[</span>new_argc<span class="op">]</span> <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb24-26"><a href="#cb24-26"></a>    <span class="op">}</span></span>
+<span id="cb24-27"><a href="#cb24-27"></a></span>
+<span id="cb24-28"><a href="#cb24-28"></a>    argv <span class="op">=</span> new_argv<span class="op">;</span></span>
+<span id="cb24-29"><a href="#cb24-29"></a>    argc <span class="op">=</span> new_argc<span class="op">;</span></span></code></pre></div>
+<p>The aim here is to get some input from standard input, but then to
+ensure the input we’ve just read will work properly with the rest of the
+codebase (which expecteds to operate on arguments in
+<code>argv</code>).</p>
+<p>So we create <em>new</em> versions of <code>argv</code> and
+<code>argc</code> (lines 1–2 of the above code), containing the data we
+want (obtained from standard input – line 15), and then we replace the
+old versions of <code>argv</code> and <code>argc</code> with our new
+ones (lines 28–29). If what the code is doing is not clear, try stepping
+through it in a debugger to see what effect each line has.</p>
+<p>AFL requires some sample, valid inputs to work with. Run the
+following:</p>
+<pre><code>$ mkdir -p testcase_dir
+$ printf &#39;www.google.com&#39; &gt; testcase_dir/google
+$ python3 -c &#39;print(&quot;A&quot;*980, end=&quot;&quot;)&#39; &gt; testcase_dir/manyAs</code></pre>
+<p>We also need to ideally allow afl-fuzz to <em>instrument</em> the
+code (i.e., insert extra instructions so it can analyze what the running
+code is doing) – though afl-fuzz will still work even without this step.
+Recompile Dnstracer by running the following:</p>
+<pre><code>$ CC=/usr/bin/afl-gcc CFLAGS=&quot;-pedantic -g -std=c11 -Wall -Wextra -Wno-pointer-sign -O2&quot; ./configure
+$ make clean all</code></pre>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p>Instrumenting for afl-fuzz</p>
+</div>
+<p>Some of the dynamic analysis tools we have seen (like the Google
+sanitizers, ASan and UBsan) are built into GCC, so to use them, we just
+have to supply GCC with appropriate command-line arguments
+(e.g. <code>-fsanitize=address,undefined</code>).</p>
+<p>However, AFL-fuzz is not part of GCC, and it takes a different
+approach. It provides a command, <code>afl-gcc</code>, which behaves
+very similarly to normal GCC, but additionally adds in the
+instrumentation that AFL-fuzz needs.</p>
+<p>So we can perform the instrumentation by specifying the option
+<code>CC=/usr/bin/afl-gcc</code> to the <code>./configure</code>
+command: this specifies a particular compiler that we want to use.</p>
+</div>
+<p>Then, to do the fuzzing, run</p>
+<pre><code>$ afl-fuzz -d -i testcase_dir -o findings_dir -- ./dnstracer</code></pre>
+<p>A “progress” screen should shortly appear, showing what AFL-fuzz is
+doing – something like this:</p>
+<pre style="line-height: 1.0"><code>
+             american fuzzy lop ++2.59d (dnstracer) [explore] {-1}
+┌─ process timing ────────────────────────────────────┬─ overall results ────┐
+│        run time : 0 days, 0 hrs, 0 min, 18 sec      │  cycles done : 2     │
+│   last new path : 0 days, 0 hrs, 0 min, 0 sec       │  total paths : 70    │
+│ last uniq crash : none seen yet                     │ uniq crashes : 0     │
+│  last uniq hang : none seen yet                     │   uniq hangs : 0     │
+├─ cycle progress ───────────────────┬─ map coverage ─┴──────────────────────┤
+│  now processing : 66*0 (94.3%)     │    map density : 0.02% / 0.23%        │
+│ paths timed out : 0 (0.00%)        │ count coverage : 1.71 bits/tuple      │
+├─ stage progress ───────────────────┼─ findings in depth ───────────────────┤
+│  now trying : splice 4             │ favored paths : 26 (37.14%)           │
+│ stage execs : 60/64 (93.75%)       │  new edges on : 30 (42.86%)           │
+│ total execs : 58.0k                │ total crashes : 0 (0 unique)          │
+│  exec speed : 3029/sec             │  total tmouts : 0 (0 unique)          │
+├─ fuzzing strategy yields ──────────┴───────────────┬─ path geometry ───────┤
+│   bit flips : n/a, n/a, n/a                        │    levels : 8         │
+│  byte flips : n/a, n/a, n/a                        │   pending : 29        │
+│ arithmetics : n/a, n/a, n/a                        │  pend fav : 0         │
+│  known ints : n/a, n/a, n/a                        │ own finds : 68        │
+│  dictionary : n/a, n/a, n/a                        │  imported : n/a       │
+│   havoc/rad : 29/29.2k, 39/28.0k, 0/0              │ stability : 100.00%   │
+│   py/custom : 0/0, 0/0                             ├───────────────────────┘
+│        trim : 50.13%/169, n/a                      │             [cpu:322%]
+└────────────────────────────────────────────────────┘
+</code></pre>
+<p>The AFL-fuzz documentation gives an explanation of this screen <a href="https://github.com/google/AFL/blob/master/docs/status_screen.txt">here</a>.</p>
+<p>We’ve given afl-fuzz a <em>very</em> strong hint here about some
+valid input that’s <em>almost</em> invalid
+(<code>testcase_dir/manyAs</code>); but given time and proper
+configuration, many fuzzers will be able to identify such input for
+themselves.</p>
+<p>After about a minute, afl-fuzz should report that it has found a
+“crash”; hit ctrl-c to stop it, and look in
+<code>findings_dir/crashes</code> for the identified bad input.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p>Crash files</p>
+</div>
+<p>Inside the <code>findings_dir/crashes</code> directory should be
+files containing input that will cause the program under test to crash.
+For instance, on one run of AFL-fuzz, a “bad input” file is produced
+called
+“<code>findings_dir/crashes/id:000000,sig:06,src:000083,time:25801+000001,op:splice,rep:16</code>”.
+The filename gives information about the crash that occurred and how the
+input was derived.</p>
+<ul>
+<li>“<code>id:000000</code>” is an ID for this crash – this is the first
+and only crash found, so the ID is 0.</li>
+<li>“<code>sig:06</code>” says what <a href="https://en.wikipedia.org/wiki/Signal_(IPC)"><em>signal</em></a>
+caused the program to crash. You can get a list of Linux signals and
+their numbers by running the command “<code>kill -L</code>”: signal 6 is
+“<code>SIGABRT</code>”, which is raised when a program calls the <a href="https://man7.org/linux/man-pages/man3/abort.3.html"><code>abort()</code></a>
+function. <code>abort()</code> typically gets called by the process
+itself; in this case, the code added by gcc to detect buffer overflows
+detects an overflow has occured, and “bails out” by calling
+<code>abort()</code>.</li>
+<li>“<code>src:000083</code>” isn’t too important to understand, but
+matches up the crash with an item in AFL-fuzz’s “queue” of inputs to try
+(also available under the <code>findings_dir</code>).</li>
+<li>“<code>time:25801+000001</code>” gives information about when the
+crash occurred.</li>
+<li>“<code>op:splice,rep:16</code>” gives information about what
+AFL-fuzz did to one of our inputs to get the new input that caused the
+crash. In this case, it performed a “splice” operation (inserting new
+characters into the input string) 16 times.</li>
+</ul>
+<p>Since gcc’s buffer overflow protections are enabled, we should expect
+a crash to occur exactly when the input is long enough to overflow the
+buffer – at that point, gcc’s protection code detects that something has
+been written outside the buffer bounds, and calls <code>abort()</code>.
+So all AFL-fuzz has to do to trigger a crash is lengthen the input
+string enough. But AFL-fuzz <em>monitors</em> the code paths the program
+under test is executing – that’s what the “instrumentation” step is for
+– and can thus “learn” to explore quite complicated input structures –
+see <a href="https://lcamtuf.blogspot.com/2014/11/pulling-jpegs-out-of-thin-air.html">this
+post</a> by the main developer of AFL-fuzz, Michał Zalewski, in which
+AFL-fuzz “learns” how to generate valid JPEG files, just from being
+given the input string “<code>hello</code>”.</p>
+</div>
+<p>In general, running a fuzzer on potentially vulnerable software is a
+pretty “cheap” activity: one can leave a fuzzer running for several days
+with simple, valid input, and check at the end of that period to see
+what problems have been discovered.</p>
+<dl>
+<dt><strong>Challenge exercise</strong></dt>
+<dd>
+<p>We’ve seen how we could have <em>detected</em> CVE-2017-9430 in
+advance, by letting a fuzzer generate random inputs and attempt to crash
+the Dnstracer program.</p>
+<p>Can you work out the best way of fixing the problem, once
+detected?</p>
+</dd>
+</dl>
+<h1 id="further-reading">3. Further reading</h1>
+<p>Take a look at <em>The Fuzzing Book</em> (by Andreas Zeller, Rahul
+Gopinath, Marcel Böhme, Gordon Fraser, and Christian Holler) at <a href="https://www.fuzzingbook.org" class="uri">https://www.fuzzingbook.org</a>, in particular the
+“Introduction to Fuzzing” at <a href="https://www.fuzzingbook.org/html/Fuzzer.html" class="uri">https://www.fuzzingbook.org/html/Fuzzer.html</a>.</p>
+<p>Fuzzing doesn’t apply just to C programs; the idea behind fuzzing is
+to randomly generate inputs in hopes of revealing crashes or other bad
+behaviour by a program. The <em>Fuzzing Book</em> demonstrates how the
+techniques by applying them to Python programs, but they are generally
+applicable to any language.</p>
+<p>Fuzzing has been very successful at finding security vulnerabilities
+in software – often much more so than writing unit tests, for instance.
+An issue with unit tests is that human testers can’t generate as
+<em>many</em> tests as a fuzzer can (fuzzers will often generate at
+least thousands per second), and often have trouble coming up with test
+inputs that are sufficiently “off the beaten path” of normal program
+execution to trigger vulnerabilities.</p>
+<p>Fuzzers often work well with some of the dynamic <em>sanitizers</em>
+which we’ve seen <code>gcc</code> and <code>clang</code> provide. The
+sanitizers (such as ASAN, the <a href="https://github.com/google/sanitizers/wiki/AddressSanitizer">AddressSanitizer</a>,
+and UBSan, the <a href="https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html">Undefined
+Behaviour sanitizer</a>) help with making a program <em>crash</em> if
+memory-access problems or undefined behaviour are detected.</p>
+<p>You can read more about AFL-fuzz at <a href="https://afl-1.readthedocs.io/en/latest/fuzzing.html" class="uri">https://afl-1.readthedocs.io/en/latest/fuzzing.html</a>, and
+if you have time, experiment with the <code>honggfuzz</code> fuzzer (<a href="https://github.com/google/honggfuzz" class="uri">https://github.com/google/honggfuzz</a>) or using AFL-fuzz
+in combination with sanitizers.</p>
+<p><br><br><br></p>
+<!-- vim: syntax=markdown tw=92 :
+-->
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>“AFL” stands for “American Fuzzy Lop”, a type of rabbit;
+<code>afl-fuzz</code> was developed by Google. Read about it further at
+<a href="https://github.com/google/AFL" class="uri">https://github.com/google/AFL</a>. (If you have time, you
+might like to try using another fuzzer, <code>honggfuzz</code>, by
+reading the documentation at <a href="https://github.com/google/honggfuzz" class="uri">https://github.com/google/honggfuzz</a>.)<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>
