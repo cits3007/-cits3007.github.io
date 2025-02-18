@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CITS3007 lab 2 (week 3) – Debugging – solutions</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: sans-serif;
+font-size: 12pt;
+color: black;
+background-color: white;
+}
+body {
+margin: 0 auto;
+max-width: 50em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+background-color: hsl(0, 0%, 98%);
+padding: .2em .4em;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+background-color: hsl(0, 0%, 98%);
+padding: 1em;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+
+:not(pre) > code {
+padding: 2px 4px;
+font-size: 90%;
+word-break: normal !important;
+white-space: nowrap;
+color: hsl(344.8,69%,10%);
+background-color: hsl(342.9,37%,96%);
+border-radius: 4px;
+}
+.sourceCode {
+background-color: hsl(0, 0%, 98%);
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+th {
+border-top: 1px solid black;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style>
+div.solutions {
+border: solid 2pt hsla(120, 100%, 35%, 1);
+border-radius: 5pt;
+background-color: hsla(120, 100%, 50%, 0.1);
+padding: 1em;
+}
+.block-caption {
+display: block;
+font-family: sans-serif;
+font-weight: bold;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+details[open] summary *.only-open {
+opacity: 0.1;
+}
+</style>
+<script data-external="1" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript">
+</script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><p>CITS3007 lab 2 (week
+3) – Debugging – solutions</p></h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#gdb-basics" id="toc-gdb-basics">1. GDB basics</a>
+<ul>
+<li><a href="#factorial-results" id="toc-factorial-results">1.1.
+Factorial results</a></li>
+<li><a href="#running-gdb" id="toc-running-gdb">1.2. Running
+GDB</a></li>
+<li><a href="#argc-and-argv" id="toc-argc-and-argv">1.3.
+<code>argc</code> and <code>argv</code></a></li>
+<li><a href="#strtol" id="toc-strtol">1.4. <code>strtol</code></a></li>
+<li><a href="#diagnosing-and-fixing-the-factorial-bug" id="toc-diagnosing-and-fixing-the-factorial-bug">1.5. Diagnosing and
+fixing the <code>factorial</code> bug</a></li>
+</ul></li>
+<li><a href="#segmentation-faults" id="toc-segmentation-faults">2.
+Segmentation faults</a></li>
+<li><a href="#c-refresher-no.-2" id="toc-c-refresher-no.-2">3. C
+refresher no. 2</a></li>
+</ul>
+</nav>
+<p>For this lab, from within your VM, download the source code for the
+lab from the <code>lab-02-code.zip</code> zip file. (You can do this by
+running, for instance,
+<code>wget https://cits3007.arranstewart.io/labs/lab-02-code.zip</code>
+from within the VM.) You can then unzip the file using the
+<code>unzip</code> command, and view individual files using
+<code>less</code> or <code>vim</code>.</p>
+<p>This lab shows how you can use GDB (the <strong>G</strong>NU
+<strong>D</strong>e<strong>b</strong>ugger) program to inspect a running
+program. This is important for later labs, and for the unit project. The
+best way of fixing bugs in your project code will be to use GDB to step
+through your code and pinpoint the source of those bugs. Often, you will
+also be able to access a debugger through your IDE or graphical
+editor.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> However, it’s worth learning how to
+use GDB directly, as in practice, you won’t always have access to an IDE
+or graphical editor (for instance, when debugging programs running on
+cloud-based virtual machines).</p>
+<h2 id="gdb-basics">1. GDB basics</h2>
+<p>GDB, the GNU Debugger, lets us step through compiled C (or C++)
+programs and examine the values of variables in the running program.</p>
+<p>When compiling programs we wish to debug, we need to pass the flag
+<code>-g</code> to <code>gcc</code>, which tells it to add debugging
+information. It can also be helpful to pass the <code>-O0</code> option
+to <code>gcc</code>, which tells the compiler <em>not</em> to optimize
+the compiled code.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> If we try to execute a binary, and
+<code>gcc</code> has heavily optimized the machine-code instructions
+emitted, then the CPU instructions being executed may not correspond
+very closely to the source code we provided, making the behaviour of GDB
+unexpected.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>The Makefile for this lab already includes these two flags, so
+running <code>make factorial</code> in your VM is all you need to do to
+compile the code. (All commands from this point on in the lab are
+intended to be run from the command-line in your VM, in the cloned
+<code>lab02</code> directory, unless otherwise specified.)</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%, 50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Compiling and Makefiles</p>
+</div>
+<p>The code provided for this lab includes a Makefile intended to work
+with the <a href="https://www.gnu.org/software/make/">GNU Make</a>
+program, which contains pre-written rules for compiling all the sample
+programs in the lab.</p>
+<p>Amongst other things, it ensures that when GCC is compiling code, it
+uses the options
+<code>-std=c11 -pedantic-errors -Wall -Wextra -Wconversion</code>
+(amongst others). When compiling code for this unit, you should always
+include these options, at a minimum.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<p>Of course, it is possible to invoke GCC “by hand” to compile our
+code, but GNU Make</p>
+<ul>
+<li>will detect when particular source files need to be re-compiled, and
+re-compile <em>only</em> those source files (important for large
+projects, where there may be hundreds or even thousands of source files,
+and re-compiling them all would be slow)</li>
+<li>helps ensure that other developers using our code can invoke the
+compiler with <em>exactly</em> the options we intend.</li>
+</ul>
+<p>We can even use GNU Make <em>without</em> having a Makefile present –
+it has many “built-in” rules about how to compile C and C++ programs,
+which mean that if we have a C source file <code>my_program.c</code>
+present, we can use the following single command to compile it:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make CFLAGS=<span class="st">&quot;-std=c11 -pedantic-errors -Wall -Wextra -Wconversion&quot;</span> my_program.o my_program</span></code></pre></div>
+<p>Here, we’ve instructed Make to build the object file
+<code>my_program.o</code> and the executable <code>my_program</code>,
+and we’ve specified compiler options that we want provided, but we’ve
+left it up to Make’s built-in rules to work out exactly what programs
+need to be invoked. For small, single-file projects, Make’s built-in
+rules are often all we need.</p>
+</div>
+<h3 id="factorial-results">1.1. Factorial results</h3>
+<p>Read the API comments for the <code>factorial</code> function in
+<code>factorial.c</code>, and build the <code>factorial</code> program
+with the command <code>make factorial</code>.</p>
+<p>Try executing the <code>factorial</code> program with various
+arguments from 0 to 20 (the valid range) and outside it. Does the
+program print the correct result? (If you’re not sure what the factorial
+of some number is, then Googling “factorial 10”, for example, should
+give you an answer.)</p>
+<p>See if you can spot the cause of the error in
+<code>factorial.c</code>. If you can, don’t fix it yet – we’re going to
+use the program to experiment with debugging using GDB.</p>
+<h3 id="running-gdb">1.2. Running GDB</h3>
+<p>Launch the debugger by running</p>
+<pre class="text"><code>$ gdb ./factorial</code></pre>
+<p>You should see some welcome messages from GDB, then it will display
+the debugger prompt <code>(gdb)</code>. As the welcome messages say, you
+can type <code>help</code> at this prompt to get help, but the online
+help is unfortunately not especially useful unless you already have some
+familiarity with GDB. (If you <em>do</em> know the first letter of a
+command you’re interested in, then GDB has an “autocomplete” feature –
+type <code>l</code> and then the <code>tab</code> key a couple of times,
+to see commands beginning with <code>l</code>.)</p>
+<p>Some of the commands you can run from the GDB prompt include:</p>
+<ul>
+<li><code>list <em>[LINENUM]</em></code>, which lists the code around
+(before and after) <code><em>LINENUM</em></code>. If you leave off
+<code><em>LINENUM</em></code>, GDB will “page” it’s way through the
+current file. You can type just <code>l</code> as shorthand for
+<code>list</code>.</li>
+<li><code>run</code>, which runs the loaded program.</li>
+</ul>
+<p>Try both of these commands. When you run the program, you should see
+it print the error message</p>
+<pre class="text"><code>Error: expected 1 command-line argument (an INT), but got 0</code></pre>
+<p>since by default, GDB runs the program with no command-line
+arguments. (GDB should also print a message saying that our program
+<code>exited with code 01</code>. By convention, programs on Unix-like
+platforms exit with a non-zero code to indicate an error.)</p>
+<p>Set the programs arguments by running the following command (don’t
+type the <code>(gdb)</code> prompt):</p>
+<pre class="text"><code>(gdb) set args 6</code></pre>
+<p>and then running the program again.</p>
+<p>Now, exit the debugger by typing <code>quit</code> or
+<code>ctrl-d</code>, and start it again. This time, we’ll use GDB’s TUI
+(text-based user interface).</p>
+<p>Type <code>ctrl-x</code> and then the <code>a</code> key immediately
+afterward. A “window” should open in your terminal; run the
+<code>list</code> command, and you should see something like this:</p>
+<p><div style="display: flex; justify-content: center;"> <img role="img" src="data:image/png;base64,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" title="gdb TUI" /> </div></p>
+<p>The arrow keys and the <code>pageup</code> and <code>pagedown</code>
+keys on your keyboard should now move you around in the source listing
+window, and <code>ctrl-i</code> will refresh the display if at any point
+it seems to get out of sync with what you’re doing. (The
+<code>ctrl-x a</code> sequence toggles between GDBs normal mode and TUI
+mode; hitting it repeatedly will take you back and forth between
+them.)</p>
+<p>The <code>breakpoint <em>LINENUM</em></code> command (<code>b</code>
+for short) will set a breakpoint in the code (and the source listing
+will indicate this with a “<code>b+</code>” in the code margin).</p>
+<p>Run the command <code>b 26</code> to set a breakpoint at line 26
+(containing the statement <code>argc--</code>), and <code>r</code> to
+run the program.</p>
+<p>GDB will highlight the line about to be executed. Some other useful
+commands:</p>
+<ul>
+<li><p><code>print <em>EXPRESSION</em></code> (<code>p</code> for
+short): print the value of a C variable or expression.
+<code>p argv</code> will print the type (<code>char **</code>) and value
+of <code>argv</code>, one of the arguments to main – the value should be
+a location in virtual memory, something like
+<code>0x7fffffffe468</code>.</p>
+<p>You can print elements within a struct or array using the normal C
+syntax for accessing those elements – for instance,
+<code>print argv[0]</code> will (unsurprisingly) print the value of
+<code>argv[0]</code>.</p>
+<p>You aren’t limited to variables – try printing the value of
+<code>3 * 2 + 1</code> or <code>&quot;foo&quot;[0]</code> and see what gets
+displayed.</p></li>
+<li><p><code>ptype <em>EXPRESSION</em></code>: print the <em>type</em>
+of a C variable or expression.</p></li>
+<li><p><code>step</code> (<code>s</code> for short): step “into” the
+current instruction. That is, if the current instruction is a function
+call, GDB will go “into” that function and start stepping through its
+instructions. (Note that if the function you’re trying to step into was,
+say, a library function compiled without debugger symbols, then typing
+<code>s</code> will result in you stepping “into” assembly language
+routines – see the box entitled “[s]tep vs [n]ext” for more
+details.)</p></li>
+<li><p><code>next</code> (<code>n</code> for short): step “over” the
+current instruction; if it is a function call, the function will be
+executed without GDB going “into” that function and stepping through it
+in detail.</p></li>
+<li><p><code>finish</code>: Step “out” of the current function (run to
+the end).</p></li>
+<li><p><code>continue</code> (<code>c</code> for short): continue
+running until a breakpoint is hit.</p></li>
+<li><p><code>kill</code> (<code>k</code> for short): abort execution of
+the program, but don’t exit GDB.</p></li>
+<li><p><code>info args</code>: print the arguments of the function
+you’re in.</p></li>
+<li><p><code>info locals</code>: print the local variables of the
+function or block you’re in.</p></li>
+<li><p><code>clear</code>: remove all breakpoints.</p></li>
+<li><p><code>backtrace</code> (<code>bt</code> for short): print
+information on the stack frames currently on the call stack – i.e., what
+“chain” of functions called the function you’re currently in, and with
+what arguments.</p></li>
+</ul>
+<p>For some additional commands and advanced features, see the <a href="https://apoorvaj.io/hitchhikers-guide-to-the-gdb">Hitchikers Guide
+To The GDB</a> and the GDB tutorial series <a href="https://developers.redhat.com/blog/2021/04/30/the-gdb-developers-gnu-debugger-tutorial-part-1-getting-started-with-the-debugger">here</a>
+and <a href="https://developers.redhat.com/articles/2022/01/10/gdb-developers-gnu-debugger-tutorial-part-2-all-about-debuginfo">here</a>
+from RedHat. GDB “cheat sheets” are available <a href="https://darkdust.net/files/GDB%20Cheat%20Sheet.pdf">here</a> (PDF)
+and <a href="https://gist.github.com/rkubik/b96c23bd8ed58333de37f2b8cd052c30">here</a>.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%, 50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Dynamic printf (<code>dprintf</code>) – no more stray
+<code>printf</code>s!</p>
+</div>
+<p>A common method of debugging C programs is to add
+<code>printf()</code> invocations at various points in the program to
+show what the value program variables take on at different times. A
+disadvantage of this approach is that it requires you to re-compile your
+program, and you must remember to remove the calls to
+<code>printf()</code> from your final code.</p>
+<p>However, GDB will let you add <code>printf()</code> invocations
+without recompiling the program using the <a href="https://sourceware.org/gdb/current/onlinedocs/gdb#Dynamic-Printf"><code>dprintf</code>
+(dynamic printf)</a> command.</p>
+<details>
+<summary>
+<span class="only-open"> …click for more </span>
+</summary>
+<p>Issuing the <code>dprintf <em>LINENUM</em>, <em>FORMAT-STRING</em>,
+<em>EXPRESSION</em></code> command has the effect of adding a breakpoint
+at <code><em>LINENUM</em></code>, as well as inserting a call to
+<code>printf</code> which prints the specified expression using a
+specified printf-style format string.</p>
+<p>So, for example, the command
+<code>dprintf myprogram.c:8, &quot;Num elements: %d\n&quot;, n</code> would allow
+you to insert <code>printf</code> calls that nicely display the value of
+the variable <code>n</code> at line 8 of a program.</p>
+<p>If you’re interested in using the <code>dprintf</code> command, you
+can find a tutorial on how to use it <a href="https://abstractexpr.com/2024/03/03/dynamic-printf-debugging-with-gdb/">here</a>.</p>
+</details>
+</div>
+<h3 id="argc-and-argv">1.3. <code>argc</code> and <code>argv</code></h3>
+<p>The first thing the <code>factorial</code> program does in
+<code>main</code> is execute the following statements:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>argc<span class="op">--;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>argv<span class="op">++;</span></span></code></pre></div>
+<p>If you’re running an instance of the <code>factorial</code> program,
+kill it with <code>k</code>, use <code>set args 6</code> to set the
+command-line arguments of the program, and run it with <code>r</code>.
+(Your breakpoint at line 26 should still be showing; execute the command
+<code>b 26</code> to set if you’ve accidentally exited GDB and come back
+in.)</p>
+<p>Step through the program, examining the values of <code>argc</code>,
+<code>argv</code>, and elements of <code>argv</code> (like
+<code>argv[0]</code> and <code>argv[1]</code>) at various points in the
+program.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,
+50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>[s]tep vs [n]ext</p>
+</div>
+<p>In general, when you’re stepping through code, the command you want
+to use is “n” (“next”), which steps <em>over</em> function calls when it
+encounters them.</p>
+<p>When you encounter a call to a function you’ve defined elsewhere in
+the program, and want to step “into” that function, then “s” (“step”) is
+the command to use.</p>
+<p>If you try and invoke “s” on a function that is part of the C
+runtime, however, like <code>strtol</code>, then GDB will print an error
+something like this:</p>
+<pre><code>  (gdb) s
+  __strtol (nptr=0x7fffffffe730 &quot;6&quot;, endptr=0x7fffffffe3a0, base=10) at ../stdlib/strtol.c:105
+  ../stdlib/strtol.c: No such file or directory.</code></pre>
+<p>Here, GDB is telling you that it <em>can’t</em> “step into” the code
+for <code>strtol</code>, because it can’t find the original source code
+for that function, nor can it find any “debugging symbols” for it. (To
+save disk space, C runtime libraries are normally shipped without either
+of those – though it is possible to install them if you wish.)</p>
+<details>
+<summary>
+<span class="only-open"> …click for more </span>
+</summary>
+<p>A quick fix is to type <code>f</code> for <code>finish</code>, which
+will finish running the current function, and so should get you back to
+the C code the function was called from.</p>
+<p>You’ll get a similar error if you try to “step into” the
+<code>errno</code> variable. <code>errno</code> isn’t a library
+<em>function</em>, but is a global symbol defined in the C runtime, and
+thus causes the same sort of error messages if you try to step “into”
+it.</p>
+<p>The takeaway here is: usually, you can only “step into” functions
+that <em>you’ve</em> defined, and only when you compiled your code using
+the “<code>-g</code>” option which causes <code>gcc</code> to include
+debugging symbols.</p>
+</details>
+</div>
+<p>What is the effect of the two statements we listed above? Why would
+we use them?</p>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solutions</p>
+</div>
+<p>The statements are used to “ignore” the value of
+<code>argv[0]</code>, which contains the filename of the program being
+executed. <code>argc</code> is decremented by one (so the number of
+arguments is reduced by one), and <code>argv</code> is incremented by
+one – the effect is that <code>argv[0]</code> <em>after</em> the
+statements are executed points to what used to be
+<code>argv[1]</code>.</p>
+<p>This is commonly done in programs where we are interested in the
+command-line arguments of the program, but have no especial interest in
+the name of the executable.</p>
+</div>
+<h3 id="strtol">1.4. <code>strtol</code></h3>
+<p>In the file <code>factorial.c</code>, we use the function
+<code>strtol</code> to convert the program’s first command-line argument
+into a <code>long</code>, despite the fact that the
+<code>factorial</code> function only takes an <code>int</code>, and we
+then cast the <code>long</code> into an <code>int</code>.</p>
+<p>However, C11 has a function <code>atoi</code>, which converts strings
+to <code>int</code>s, so it seems we could have used that. Read the
+documentation for</p>
+<ul>
+<li><code>strtol</code> (<code>man strtol</code> in your VM, or <a href="https://en.cppreference.com/w/c/string/byte/strtol" class="uri">https://en.cppreference.com/w/c/string/byte/strtol</a>),
+and</li>
+<li><code>atoi</code> (<code>man atoi</code> in your VM, or <a href="https://en.cppreference.com/w/c/string/byte/atoi" class="uri">https://en.cppreference.com/w/c/string/byte/atoi</a>)</li>
+</ul>
+<p>and summarize what the differences are. Why might we prefer
+<code>strtol</code> over <code>atoi</code>?</p>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solutions</p>
+</div>
+<p><code>strtol</code> provides more information and allows for more
+precise error-checking than <code>atoi</code>. When <code>atoi</code>
+can’t convert the string it sees, it returns the value <code>0</code>:
+this is unhelpful, since it means we have no way of knowing whether it
+encountered a conversion error, or was actually supplied with the string
+<code>&quot;0&quot;</code>.</p>
+<p><code>atoi</code> also has unhelpful behaviour when the number
+encountered would fall outside the bounds of an <code>int</code>
+(i.e. is too large in magnitude, whether positive or negative): its
+behaviour is simply undefined. <code>strtol</code> in contrast is more
+helpful: it sets the global value <code>errno</code> (which you can read
+about <a href="https://en.cppreference.com/w/c/error/errno">here</a>) to
+the value <code>ERANGE</code> to indicate an “out of range” error, and
+still returns <em>some</em> potentially useful value (either the highest
+or lowest value a <code>long</code> can hold).</p>
+<p>Because of this, many C style guides recommend that
+<code>strtol</code> be used instead of <code>atoi</code>.</p>
+</div>
+<h3 id="diagnosing-and-fixing-the-factorial-bug">1.5. Diagnosing and
+fixing the <code>factorial</code> bug</h3>
+<p>Kill the <code>factorial</code> program, set a breakpoint somewhere
+in the <code>factorial</code> function (e.g. line 18), and use the
+<code>run</code> and/or <code>continue</code> commands to get to your
+breakpoint.</p>
+<p>Step through execution of the <code>factorial</code> function, and
+examine the values of the local variables (using either
+<code>print</code> or <code>info locals</code>). What is the bug in
+<code>factorial</code>? Fix it.</p>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solutions</p>
+</div>
+<p>The fix is that the line</p>
+<pre><code>for (int i = n; i &gt;= 0; i--) {</code></pre>
+<p>should be changed to</p>
+<pre><code>for (int i = n; i &gt; 0; i--) {</code></pre>
+<p>In other words, this is an <a href="https://en.wikipedia.org/wiki/Off-by-one_error">“off-by-one”
+error</a>.</p>
+</div>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,
+50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Recommendation – keep lab notes</p>
+</div>
+<p>It’s recommended you keep online notes of useful commands, coding
+best practices, useful links etc. you come across in the unit, as a
+reminder to yourself of what we’ve covered. You could keep a Word or
+text document, if you like, using <a href="https://docs.google.com/">Google Docs</a>, but another option is
+to store your notes in a “Gist” – a single text file versioned by
+GitHub.</p>
+<p>If you have a GitHub account and are logged in, then click on the “+”
+symbol in the top right of any GitHub page, and select “New gist”. Give
+your gist a description (e.g. “My CITS3007 notes”) and a filename
+(e.g. “notes.md”). Then click “Create secret gist” (or “public”, if you
+wish to make it public).</p>
+<p>Gists support formatting your file using <a href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax">Markdown</a>
+– for instance, use asterisks (“<code>*</code>”) to surround words
+intended to be italic, and start paragraphs which should be part of a
+list with a hyphen and space (“<code>- </code>”). Clicking the “Preview”
+tab will show you what your notes look like converted to HTML.</p>
+</div>
+<h2 id="segmentation-faults">2. Segmentation faults</h2>
+<p>Compile the <code>segfault</code> program by running
+<code>make segfault</code> and then run it with <code>./segfault</code>.
+The intended behaviour is that it should accept a line of input from the
+user, and echo this back.</p>
+<p>However, when it is run and some text entered, it produces a <a href="https://en.wikipedia.org/wiki/Segmentation_fault"><em>segmentation
+fault</em></a>. A segmentation fault is caused when the CPU detects that
+a program has attempted to access memory which it is not permitted to
+access.</p>
+<p>Try running the program using GDB. (Hint: you can get GDB to start in
+TUI mode by running <code>gdb -tui ./segfault</code>.) Start GDB and run
+the program with the <code>run</code> command, and enter some text. Once
+the segfault occurs, run the <code>backtrace</code> command to see the
+current stack trace.</p>
+<p>You should see something like</p>
+<pre><code>#1  0x00007ffff7e2a96c in __GI__IO_getline (fp=fp@entry=0x7ffff7f93980 &lt;_IO_2_1_stdin_&gt;, buf=buf@entry=0x0,
+    n=n@entry=1023, delim=delim@entry=10, extract_delim=extract_delim@entry=1) at iogetline.c:34
+#2  0x00007ffff7e296ca in _IO_fgets (buf=0x0, n=1024, fp=0x7ffff7f93980 &lt;_IO_2_1_stdin_&gt;) at iofgets.c:53
+#3  0x0000555555555209 in main () at segfault.c:9</code></pre>
+<p>Each stack frame shows the values of the arguments to the function
+called for that frame. Do any of them look suspicious?</p>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solutions</p>
+</div>
+<p>The argument <code>buf</code> (in stack frames #1 and #2) is equal to
+0 – that is, the <code>NULL</code> pointer. Trying to dereference the
+<code>NULL</code> pointer in C – on platforms that have hardware memory
+protection – will generally result in a segmentation fault.</p>
+<p>However, not all platforms <em>do</em> implement memory protection,
+so this is not guaranteed.</p>
+</div>
+<p>Try printing the value of <code>buf</code> (with the command
+<code>print buf</code>) before and after it has been allocated, and see
+what result you get.</p>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solutions</p>
+</div>
+<p>After the allocation, <code>buf</code> will be set to 0 (the
+<code>NULL</code> pointer), which is not what we want – we expect it
+should point to newly-allocated memory.</p>
+</div>
+<p>Try using the <code>print</code> command to see how the “bitwise left
+shift” (“<code>&lt;&lt;</code>”) operator works.</p>
+<p>Try <code>p 1 &lt;&lt; 2</code>, <code>p 1 &lt;&lt; 10</code>, and a
+few other values, then try <code>p 1 &lt;&lt; 31</code>. What result do
+you get? Why might this occur? (Hint: read the cppreference.com page on
+arithmetic operators, in particular the section on “overflow”: <a href="https://en.cppreference.com/w/cpp/language/operator_arithmetic" class="uri">https://en.cppreference.com/w/cpp/language/operator_arithmetic</a>.
+Also try the <code>ptype</code> command for the various values you typed
+above, to see what their type is.) How can the program be fixed?</p>
+<div class="solutions">
+<div class="block-caption">
+<p>Sample solutions</p>
+</div>
+<p>The behaviour occurs because the type of <code>1 &lt;&lt; 32</code>
+is type <code>int</code>, which is a signed integer type, and only has 4
+bytes (32 bits) on the platform we’re using. The left shift operator
+<code>&lt;&lt;</code> has the effect of multiplying a number by two
+<span class="math inline">\(n\)</span> times (where <span class="math inline">\(n\)</span> is the right-hand operand). For an
+<code>int</code>, multiplying by two 32 times leads to overflow, and the
+<code>int</code> “wraps around” to a negative number.</p>
+<p>The immediate problem with the program can be fixed by:</p>
+<ul>
+<li>choosing a much smaller buffer (say, <code>1 &lt;&lt; 16</code>, or
+<code>65535</code>)</li>
+<li>putting a lowercase “<code>l</code>” after the <code>1</code>
+(i.e. <code>1l &lt;&lt; 32</code>) – this makes it a <code>long</code>,
+which on our platform can store 8 bytes, or 64 bits)</li>
+</ul>
+</div>
+<h2 id="c-refresher-no.-2">3. C refresher no. 2</h2>
+<p>On <a href="https://quiz.jinhong.org/course/view.php?id=19">Moodle</a>, you
+will find an unassessed quiz entitled “C refresher no. 2”. It’s
+recommended you complete this (either now, or in your own time) to check
+your knowledge of C control flow structures and data types.</p>
+<div style="margin: 2rem 0; line-height: 2;">
+ 
+</div>
+<!--
+  vim: syntax=markdown tw=92 smartindent :
+-->
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>For instance, Eclipse and VS Code will provide a
+graphical interface to GDB.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Passing flags like <code>-O1</code>, <code>-O2</code>
+and <code>-O3</code> to <code>gcc</code> tells it to spend longer
+compiling the code, in order apply increasingly advanced optimizations;
+see the documentation for <code>gcc</code>’s <a href="https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">optimization
+options</a> for more details.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>On the other hand, sometimes the behaviour we’re trying
+to debug might <em>only</em> appear when optimizations are enabled. In
+such a case, we will likely have to debug our optimized binary, and
+simply accept that sometimes, the code being executed differs from what
+we see in the source file.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>The <code>-std=c11</code> option instructs the compiler
+to use the C11 standard. The <a href="https://gcc.gnu.org/onlinedocs/gcc/gcc-command-options/options-to-request-or-suppress-warnings.html#cmdoption-pedantic-errors"><code>-pedantic-errors</code>
+option</a> instructs the compiler to disallow GCC-specific extensions to
+that standard, and to report an error if any of them are used. (By
+default, GCC tends to be fairly “generous”, and attempts to compile
+programs that use extensions, even when we’ve specified we want to use
+the C11 standard.) The other options
+(<code>-Wall   -Wextra -Wconversion</code>) enable warnings about
+problematic constructs in our source code.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>

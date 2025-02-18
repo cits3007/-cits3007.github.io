@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CITS3007 lab 5 (week 6) – Buffer overflows</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: sans-serif;
+font-size: 12pt;
+color: black;
+background-color: white;
+}
+body {
+margin: 0 auto;
+max-width: 50em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+background-color: hsl(0, 0%, 98%);
+padding: .2em .4em;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+background-color: hsl(0, 0%, 98%);
+padding: 1em;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+
+:not(pre) > code {
+padding: 2px 4px;
+font-size: 90%;
+word-break: normal !important;
+white-space: nowrap;
+color: hsl(344.8,69%,10%);
+background-color: hsl(342.9,37%,96%);
+border-radius: 4px;
+}
+.sourceCode {
+background-color: hsl(0, 0%, 98%);
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+th {
+border-top: 1px solid black;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style>
+div.solutions {
+border: solid 2pt hsla(120, 100%, 35%, 1);
+border-radius: 5pt;
+background-color: hsla(120, 100%, 50%, 0.1);
+padding: 1em;
+}
+.block-caption {
+display: block;
+font-family: sans-serif;
+font-weight: bold;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+details[open] summary *.only-open {
+opacity: 0.1;
+}
+</style>
+<script data-external="1" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript">
+</script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"><p>CITS3007 lab 5 (week 6) – Buffer overflows</p></h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#setup" id="toc-setup">1. Setup</a>
+<ul>
+<li><a href="#countermeasures" id="toc-countermeasures">1.1. Turning off
+countermeasures</a></li>
+</ul></li>
+<li><a href="#shellcode" id="toc-shellcode">2. Shellcode</a>
+<ul>
+<li><a href="#invoking-the-shellcode" id="toc-invoking-the-shellcode">2.1. Invoking the shellcode</a></li>
+</ul></li>
+<li><a href="#a-vulnerable-program" id="toc-a-vulnerable-program">3. A
+vulnerable program</a>
+<ul>
+<li><a href="#compilation" id="toc-compilation">3.1.
+Compilation</a></li>
+<li><a href="#launching-an-attack-on-a-32-bit-program" id="toc-launching-an-attack-on-a-32-bit-program">3.2. Launching an
+attack on a 32-bit program</a></li>
+<li><a href="#hints-on-inserting-your-shellcode" id="toc-hints-on-inserting-your-shellcode">3.3. Hints on inserting your
+shellcode</a></li>
+</ul></li>
+<li><a href="#credits" id="toc-credits">Credits</a></li>
+</ul>
+</nav>
+<p>It’s recommended you complete this lab in pairs, if possible, and
+discuss your results with your partner.</p>
+<p>The objective of this lab is to gain insight into</p>
+<ol type="a">
+<li>buffer overflow vulnerabilities, and</li>
+<li>setuid programs</li>
+</ol>
+<p>and see how they can be exploited. You will be given a
+<code>setuid</code> program with a buffer overflow vulnerability, and
+your task is to develop a scheme to exploit the vulnerability and gain
+root privileges.</p>
+<div style="border: solid 2pt orange; background-color: hsl(22.35, 100%, 85%, 1); padding: 1em;">
+<div class="block-caption">
+<p>Note – Virtual Machine requirements</p>
+</div>
+<p>Completing this lab requires you to have root access to the Linux
+kernel of the VM (or other machine) you’re running on. Otherwise, the
+command</p>
+<pre><code>sudo sysctl -w kernel.randomize_va_space=0</code></pre>
+<p>(in section 1.1, <a href="#countermeasures">Turning off
+countermeasures</a>) will fail. Furthermore, the <a href="#shellcode">shellcode</a> used in this lab contains machine-code
+instructions specific to the x86-64 architecture.</p>
+<p>Consequently, you will not be able to complete the lab using any of
+the following methods:</p>
+<dl>
+<dt><strong><em>gitpod</em></strong></dt>
+<dd>
+<p>The <a href="https://gitpod.io/">GitPod</a> environment does
+<strong><em>not</em></strong> give you root access to the kernel; while
+using GitPod, you are running within a security-restricted <a href="https://docs.docker.com/get-started/overview/">Docker
+container</a> <em>within</em> a VM, and will be unable to change the way
+the kernel is running.</p>
+</dd>
+<dt><strong><em>a non–x86-64 virtual machine</em></strong></dt>
+<dd>
+<p>If you are using a VM with some architecture other than x86-64 (for
+instance, ARM64): exercises that involve injecting <a href="https://en.wikipedia.org/wiki/Shellcode">shellcode</a> will only
+work on the x86-64 platform, because the machine instructions in the
+shellcode are specific to the x86-64 instructions contained in the
+shellcode. If you normally use a VM with some other architecture, then
+to complete shellcode exercises, you will have to switch to a VM that
+uses an x86-64 architecture.</p>
+</dd>
+</dl>
+<p>The preferred way of completing this lab is by using Vagrant (as
+outlined in Lab 1) to run the standard CITS3007 standard development
+environment (SDE) image from VirtualBox. Within that VM, you have root
+access to the kernel, and all commands should complete successfully. If
+you use some other method, the commands <em>might</em> work, but it’s
+not guaranteed.</p>
+</div>
+<h2 id="setup">1. Setup</h2>
+<h3 id="countermeasures">1.1. Turning off countermeasures</h3>
+<p>Modern operating systems implement several security mechanisms to
+make buffer overflow attacks more difficult. To simplify our attacks, we
+need to disable them first. It’s worth understanding what these
+protections are, because even though they are enabled in (for instance)
+modern Linux systems, embedded systems (and some other cut-down or
+minimal operating systems) may still be vulnerable.</p>
+<dl>
+<dt><strong>Address Space Randomization</strong></dt>
+<dd>
+<p>Ubuntu and several other Linux-based systems use address space
+randomization to randomize the starting address of heap and stack. This
+makes guessing the exact addresses difficult. This feature can be
+disabled by running the following command in the CITS3007 development
+environment:</p>
+<pre><code>$ sudo sysctl -w kernel.randomize_va_space=0</code></pre>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em; margin-bottom: 1em">
+<div class="block-caption">
+<p>The <code>sysctl</code> command</p>
+</div>
+<p>This information isn’t essential to the lab, but may be helpful in
+understanding what’s going on here.</p>
+<p>The <a href="https://linux.die.net/man/8/sysctl"><code>sysctl</code></a>
+command (documented at <code>man 8 sysctl</code>) alters the parameters
+of a running Linux kernel. (The <code>sysctl</code> command should not
+be confused with the annoyingly similarly named <a href="https://man7.org/linux/man-pages/man1/systemctl.1.html"><code>systemctl</code></a>
+command, which has to do with starting and stopping daemon programs on a
+system.)</p>
+<p>The current value of the <code>randomize_va_space</code> (“randomize
+virtual address space”) kernel parameter can be displayed by running the
+command:</p>
+<pre><code>$ cat /proc/sys/kernel/randomize_va_space</code></pre>
+<p>The result is a number, 0, 1 or 2, with the following meanings:</p>
+<ul>
+<li>0 – No randomization. Everything is static.</li>
+<li>1 – Conservative randomization. Shared libraries, stack,
+<code>mmap()</code>, VDSO and heap are randomized.</li>
+<li>2 – Full randomization. In addition to elements listed in the
+previous point, memory managed through <code>brk()</code> is also
+randomized.</li>
+</ul>
+<p>(The <a href="https://man7.org/linux/man-pages/man2/sbrk.2.html"><code>brk()</code></a>
+system call, documented at <code>man 2 brk</code>, <a href="https://stackoverflow.com/a/31082353/6818792">adjusts the size of
+the heap</a>; it’s one of the system calls typically used by
+<code>malloc</code> to allocate memory on the heap.)</p>
+<p>We use the <code>sysctl</code> command to set this parameter to
+0.</p>
+</div>
+</dd>
+<dt><strong>Configuring <code>/bin/sh</code></strong></dt>
+<dd>
+<p>In recent versions of Ubuntu OS, <code>/bin/sh</code> is a symbolic
+link pointing to the <code>/bin/dash</code> shell: run
+<code>ls -al /bin/sh</code> to see this.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Almquist_shell#dash">Dash</a>
+program (as well as <a href="https://en.wikipedia.org/wiki/Bash_(Unix_shell)">Bash</a>)
+implements a <a href="https://unix.stackexchange.com/questions/74527/setuid-bit-seems-to-have-no-effect-on-bash/74538#74538">countermeasure</a>
+that prevents it from being executed in a setuid process. If the shell
+detects that the effective user ID differs from the actual user ID (see
+the previous lab), it will immediately change the effective user ID back
+to the real user ID, essentially dropping the privilege.</p>
+<p>For these exercises, our victim program is a <code>setuid</code>
+program, and our attack relies on running <code>/bin/sh</code>, so the
+countermeasure in <code>/bin/dash</code> makes our attack more
+difficult. Therefore, we will link <code>/bin/sh</code> to
+<code>zsh</code> instead, a shell which lacks such protection (though
+with more effort, the countermeasure in <code>/bin/dash</code> can be
+defeated – you might like to try doing so as a challenge task).</p>
+<div style="border: solid 2pt orange; background-color: hsl(22.35, 100%, 85%, 1); padding: 1em;">
+<div class="block-caption">
+<p>Take care!</p>
+</div>
+<p>Take care running the commands following this warning box.</p>
+<p>The command <code>sudo ln -sf /bin/zsh /bin/sh</code> overwrites
+whatever file is currently at <code>/bin/sh</code>, and replaces it with
+a symbolic link that points to <code>/bin/zsh</code>. If there
+<em>is</em> no file at <code>/bin/zsh</code>, then <code>/bin/sh</code>
+becomes a “broken link”; and since many Linux programs and libraries
+rely on <code>/bin/sh</code> existing, they’ll cease to work.</p>
+<p>So the <code>ln</code> command should only be run after
+<code>sudo apt-get install -y zsh</code> has completed successfully.
+It’s assumed in CITS3007 labs that you will read error messages produced
+by commands, and seek assistance if they don’t complete
+successfully.</p>
+<details>
+<summary>
+<span class="only-open"> …click for more </span>
+</summary>
+<p>If you <em>do</em> accidentally overwrite <code>/bin/sh</code>, then
+in the CITS3007 SDE, you can fix this by running
+<code>sudo ln -sf /usr/bin/dash /bin/sh</code>, which restores
+<code>/bin/sh</code> to its original state.</p>
+<p>Alternatively, to revert any alterations made in a VM, you can just
+destroy the current VM instance and create a new one. (This is the great
+advantage of virtualization technology – no matter what damage is done
+to a VM, it’s “cheap” to re-start from scratch.) You can do this by
+running (on your host laptop or other machine, in the directory where
+you Vagrantfile is located):</p>
+<pre><code>$ vagrant destroy --force
+$ vagrant up --provider=virtualbox</code></pre>
+</details>
+</div>
+<p>Inside the development environment VM, install the <code>zsh</code>
+package with the command
+<code>sudo apt-get update &amp;&amp; sudo apt-get install -y zsh</code>.
+Then run the following command to link <code>/bin/sh</code> to
+<code>zsh</code>:</p>
+<pre><code>$ sudo ln -sf /bin/zsh /bin/sh</code></pre>
+<p>You can confirm that you’ve done this correctly by running the
+command:</p>
+<pre><code>$ sh --version</code></pre>
+<p>If all is working as expected, it should display:</p>
+<pre><code>zsh 5.8 (x86_64-ubuntu-linux-gnu)</code></pre>
+</dd>
+<dt><strong>Non-executable stack</strong></dt>
+<dd>
+<p>When the program runs, the memory segment containing the stack can be
+marked non-executable. This feature can be turned off during
+compilation, by passing the option “<code>-z execstack</code>” to
+<code>gcc</code>. This option is passed onto the linker,
+<code>ld</code>, and marks the output binary as requiring an
+<em>executable</em> stack.</p>
+<p>This option is documented in <code>man ld</code>, and we will discuss
+it further when compiling our programs.</p>
+</dd>
+<dt><strong>Stack canaries</strong></dt>
+<dd>
+<p>The GCC compiler can include code in a compiled program which inserts
+<a href="https://www.sans.org/blog/stack-canaries-gingerly-sidestepping-the-cage/">stack
+canaries</a> in the stack frames of a running program, and before
+returning from a function, checks that the canary is unaltered.</p>
+<p>A RedHat article on compiler <a href="https://developers.redhat.com/articles/2022/06/02/use-compiler-flags-stack-protection-gcc-and-clang#stack_canary">stack
+protection flags</a> outlines the flags which enable stack canaries in
+GCC; we will use the <code>-fno-stack-protector</code> flag to ensure
+they’re disabled. (Further documentation on these options is available
+in the <a href="https://gcc.gnu.org/onlinedocs/gcc-12.2.0/gcc/Instrumentation-Options.html#Instrumentation-Options">GCC
+manual</a>.) We discuss this option further when compiling our
+programs.</p>
+</dd>
+</dl>
+<!--
+
+## 2. Data corruption
+
+Buffer overflow attacks
+
+Changing program behavior by overwriting a local variable located near the vulnerable buffer on the stack;
+By overwriting the return address in a stack frame to point to code selected by the attacker, usually called the shellcode. Once the function returns, execution will resume at the attacker's shellcode;
+By overwriting a function pointer[2] or exception handler to point to the shellcode, which is subsequently executed;
+By overwriting a local variable (or pointer) of a different stack frame, which will later be used by the function that owns that frame.[3]
+
+-->
+<h2 id="shellcode">2. Shellcode</h2>
+<p><a href="https://en.wikipedia.org/wiki/Shellcode"><em>Shellcode</em></a> is
+a small portion of code that launches a shell, and is widely used in
+code injection attacks. The aim is to inject code into the running
+process that will allow us to exploit the system. In the buffer overflow
+attack we launch in this lab, we’ll write that code – which is just a
+sequence of bytes – into a location on the stack, and try to convince
+the target program to execute it.</p>
+<p>Represented in C, a piece of shellcode might look like the
+following:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">// shellcode.c</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>  <span class="dt">char</span> <span class="op">*</span>name<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  name<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> <span class="st">&quot;/bin/sh&quot;</span><span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>  name<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>  execve<span class="op">(</span>name<span class="op">[</span><span class="dv">0</span><span class="op">],</span> name<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="op">}</span></span></code></pre></div>
+<p>Read about the Linux <code>execve</code> system call by typing <a href="https://man7.org/linux/man-pages/man2/execve.2.html"><code>man execve</code></a>;
+it allows us to execute a program from C code. The <code>name</code>
+array is effectively a list of pointers-to-<code>char</code>, with a
+<code>NULL</code> pointer used to mark the end of the list.</p>
+<p>However, we can’t straightforwardly use GCC to obtain our shellcode.
+Recall that shellcode is a <em>small</em> sequence of bytes that we want
+to inject into a target process. Try saving the above code as
+<code>shellcode.c</code>, and compile it with
+<code>make shellcode.o shellcode</code>. Examine the size of the
+compiled program with</p>
+<pre><code>$ du -sk shellcode</code></pre>
+<p>and you will see that the compiled binary is about 20 kilobytes – far
+too big and unwieldy for our purposes. (Once preprocessing is done on
+the C code with <code>cpp</code>, and all header files and their
+definitions are included, the resulting code is a lot bigger than the 9
+lines above would suggest. Read <a href="http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html">here</a>
+about one user’s attempts to get the smallest possible “Hello world”
+program using GCC.)</p>
+<p>Instead, the easiest way to construct shellcode is to write it in <a href="https://en.wikipedia.org/wiki/Assembly_language">assembly
+language</a>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> The Intel 32-bit assembly code
+equivalent for the above C code would be something like the following
+(which you are not required to understand, but is presented here for
+interest):</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource asm numberLines"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">; Store the command on stack</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="bu">xor</span>  <span class="kw">eax</span><span class="op">,</span> <span class="kw">eax</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="bu">push</span> <span class="kw">eax</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="bu">push</span> <span class="st">&quot;//sh&quot;</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="bu">push</span> <span class="st">&quot;/bin&quot;</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="bu">mov</span>  <span class="kw">ebx</span><span class="op">,</span> <span class="kw">esp</span> <span class="co">; ebx --&gt; &quot;/bin//sh&quot;: execve()&#39;s 1st argument</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="co">; Construct the argument array argv[]</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="bu">push</span> <span class="kw">eax</span> <span class="co">; argv[1] = 0</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="bu">push</span> <span class="kw">ebx</span> <span class="co">; argv[0] --&gt; &quot;/bin//sh&quot;</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="bu">mov</span> <span class="kw">ecx</span><span class="op">,</span> <span class="kw">esp</span> <span class="co">; ecx --&gt; argv[]: execve()&#39;s 2nd argument</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="co">; For environment variable</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="bu">xor</span> <span class="kw">edx</span><span class="op">,</span> <span class="kw">edx</span> <span class="co">; edx = 0: execve()&#39;s 3rd argument</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a></span>
+<span id="cb10-16"><a href="#cb10-16"></a><span class="co">; Invoke execve()</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="bu">xor</span> <span class="kw">eax</span><span class="op">,</span> <span class="kw">eax</span> <span class="co">;</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="bu">mov</span> <span class="kw">al</span><span class="op">,</span> <span class="bn">0x0b</span> <span class="co">; execve()&#39;s system call number</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a><span class="bu">int</span> <span class="bn">0x80</span></span></code></pre></div>
+<p>A brief explanation of the code (again, you’re not required to
+understand this in detail) is:</p>
+<ul>
+<li><p>The <code>&quot;/sh&quot;</code> and <code>&quot;/bin&quot;</code> arguments are
+pushed onto the stack (lines 1–5)</p></li>
+<li><p>We need to pass three arguments to <code>execve()</code> via the
+<code>ebx</code>, <code>ecx</code> and <code>edx</code>
+<em>registers</em>,<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> respectively. The majority of the
+shellcode basically constructs the content for these three
+arguments.</p></li>
+<li><p>The code in lines 17–19 is where we make the <code>execve</code>
+system call – that is, we request a service from the kernel. The kernel
+expects us to put a number identifying the system call we’re after (in
+this case, <code>execve</code>) into the <code>a1</code> register, and
+then notify the kernel by invoking an “interrupt”.</p>
+<p>So, we need to know what the system call number for
+<code>execve</code> is – it is <code>0x0b</code>. (A list of all the
+system calls and their numbers are found in a Linux header called
+<code>unistd_32.h</code>, usually found at
+<code>/usr/include/x86_64-linux-gnu/asm/unistd_32.h</code>. On Ubuntu,
+this file will only exist if you’ve installed the package
+<code>linux-libc-dev</code>.)</p>
+<p>We set <code>al</code> to <code>0x0b</code> (<code>al</code>
+represents the lower 8 bits of the <code>eax</code> register), and then
+execute the instruction “<code>int 0x80&quot;</code>.</p>
+<p>The <code>int</code> instruction generates a call to an <em>interrupt
+handler</em> – a bit like an exception handler – and the
+<code>0x80</code> in <code>int 0x80</code> identifies a specific bit of
+kernel handler code which exists to handle system calls.</p>
+<p>That handler will look in register <code>a1</code> (part of the
+<code>eax</code> register) to find out what system call we want to
+execute, and in registers <code>ebx</code>, <code>ecx</code> and
+<code>edx</code> for the arguments to that system call.</p></li>
+</ul>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Programming in assembly</p>
+</div>
+<p>If you’re interested in further details on programming in x86
+assembly, this <a href="https://www.cs.virginia.edu/~evans/cs216/guides/x86.html">guide</a>
+from the University of Virginia gives more details, such as how the
+<code>push</code> instruction works with the hardware-supported call
+stack.</p>
+<p>Another useful reference is the <a href="https://en.wikibooks.org">Wikibook</a> on <a href="https://en.wikibooks.org/wiki/X86_Assembly">x86 Assembly</a>.</p>
+</div>
+<p>We won’t do it in this lab, but the assembly code above can be
+assembled using <a href="https://www.nasm.us"><code>nasm</code></a>, an
+assembler for the x86 CPU architecture. <code>nasm</code> would compile
+the above assembly into an object file (called, say,
+<code>sploit.o</code>), and that resulting object file contains the
+exact sequence of bytes we need to insert in order to invoke
+<code>/bin/sh</code>. The following table is an extract from a compiled
+object file produced by <code>nasm</code>,<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> and
+shows that just 26 bytes (hex <code>0x1a</code>) are needed – these 26
+bytes will have the same effect as the 20KB executable compiled from
+<code>shellcode.c</code>. The leftmost column shows offsets in hex, the
+second column the exact byte values we want, and the last column the
+corresponding assembly code:</p>
+<pre><code>off   bytes                       assembly code
+---------------------------------------------------
+   0:    31 c0                    xor    eax,eax
+   2:    50                       push   eax
+   3:    68 2f 2f 73 68           push   0x68732f2f
+   8:    68 2f 62 69 6e           push   0x6e69622f
+   d:    89 e3                    mov    ebx,esp
+   f:    50                       push   eax
+  10:    53                       push   ebx
+  11:    89 e1                    mov    ecx,esp
+  13:    31 d2                    xor    edx,edx
+  15:    31 c0                    xor    eax,eax
+  17:    b0 0b                    mov    al,0xb
+  19:    cd 80                    int    0x80</code></pre>
+<h3 id="invoking-the-shellcode">2.1. Invoking the shellcode</h3>
+<p>Download the file <a href="https://cits3007.arranstewart.io/labs/bufoverflow-code.zip"><code>bufoverflow-code.zip</code></a>
+into the VM (you can use the command
+<code>wget https://cits3007.arranstewart.io/labs/bufoverflow-code.zip</code>)
+and unzip it.</p>
+<p><code>cd</code> into the <code>shellcode</code> directory, and take a
+look at <code>call_shellcode.c</code> (reproduced below):</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="co">// Binary code for setuid(0)</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="co">// 64-bit:  &quot;\x48\x31\xff\x48\x31\xc0\xb0\x69\x0f\x05&quot;</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co">// 32-bit:  &quot;\x31\xdb\x31\xc0\xb0\xd5\xcd\x80&quot;</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a></span>
+<span id="cb12-9"><a href="#cb12-9"></a></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="dt">const</span> <span class="dt">char</span> shellcode<span class="op">[]</span> <span class="op">=</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="pp">#if __x86_64__</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a>  <span class="st">&quot;</span><span class="sc">\x48\x31\xd2\x52\x48\xb8\x2f\x62\x69\x6e</span><span class="st">&quot;</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a>  <span class="st">&quot;</span><span class="sc">\x2f\x2f\x73\x68\x50\x48\x89\xe7\x52\x57</span><span class="st">&quot;</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a>  <span class="st">&quot;</span><span class="sc">\x48\x89\xe6\x48\x31\xc0\xb0\x3b\x0f\x05</span><span class="st">&quot;</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="pp">#else</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>  <span class="st">&quot;</span><span class="sc">\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f</span><span class="st">&quot;</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a>  <span class="st">&quot;</span><span class="sc">\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31</span><span class="st">&quot;</span></span>
+<span id="cb12-18"><a href="#cb12-18"></a>  <span class="st">&quot;</span><span class="sc">\xd2\x31\xc0\xb0\x0b\xcd\x80</span><span class="st">&quot;</span></span>
+<span id="cb12-19"><a href="#cb12-19"></a><span class="pp">#endif</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a><span class="op">;</span></span>
+<span id="cb12-21"><a href="#cb12-21"></a></span>
+<span id="cb12-22"><a href="#cb12-22"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span></span>
+<span id="cb12-23"><a href="#cb12-23"></a><span class="op">{</span></span>
+<span id="cb12-24"><a href="#cb12-24"></a>   <span class="dt">char</span> code<span class="op">[</span><span class="dv">500</span><span class="op">];</span></span>
+<span id="cb12-25"><a href="#cb12-25"></a></span>
+<span id="cb12-26"><a href="#cb12-26"></a>   strcpy<span class="op">(</span>code<span class="op">,</span> shellcode<span class="op">);</span></span>
+<span id="cb12-27"><a href="#cb12-27"></a>   <span class="dt">int</span> <span class="op">(*</span>func<span class="op">)()</span> <span class="op">=</span> <span class="op">(</span><span class="dt">int</span><span class="op">(*)())</span>code<span class="op">;</span></span>
+<span id="cb12-28"><a href="#cb12-28"></a></span>
+<span id="cb12-29"><a href="#cb12-29"></a>   func<span class="op">();</span></span>
+<span id="cb12-30"><a href="#cb12-30"></a>   <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb12-31"><a href="#cb12-31"></a><span class="op">}</span></span></code></pre></div>
+<p>The purpose of this program is to demonstrate that our shellcode
+byte-sequence does indeed invoke the shell <code>/bin/sh</code>.</p>
+<p>The byte sequences are stored in the array <code>shellcode</code> –
+observe that the 32-bit version starts with “<code>\x31\xc0\x50</code>”,
+which is the byte sequence we get from compiling our assembly code.</p>
+<p>What about line 27? The syntax C uses for this is unfortunately a bit
+obscure – but the gist of it is that we are saying “Declare
+<code>func</code> to be a pointer to some <em>function</em> (i.e., a
+blob of executable code sitting in memory), and point it at the address
+of the array <code>code</code>”. Usually, the bytes sitting in
+<code>code</code> would <em>not</em> be executable, because they are
+part of the call stack; but in our Makefile we pass the option
+“<code>-z execstack</code>” to GCC, which says to make the stack memory
+segment executable. Line 29 then invokes that function pointer, just as
+if it were a normal function, and that will execute the code.</p>
+<p>Discuss with your lab partner what is happening here; ask the lab
+facilitator for an explanation if you’re not sure.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Function pointers</p>
+</div>
+<p>We won’t need to use function pointers elsewhere in the unit, but
+they do come in handy when trying to exploit or reverse engineer exiting
+binaries.</p>
+<p>The exact details of what we are doing is as follows.</p>
+<p>Line 27 declares <code>func</code> as a <em>pointer to a
+function</em>, and points it at the start of the <code>code</code>
+buffer. (We’re allowed to do this, because when we use the variable
+<code>code</code>, it “decays” from being a <code>char</code> array into
+a <code>char *</code>. And <code>char *</code> is a sort of “universal
+type” in C – the <code>char *</code> type gives us a way of viewing or
+writing raw memory, and it’s legal for us to then convert from
+<code>char *</code> to another pointer type, such as a function
+pointer.)</p>
+<p>We cast the address of <code>code</code> into the type we want by
+putting <code>(int(*)())</code> in front of it; that says the type to
+convert to is “pointer to a function which takes no arguments and
+returns an <code>int</code>”. (Is that obvious from the declaration?
+Probably not. Function pointer declarations in C are rather cryptic, and
+have to be read <a href="https://www.cprogramming.com/tutorial/function-pointers.html#:~:text=Function%20Pointer%20Syntax">“from
+the inside out”</a>. Alternatively, as a shortcut, you can paste a
+declaration into <a href="https://cdecl.org" class="uri">https://cdecl.org</a>, and it will attempt to give you an
+“English translation” of what the declaration means.)</p>
+<p>So: when the function pointer <code>func</code> is invoked (line 29),
+the instructions sitting in <code>code</code> will be executed.</p>
+</div>
+<p>The code above includes two copies of the shellcode – one is 32-bit
+and the other is 64-bit. When we compile the program using the -m32
+flag, the 32-bit version will be used; without this flag, the 64-bit
+version will be used. Using the provided Makefile, you can compile the
+code by typing <code>make</code>. Two binaries will be created,
+<code>a32.out</code> (32-bit) and <code>a64.out</code> (64-bit). Run
+them and describe your observations. As noted above, the compilation
+uses the <code>execstack</code> option, which allows code to be executed
+from the stack; without this option, the program will fail. Try deleting
+the flags “<code>-z execstack</code>” from the makefile and compile and
+run the programs again – what happens?</p>
+<h2 id="a-vulnerable-program">3. A vulnerable program</h2>
+<p>The vulnerable program used in this lab is called
+<code>stack.c</code>, which is in the <code>code</code> folder from the
+zip file. This program has a buffer overflow vulnerability, and your job
+is to exploit this vulnerability and gain root privileges. The essential
+parts are shown below (some inessential functions have been
+omitted):</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a></span>
+<span id="cb13-5"><a href="#cb13-5"></a></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="pp">#ifndef BUF_SIZE</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="pp">#define BUF_SIZE </span><span class="dv">100</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="pp">#endif</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="dt">int</span> bof<span class="op">(</span><span class="dt">char</span> <span class="op">*</span>str<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a>    <span class="dt">char</span> buffer<span class="op">[</span>BUF_SIZE<span class="op">];</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a></span>
+<span id="cb13-13"><a href="#cb13-13"></a>    <span class="co">// The following statement has a buffer overflow problem</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a>    strcpy<span class="op">(</span>buffer<span class="op">,</span> str<span class="op">);</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a></span>
+<span id="cb13-16"><a href="#cb13-16"></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="op">}</span></span>
+<span id="cb13-18"><a href="#cb13-18"></a></span>
+<span id="cb13-19"><a href="#cb13-19"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-20"><a href="#cb13-20"></a>    <span class="dt">char</span> str<span class="op">[</span><span class="dv">517</span><span class="op">];</span></span>
+<span id="cb13-21"><a href="#cb13-21"></a>    <span class="dt">FILE</span> <span class="op">*</span>badfile<span class="op">;</span></span>
+<span id="cb13-22"><a href="#cb13-22"></a></span>
+<span id="cb13-23"><a href="#cb13-23"></a>    badfile <span class="op">=</span> fopen<span class="op">(</span><span class="st">&quot;badfile&quot;</span><span class="op">,</span> <span class="st">&quot;r&quot;</span><span class="op">);</span></span>
+<span id="cb13-24"><a href="#cb13-24"></a>    <span class="cf">if</span> <span class="op">(!</span>badfile<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-25"><a href="#cb13-25"></a>       perror<span class="op">(</span><span class="st">&quot;Opening badfile&quot;</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb13-26"><a href="#cb13-26"></a>    <span class="op">}</span></span>
+<span id="cb13-27"><a href="#cb13-27"></a></span>
+<span id="cb13-28"><a href="#cb13-28"></a>    <span class="dt">int</span> length <span class="op">=</span> fread<span class="op">(</span>str<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">),</span> <span class="dv">517</span><span class="op">,</span> badfile<span class="op">);</span></span>
+<span id="cb13-29"><a href="#cb13-29"></a>    printf<span class="op">(</span><span class="st">&quot;Input size: </span><span class="sc">%d\n</span><span class="st">&quot;</span><span class="op">,</span> length<span class="op">);</span></span>
+<span id="cb13-30"><a href="#cb13-30"></a>    bof<span class="op">(</span>str<span class="op">);</span></span>
+<span id="cb13-31"><a href="#cb13-31"></a>    fprintf<span class="op">(</span>stdout<span class="op">,</span> <span class="st">&quot;==== Returned Properly ====</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb13-32"><a href="#cb13-32"></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb13-33"><a href="#cb13-33"></a><span class="op">}</span></span></code></pre></div>
+<p>The above program has a buffer overflow vulnerability. It first reads
+an input from a file called <code>badfile</code>, and then passes this
+input to another buffer in the function <code>bof()</code>. The original
+input can have a maximum length of 517 bytes, but the buffer in
+<code>bof()</code> is only <code>BUF_SIZE</code> bytes long, which is
+less than 517. Because <code>strcpy()</code> does not check boundaries,
+buffer overflow will occur.</p>
+<p>Since this program is a root-owned <code>setuid</code> program, if a
+normal user is able to exploit this vulnerability, the user may be able
+to get a root shell. Note that the program gets its input from a file
+called <code>badfile</code>, which is under users’ control. Your
+objective is to create the contents for <code>badfile</code>, such that
+when the vulnerable program copies the contents into its buffer, a root
+shell can be spawned.</p>
+<h3 id="compilation">3.1. Compilation</h3>
+<p>To compile the above vulnerable program, do not forget to turn off
+the stack canaries and the non-executable stack protections using the
+<code>-fno-stack-protector</code> and “<code>-z execstack</code>”
+options.</p>
+<p>After compilation, we need to make the program a root-owned
+<code>setuid</code> program. We can achieve this by first changing the
+ownership of the program to root, and then changing the permission to
+<code>4755</code> to enable the <code>setuid</code> bit:</p>
+<pre><code>$ gcc -DBUF_SIZE=100 -m32 -o stack -z execstack -fno-stack-protector stack.c
+$ sudo chown root stack
+$ sudo chmod 4755 stack</code></pre>
+<p>It should be noted that changing ownership must be done before
+turning on the <code>setuid</code> bit, because ownership change will
+cause the <code>setuid</code> bit to be turned off.</p>
+<p>The compilation and setup commands are already included in Makefile,
+so we just need to type <code>make</code> to execute those commands. The
+variables L1, …, L4 are set in Makefile; they will be used during the
+compilation.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Building the target programs with GNU Make</p>
+</div>
+<p>Typing <code>make</code> should result in output like the
+following:</p>
+<pre><code>gcc -DBUF_SIZE=100 -z execstack -fno-stack-protector -m32 -o stack-L1 stack.c
+gcc -DBUF_SIZE=100 -z execstack -fno-stack-protector -m32 -g -o stack-L1-dbg stack.c
+sudo chown root stack-L1 &amp;&amp; sudo chmod 4755 stack-L1
+gcc -DBUF_SIZE=160 -z execstack -fno-stack-protector -m32 -o stack-L2 stack.c
+gcc -DBUF_SIZE=160 -z execstack -fno-stack-protector -m32 -g -o stack-L2-dbg stack.c
+sudo chown root stack-L2 &amp;&amp; sudo chmod 4755 stack-L2
+gcc -DBUF_SIZE=200 -z execstack -fno-stack-protector -o stack-L3 stack.c
+gcc -DBUF_SIZE=200 -z execstack -fno-stack-protector -g -o stack-L3-dbg stack.c
+sudo chown root stack-L3 &amp;&amp; sudo chmod 4755 stack-L3
+gcc -DBUF_SIZE=10 -z execstack -fno-stack-protector -o stack-L4 stack.c
+gcc -DBUF_SIZE=10 -z execstack -fno-stack-protector -g -o stack-L4-dbg stack.c
+sudo chown root stack-L4 &amp;&amp; sudo chmod 4755 stack-L4</code></pre>
+<p>The following executables should get built:</p>
+<pre><code>stack-L1    stack-L1-dbg
+stack-L2    stack-L2-dbg
+stack-L3    stack-L3-dbg
+stack-L4    stack-L4-dbg</code></pre>
+<p>The level 1 (“L1”) programs should be the easiest to exploit, and are
+the ones we use in this lab; and for each level, the ones with debugging
+symbols enabled (“-dbg”) should be very straightforward to exploit.</p>
+<p>If you are able to successfully exploit the <code>stack-L1-dbg</code>
+and <code>stack-L1</code> programs, then for a challenge, you might like
+to try exploiting the L2, L3 and L4 programs.</p>
+</div>
+<h3 id="launching-an-attack-on-a-32-bit-program">3.2. Launching an
+attack on a 32-bit program</h3>
+<p>To exploit the buffer-overflow vulnerability in the target program,
+the most important thing to know is the distance between the buffer’s
+starting position and the place where the return-address is stored. We
+will use a debugging method to find it out. Since we have the source
+code of the target program, we can compile it with the debugging flag
+turned on. That will make it more convenient to debug.</p>
+<p>We will add the <code>-g</code> flag to the <code>gcc</code> command,
+so debugging information is added to the binary. If you run
+<code>make</code>, the debugging version is already created. We will use
+GDB to debug <code>stack-L1-dbg</code>. We need to create a file called
+<code>badfile</code> before running the program.</p>
+<pre><code>$ touch badfile # Create an empty badfile
+$ gdb stack-L1-dbg # start gdb</code></pre>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>ASLR in GDB</p>
+</div>
+<p>When you run a program in GDB, ASLR address randomization gets
+temporarily turned off. (If you already disabled ASLR using the
+<code>systemctl</code> command, as described under “<a href="#countermeasures">Turning off countermeasures</a>”, then obviously
+this won’t make any difference. But on systems that <em>do</em> have
+ASLR enabled, this explains why the address you see in GDB can differ
+from the addresses found in a normally-running program.)</p>
+<p>It’s not necessary for you to know the details of how this is done;
+but if you’re interested, take a look at <a href="https://man7.org/linux/man-pages/man2/personality.2.html"><code>man 2 personality</code></a>.
+On Linux, calling <code>personality(ADDR_NO_RANDOMIZE)</code> changes
+how the stack and heap will be laid out in memory. Then, one can call <a href="https://man7.org/linux/man-pages/man2/fork.2.html"><code>fork()</code></a>
+and one of the <a href="https://man7.org/linux/man-pages/man3/exec.3.html"><code>exec</code></a>
+functions to launch a new process in which ASLR is disabled.</p>
+</div>
+<p>Within GDB, run the commands:</p>
+<pre><code>(gdb) b bof
+(gdb) run
+(gdb) next
+(gdb) print $ebp
+(gdb) print &amp;buffer
+(gdb) quit</code></pre>
+<p>This will set a break point at function <code>bof()</code> and run
+the program. We stop at the <code>bof</code> function and step to the
+<code>strcpy</code> call.</p>
+<p>The <code>ebp</code> register is used at runtime to point to the
+“start” (high-memory end) of the current stack frame. When GDB stops
+“inside” the <code>bof()</code> function, it actually stops
+<em>before</em> the <code>ebp</code> register is set to point to the
+current stack frame, so if we print out the value of ebp here, we will
+get the <em>caller’s</em> <code>ebp</code> value. We need to use
+<code>next</code> to execute a few instructions and stop after the
+<code>ebp</code> register is modified to point to the stack frame of the
+<code>bof()</code> function.</p>
+<p>It should be noted that the frame pointer value obtained from GDB is
+<strong>different</strong> from that during the actual execution
+(without using GDB). This is because GDB has pushed some environment
+data into the stack before running the debugged program. When the
+program runs directly without using GDB, the stack does not have that
+data, so the actual frame pointer value will be larger. You should keep
+this in mind when constructing your payload.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p><span id="registers-and-the-stack">Registers and the stack</span></p>
+</div>
+<p>A <a href="https://en.wikipedia.org/wiki/Processor_register"><em>register</em></a>
+is a quickly accessible location available to a CPU. You can think of it
+as being a <code>size_t</code> cell of memory hanging directly off the
+CPU. (Often, the CPU will also provide ways of referring to just
+<em>part</em> of a register, as well. For instance, there may be a name
+by which you can refer to just the 8 lowest (<code>char</code>-sized)
+bits of some register.) Instead of having memory <em>addresses</em>,
+like locations in RAM, they have <em>names</em> – for instance,
+<code>eax</code>, <code>ebx</code>, <code>ecx</code>, <code>edx</code>,
+and so on. As a program executes, data from RAM will often be loaded
+into the processor’s registers so it can be operated on.</p>
+<p>On 32-bit Intel machines, some of the registers have special
+purposes.</p>
+<ul>
+<li><p>The <code>eip</code> register: this is the “Extended Instruction
+Pointer” register (or just “Instruction Pointer”) – it keeps track of
+what instruction should be executed next.</p>
+<p>When a function is called – and a new stack frame gets pushed onto
+the call stack – the value of the <code>eip</code> register needs to be
+<em>saved</em> somewhere in the stack frame, so that when the current
+function returns, we know what instruction to execute
+afterwards.</p></li>
+<li><p>The <code>ebp</code> register: this is used to hold the “base
+pointer” for the current stack frame. As the stack frame is being set
+up, <code>ebp</code> will be used to store a “start” or “base” point for
+the stack frame, and the location of variables will be calculated
+relative to the value of <code>ebp</code>.</p>
+<p>On GCC, it’s possible to use the function
+<code>__builtin_frame_address()</code> to get the value of the
+<code>ebp</code> register (see <a href="https://gcc.gnu.org/onlinedocs/gcc/Return-Address.html" class="uri">https://gcc.gnu.org/onlinedocs/gcc/Return-Address.html</a>).</p></li>
+<li><p>The <code>esp</code> register: the “current stack frame” pointer.
+This points to the spot in the current stack frame where new local
+variables should be inserted. As a stack frame is being set up, this
+starts off being equal to the <code>ebp</code> register. As memory is
+allocated for local variables, the <code>esp</code> register will get
+decremented.</p></li>
+</ul>
+<p><div style="display: flex; justify-content: center;"> <img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA8AAAALQCAMAAABoqemGAAAAAXNSR0ICQMB9xQAAALpQTFRFAAAAGBgYEBAQCggGDwwJCAgIBAQCGSAZICATMDAwODg4KCgoICAgPz8mNzchPz8/Mz8zM0AzM0BAQEAmQEBAUFBQSEhIX19fWFhYaVQ/bllCcl1Ff39MfGdKe2ZKb29Cf39/YGBgcHBweHh4aGhoZn9mZn9/jnlVh4eHj4+Pn5+fl5eXtJ9sv7+/r6+vp6ent7e339+G39/fx8fHz8/P19fXzP/MzP////+Z/+qZ5+fn9/f37+/v////KTFF/wAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUATWljcm9zb2Z0IE9mZmljZX/tNXEAABwISURBVHja7d0NfxPHgcDhIXe9Ak1Cm5BQpRwxpA0vjdMcoXfGZr7/1zoDtrQvo5fV7uzOyM//11+RZEssjh7vaPYtREnVFvwIJIAlASwJYAlgSQBLAlgSwBLAkgCWBLA09F1/Om97gHXyRMPHdnwVYKlYwCEcALhaxQDrBPU2wIaEzf5DywN+ew6w1AWc8lsk4PPw+BjCAOs0De+SWSbgEB7/CrBmf+c9flsj4PVa+vZOuPkwHMKRmn8/392rs109//QXPxhKGGCN5BtCwYDTFkNozGy1AIf+lNfj28IsPTgHWHPyvQV8uWcF9K+z3b14vLsHu972OwAnvt6g256FXq+VU9pn6d7rK4A1J98i2g447NiMtLHbGE73X+rAHu75DfRi/xD6i7Orgf8NANaxvS6G707ACZmDAK+HEFdZf5rnH/l+GPw0gHV0775rDf72rIC+2zOEfr1nCP77oPd19zNwcuerHuB49AzWeMDH8AVYExCuYRLrQMAxjJiGHtWHD8f9Q70JNYrw89MCHGMMy62GAdbsvX1+YoBjTbtGA6xTrAc3BTixGQlgqSzAoS/y9rFt24ENoaUl9TZmolKzUp1vWD8Ut26WAlhaBHB6T6zY/Pr62+KofaEBlgSwBLAkgCUBLAlgCWBJAEsCWAJYEsCSANYdfB96IwKsarSmDi+gGWDVwvf0rhe40PICrGXe6WHPSrdowOWMIQDWIn73vuMLBlzSGAJgAXzcP6GIMQTAKgXw9NcLnPtfALDuAOD0xU4GXC8QYIC1pOCQOBHzgOsFFgt4gTEEwFqE8JY53IMuN7b84icWbaExBMCa/f2fuIZYTYCLGkMArAUAx4Mv+BmLPMtrOWMIgLWI3wquF7jzn1DKGAJgFQ44Fne9wJLGEACrfMCxqM/CRY0hANbcb//arxdY1BgCYC0juN7rBRY1hgBY8wOu+3qBRY0hANYyhLsPVXS9wJLGEABLwwEXM4YAWDqOcPehRcYQAEsVB7AEsCSAJQEsASwJYEkASwJYAlgSwJIAlgCWBLAkgCUBLAFcd+dnUpWdA3zdWZCq7AxggDP3H34EmfpPgNeAv32qTIVfauvlavWyhuW0Bt4AfnqhPP1PWP33+7r6ZbX6pYblBBhggAEGWAADDDDAAAMMMMAAlw749w8AAwxwnYCvXnzx8B3AAANcJeAP37/+MPFLAgwwwDN1+fDcZ2CAAa4V8Pe/RYABBrhSwG+eR4ABBrhSwJd/+gAwwADXCvjF6wgwwABXCvjq3geAAQa4VsCvX0SAAQa4VsB/+jfAAANcK+DzxxFggAGuFfBPrwAGGOBqAWcaQQMMMMAz9PbLCDDAANcKONMcNMAAAzxH3/26eyEbNR5qfLF3E2CAAZ6te5cDAXdvb/ELMMAAL/8ReDfgteC+X4ABBjh/v363H3CKdGyNnAPAE/bxh7m51b+ZD/DquvXN971biwNOLt/dBrxvK3BPZvIDccIvwGP8Ntkm/AIM8E2Pz8cB7t0HeErAa8FtvwADfNOXb4cDjgDPCjj0VsDZAH/6X8GAU8t3twHvW4juHFZ/yLzFL8Cj/HZWwR2/mQB/RHELo0TA6eW704Av7wFcNuDefYAB3vT7Q4DLA3wBMMCHtW8rUvczcGK7L8CTr4AvEoIv8gP+bOJGxqpRIYA7ywfwdf/8+3DAqf06TGIBDPACnZ0BDPBuIACfDuAQuoLtyJHDb0vwXIDbny7LA7xt+e404OdvBgNu3bIrZQbA7Wmr2Sax2kPmEgGnlw/gfYA3a9wk4MRIG2CAAS4PcO/438SBhQBP5bc5lp5hR46O2OIAb12+Ow14z+H8CcC9LzRBAzwB4Nat+XalBLhGwPuOZRgRwFMBbn8BYIABLnkE3byZOLAwE+BVE8iqPMD95Zt0KzXAAE+6Am58HO7ZzgS4fbs8wN3lAxjganNKnWwBDDDAAAMsgAEGGGCAAQYYYIABFsAAAyyAAQYYYIABBhhggAEWwAADDDDAAAMMMMAAAwwwwAALYIABBhhggAEGGGCABTDAAAMMMMAAAwwwwAADDDDAAhhggAEGGGCAAQYYYAEMMMACGGCAAQYY4MN6EsL9r5Snr8Pqh5d19Wy1elbDcl4DfgLwdY+CMrZSnq5/to8ABhhggKsfQn/7VHn6Maz+9ktdvVytXtawnIbQN5nEMollEgtgAXzSgD9+HgIYYICrA/wJ7ucZDYABBrgywJ/Zfvz/EYIBBhjgpQFHgAEGGGCAAQZ4XsANxQADDDDAAAMM8DyAw2YmGmCAAa4LcFxvQLIZCWCA6wMc134BBhjg+gBPEMAAA7wM4BAABhhggAEGGGCAAQYY4LkFAwwwwAsBjgADDHDFQ+hGAAMMMMAAAwyw7cAAAwwwwAIYYIABBrhQwCGMPKMOwAADvBTg9fQVwAADXCNgB/QDDHCtgOc5I0dnW1V7w1VjC1Z/YxbAAANcLuCw+RCe9AswwACXDLglOLEzCcAAA1wE4P7d7iA6ADxRm9+P63uNL2QFfHt9zdt7m8fLALxt+eoFHEafFvpYwO2xc/oCTQCPA7wWnPCbFfCqcMCrEwH8SXD27cD7AMete2MDPBJwS3DbbybAt05KBZxevmoBx9GHMowaQkeAMwFurnBvboT5AL8vHPD70wE8+tqEwyax2nf3LgPAIwC3x869FTDAJwJ4dMcDDgDPAviiOaAG+IQAt1aCCwAOAOcdQl8sA7jgSaz08gE8/DNwbx8sgCcE3AGb8DvLZqRVe9q3AMCnthlpQcCdfbBMYk0POCwFeFU4YGtggKsAHGYH3PzTZ+CcgEOnuBhgO3JMD3itdhnAn2+UC7i7fCcAOM4OOLT3qbQr5dSAO/tgzTkLDfApXZnBwQwAA5wF8CRNdThhdDhhJsDz78gB8KyAZxhCO6B/fsChvU/lvLtSlg14dSqAG6LyAT4+gI8F7GCGQctXK+DNocCuzHCSgNtuHU64bTt1/YCd1O4UATcH0hcO6N++pxjAAFeXU+pk68ROqQMwwAADLIAB7gLenBMLYIABrgxw89SQEWCAAa4McNzsTgEwwABXB3iCAAYYYIABBhjgIWPn2DmkEGCAAQYYYIABNoQGGGCAARbAAAMMMMAAAwwwwJMCnuTEdgADDHARgI8jDDDAAC80hG5cXiweu0M0wAADvNQaOI4XDDDAAAMMMMAAAyyA7xLgADDAANcKODZPql4g4Cch3P9Kefo6rH54WVfPVqtnNSzntaYn8wCO3WsmlAX4UVDGVsrT9c/20UyAR1+XAWCAtSTg0eUdQn/7VHn6Maz+9ktdvVytXtawnDMOocsGbBLLJJZJrP0jaCe1AxjgWmehw8grqwAMMMDLAXZlBoABrhWwS6sADDDAAAMMMMAAAwwwwAL47gAOo6/vDTDAAC8E+JNg24EBBrhSwHH0dRkABhjg5QCXfTADwAADnDuAAQZ4ecBmoQEGuF7ANiMBDHBdgEPrlFgAAwxwRYBb0882IwEMcG2A13LNQgMMcGWAN6ejHOkXYIABXg5wHLkVGGCAAV4W8EhlAAMMMMAAAwwwwAIYYIABBrh0wN0ABhhggAEGGOCTOhop8VuidUG1xhUSO79GAAYY4PIAt+63H7UGBhjgwgF37jcfNoQGGOASAfc839zarHkDwBN28/vx9lbjwdyAP19g8+bm5sFiACeXD+CBgNc3Nw+k5tEAHsX3s9e12rbfTIDX18gtFHB6+QA+DnBsfyaOAE/t93YdfNH4Myfg1sqtQMBblg/gwwEnpAKcwe/Nrc2aN8wAeLU2USbgbcsH8D7A/TmrmPxYDPA0gNc3Nw90/GYCnL5XDuDt9wAGuDjAF6E1pr7IDHhVOOAVwABX5bc1qJ4D8PvCAb8/OcAhZL+0yt7PwABnBnyR8DsL4FVz0hfg6QE31osLAjaJBTDARwKe4fKifcA2I90RwIbQeQHPc31gO3IADHC5gL98OxywXSlnBWwSC+CRgB3MMCtgm5GGLR/AQwBvOZwwOpxw8lWwHTkOW756AYeW4qP64sNQwA7oz78KtivlkOWrFfAnwWO3A2fcmQTgEYIdzHD48lULOI4+I1a8+gPABQtuunU4YXf5Jt1KvQjg7XtBHdrbLwEulvCFA/p3Lt8pAB7b+WOAq8wpdbI1N+BRq+A3zwEGGOBlAG8mgo9+pVc/AQwwwIsA3mwCPl7wi9cAAwzwwoCP3xD83a8AAwxwtYD37ogFMMAAZwQ8blfKD19EgAEGuFbAv34HMMAALwV4sy/0kS91dgYwwAAvAzg2DvE78hVyzmEBDDDAB6yDx2xF2nssEsAAA5wN8Nhy7kgJMMAAZy7rR2CAAQb4kE/Bx+9I+eAdwAADvBjgkccD5zyWEGCAAd7vt/Xn0F6/ABhggJcC3DpJ1TEvkHM/SoABBngf4NTNw8u6GxbAAAOcF/DeizIADDDAxQJ+9yACDDDACwIe8xn46uE7gAEGeDnA42ah8+7E8bEnIdz/Snn6Oqx+eFlXz1arZzUs5zWnJ/MAHrMd+LfHV7kBPwrK2Ep5uv7ZPpoJ8PF7Yr35/kMEGGAtC/i4/v3q4fOr/H/N9RD626fK049h9bdf6urlavWyhuWccQh9ZI/Dn97O8NeYxDKJZRLrkCH04Kddvsk+BQ0wwAAf9gn4KMIPfwMYYICXBNy8NO/gJ1/lH0UDDDDAOwH3KA8o79k4AAYY4IMBH7Ur5d//CTDAAFcL+PLLK4ABBngxwHHk0Ug5L2wGMMAAD/gQfMzTcx+OBDDAAO/0223gC3z/G8AAA1wt4H/9FWCAAV5sCD22qy+uAAYY4FoBZx5DAwwwwDuH0GOJ/fPvAAMMcLWA857ZHWCAAc4KOO+1VQAGGOC8gp+/ARhggBcCPP4Fsl5cBWCAAd65Ag4jjgj+1O8PAQYY4GoBZ90SDDDAAGcu5ywWwAADnLmcs1gAAwxw5n56BTDAAFcLOOc0NMAAA7zr6eMnsbJeIxhggAHODDjndiSAAQb4QMrHPvPy3pBfE7F/Lur0TYABBniI4HzP3Ap4c23TkPQLMMAAZ18FjwHcFtwbyAMMMMC5Ad+7PABw4m7ornkDwJO0+fXYuN+7mQXw7fU1N/f7t5YEvH35agd8/CRW/PLtcYA7Y+fEChjgkYBvsLZuhJxr4M0lcssG3F++OgFPMAk9CeC4ZSEAHgu4LbjpNxPgtZNCAW9bvuoBH/8ie3eG3gq4M30F8HSA2+vbm1thLsCfiBQMOLF8tQ+hR/T4fNiviRTgLZcpBngM4M7YubMCzgv4feGA3wMMcEWAL9rTWrMAXhUOeAUwwIUD7kxfzQn4feGA358K4LGfgA8EvOczMMCZAV/0/M4EuDvvC/CkgKeYxJoCsEksgAE+ym/nxqyAbUY6fcCG0HkB9ygvAtiOHAADPApwnB+wXSlnBGwSC+BRgB3MsATgRTcjvS8a8IlsB14Y8PYPxQBPCtiOHKcKOIx/peMBx9geSjugf1LAdqUcsHy1DqG75QB8fAAfC9jBDAOXD2CACwS8dUx94XDC1P3qhtBTBHCxgC8u2kNpB/T3lg9ggCvNKXWyBTDAAAN86OdggAEGGGCAAQYYYIABBhhgAQwwwAADDDDAAAMMsAAGePoABhhggAEGGOABA+cpjmMAGGCAAQYYYIANoQUwwAADDDDAAAMMMMAAAwzwzhcwiQUwwNUCNgsNMMD1Ar65IEIctUMlwAADvBTgCDDAANcPOBY5hH4Swv2vlKevw+qHl3X1bLV6VsNyXgN+AvB1j4IytlKern+2j+YEHAAGWLUCjjeX9ixzCP3tU+XpR7/BcvVfcw2hY+NqY7FAwGcmsVRhT2feE2uUX4ClZQGPC2BpGcAhACwBDLAEMMACeG7BAEsLAY4AS9UCbm19BlgCGGABbDswwAIYYAlggKVCAX/+9OtgBqlCwOvpK4ClGgEXfUYOgAXwHr8ASwADLAEMsAAGWLobgF2ZQaoW8CfBtgNLlQKOow9lAFhaDvDok8oCLC0JeHQASwADLIABlu4SYGfkkOoF7JQ6Ur2Ag9PKSjUD9hlYAhhgaX7AEWCpZsA+A0vVAp77xO79v65xO7EkAAvgggG37gEsgBfoeMABYAFcGeAO55sbqa8DLIALB9z+dwAsgId/DJ7tjBxbAUeABfBxfGc8J9aWITTAAvhIwLOelXLLrBXAAvhYv8sB7s87AyyA6wEcU7t1ACyACwa8hTTAArg+wGvEAAvg4YDnvTJDZxa69zDAAnio4AW3AwMsgMcKnvHKDOkdOQyhBfBIwnE2wJvfGMHBDAJ48aYAHAEWwJUBXt/vfhFgAXwAppabOQAPDWABvBVwBFiqFHBj5DrylQCWFgDcvuHSKhLAAEsAAyyADwO85T7AEsAAC+AZALs+sFQT4I5g24GlygCHSVbAAEsLAI7bT0UFsFQ84DjFlc0AlhYCPMF+0ABLywGeJIAlgAEWwCcG+EkI97+SKut+CE8Avu5RkKrsEcAAC+Dqh9DfPpUq61tD6M+dmcSSSSyAJYABlgAGWAADLAEMsAQwwBLAAAtggCWAAZYABlgAAywBDLAEMMASwAALYIAlgAGWAAZYAhhgAQywBDDA0okD/v43gKVqAT9/A7AEMMACGGAJ4AH99ApgqVrAZ2eHfmfz2jGtu72vAyyAZ+r1i9GAb8QCLIBn719/nQBwAFgAL9L54yGAE3e7o2ifgQXwfL39ciTg9C2ABfAsBYClegHfuxwLOLbmsQAWwDP24N0AwJ05K4AF8MK9eA2wVC3gN88BlqoF/O6Bz8BStYDjFx8AlqoFfOg5OWxGEsAFAj70cAaABXCBgH9/OAqwXSkF8KIduCuHgxkEcImADzwpx3bA3a8DLIDn68AjCh3QL4BLBHx170OW1wVYAM/RwXtTAiyAywN8eQ9gqVrA8btfAZaqBXzw/tAAC+DyAOc5OzTAAnierh78G2CpVsDx94eXAEu1Ao7vHr4DWKoVcHz74MFPHwAWwHUCvl4Jv3oHsACuFbAhtAQwwAIYYAlggCWAARbAAEsAAywBDLAEMMACGGAJYIAlgAEWwAADLICr7kkI97+SKut+CE8Avu5RkKrsEcAAC+Dqh9B/+YdUWX8xhP7cWQj/+F+psv5hEgtgAQywBDDAEsAAC2CAJYABlgAGWAIYYAEMsAQwwBLAAAtggAEWwIXUPNiq+Uj3qwAL4AoAb7sXABbAxQPeyrkhGGABXBLgDuebG82vtgQDLIDLBdz8R6zvAyyAqwIcARbAtQ6hARbAtQBOzGEBLIDrA9zd8Bs6k1kAC+CSAUebkQRwtZ+BY2cYbUcOAVwZ4DXixGdigAVwwYBD5+Ekb4AFcKGAA8ACuGLA7V0nARbAxQPefNBNHZsEsACuD3AEWABXBnh9PznABlgA1x/AAhhgCWCAJYABFsAASwADLAEMsAQwwAIYYAlggKUqACePst/9hIxiHdAvgLP6HQh4+K8HFzcTwCOA7SM3FvCe5wMsgMesIKcFHEe9PsACGGDpNAGnTxO5LODovNACeCim7vmZmw9tvqHxnN4Z6joH54fG33Dz5cZfFBLftvkOgAXwQX5b5Jqnumk+FDuue35j8pILTcCp83C0H21dHAlgATxgBby203iwpen2jwbJxG+C5vc2H+o/knhOSIwLABbABwHe+hm157U52u0+pzNWbg6hG1b7z4md9TnAAnhSwN3Pu3EH4N4zU4AT3wawAD5+DmvLxFYCcG8i+SjA7UubASyAjwacwLrNV0icABZgaVHAG5m9C25nHkL37wEsgIcDbgPcOsfUX2MCLC0KOOwF3NnMFJL+2t+7dwjd+MsBFsBHAO5ukw0dYCG0t+3GbTtydF8lJkbgye3AqVU8wAJ4yCq4f82i7XtXpXelTO+1lQIcu3tiJcfoAAvgAR+CuwDXf7RUptagN48l95tOAo7t3wq9z8AAC+Bjp7EWfZneawEsgAGWThTwRPQmBOyUOgJ4iJdQFGAntRPAswueDLDTygrg0wlgAQywBDDAEsCDehLCH/8sVdYfQ3gC8HWPglRljwAGWABXP4T+5mepsr4xhP7cWQg//59UWT+bxAJYAAMsAQywBDDAAhhgCWCAJYABlgAGWAADLAEMsAQwwAIYYIAFcBE1D7Vq3e1+GWABXBHg1PW+ARbAtQAOiS8DLICLA9y/2wIcY+u6aAAL4MIB9/6MAAtggCWA5xlCR4AFcA2Ak5NWEWABXC/gkBxSAyyA6wBsM5IArvQzcNy2YwfAArgCwLELuPUkgAVwNYD7TwJYAAMsAZz/MzDAArhkwHsOZgBYANcHOAIsgKsFHAEWwKcZwAIYYAlggCWAARbAAEsAAywBDLAEMMACGGAJYIClegDf7t64uFjXRhLAx7LJAXjoazqljgA+Utk8gPf8LQAL4OOQzTOE3ve3OCulAAZYuiOA12LKABxdmUEAHwu4fYh940udL/RfovvdjRe/+XLjlULi20L/ozjAAniv37bSzqUSYvdO6gTOIfXdTcC9p/cebZ2nEmABPHhI29qa1MS0phW3bHJqPzN0v6//SOI5IbFEAAvgAYD7n1J7e3gkZ7zSI+HQeX4X8Ja/AWABnAtwesarDbj31BTgxLcBLICnA5w8a3P6ImRHAW6fpBJgATwh4C3zUgBLFQAOvcmqz9bSW3HHDKG3D8gBFsBHA07LAlgqG3BrTPv5ThNwSPzVnY2+t2vsPUPoxgsBLICPBdyeWA7tTbetLbjp/aXaz0xuB+4DjiH1+6K9QAAL4MNXwcmdr3oTWulJrN6+lgmezVfu/Q3J4TTAAngA4O4OzZ0549Z0Vux+OO7Od20D3L64d399DrAAPu5T8HKvkH4tgAUwwNIpAx7vb0LATqkjgAejCaUAdlI7ATy74MkAO62sAD6dABbAAEsAAywBPBTwNz9LlfUNwGvAUo0BDLAArrzzM6nKzgGWTj6AJYAlASwJYAlgSQBLAlgSwBLAkgCWBLAEsCSAJQEsCWAJYEkASwJYEsASwJIAlgSwBLAkgCUBrIreR95IAKtgnx9r3tkFmGaAVRzfG7bN27sAUwywigG8+fPmzi7AWx4RwFr0TfIJcBIowADn7cp/6wneLWEbUIAXepvekZ/y1et73hy5AYfNUHv9UTl2JsC0u3uvBxK+Ez/Ya77eQVPw3T7V3JraagFOznlp6894IOE78HP9xDeEcw2rp7fjNyRwN/6/OfHVeaP52W7t4095EOGTB3zDV4PrA45bV8Druxu7jeF0YlWuXQ0gfPKAX/3B+2EKwB2Mfd8AT9gfXgF82+WLz4Qfa1hxh+BwMOCY+F3gZ7u1z3xfXBpC9wjfgX9o9hoo46GA49YVulI/4UF878pmpI+EvTkmAxy2b/VNAI7pvaeV/AkP43t3duS4fOHNMRXgFMbdgKP9Og5sIF+7UmrAmyTc7pixjXZqMxLAs/y3kba/SZpr3vRguLVuTmwHNoQGWAsC3kxEpTc0tR5qfGPcsVVKAGtOwnEX4Mb2osZ3RvtCAywJYAlgSQBLAlgCWBLAkgCWBLAEsCSAJQEsCWAJYEkASwJYAlgSwJLm6/8Blc9GJ3i+W2UAAAAASUVORK5CYII=" title="x86 registers" style="width:60.0%" /> </div>
+<div style="display: flex; justify-content: center;"> x86 registers
+</div></p>
+<p>(Diagram of x86 registers from University of Virginia cs216 <a href="https://www.cs.virginia.edu/~evans/cs216/guides/x86.html"><em>x86
+Assembly Guide</em></a> by David Evans.)</p>
+</div>
+<p>To exploit the buffer overflow vulnerability in the target program,
+we need to prepare a payload, and save it inside <code>badfile</code>.
+We will use a Python program to do that. (You won’t need any extensive
+knowledge of Python for this lab, since you’ll just be making minor
+alterations to an existing script. But if you are not familiar with
+Python and would like a tutorial on it, <a href="https://developers.google.com/edu/python/introduction">Google</a>
+provides a helpful one.) We provide a skeleton program called
+<code>exploit.py</code>, which is included in the lab zip file. The code
+is incomplete, and you will need to replace some of the essential values
+in the code (marked with an <code>XXX</code>):</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">#!/usr/bin/python3</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="im">import</span> sys</span>
+<span id="cb19-3"><a href="#cb19-3"></a></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="co"># XXX - replace the content with the actual shellcode</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a>shellcode<span class="op">=</span> (</span>
+<span id="cb19-6"><a href="#cb19-6"></a>  <span class="st">&quot;</span><span class="ch">\x90\x90\x90\x90</span><span class="st">&quot;</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a>  <span class="st">&quot;</span><span class="ch">\x90\x90\x90\x90</span><span class="st">&quot;</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a>).encode(<span class="st">&#39;latin-1&#39;</span>)</span>
+<span id="cb19-9"><a href="#cb19-9"></a></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="co"># Fill the content with NOP&#39;s</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a>content <span class="op">=</span> <span class="bu">bytearray</span>(<span class="bn">0x90</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">517</span>))</span>
+<span id="cb19-12"><a href="#cb19-12"></a></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="co">##################################################################</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="co"># Put the shellcode somewhere in the payload</span></span>
+<span id="cb19-15"><a href="#cb19-15"></a>start <span class="op">=</span> <span class="dv">0</span>               <span class="co"># XXX - change this number</span></span>
+<span id="cb19-16"><a href="#cb19-16"></a>content[start:start <span class="op">+</span> <span class="bu">len</span>(shellcode)] <span class="op">=</span> shellcode</span>
+<span id="cb19-17"><a href="#cb19-17"></a></span>
+<span id="cb19-18"><a href="#cb19-18"></a><span class="co"># Decide the return address value</span></span>
+<span id="cb19-19"><a href="#cb19-19"></a><span class="co"># and put it somewhere in the payload</span></span>
+<span id="cb19-20"><a href="#cb19-20"></a>ret    <span class="op">=</span> <span class="bn">0x00</span>           <span class="co"># XXX - change this number</span></span>
+<span id="cb19-21"><a href="#cb19-21"></a>offset <span class="op">=</span> <span class="dv">0</span>              <span class="co"># XXX - change this number</span></span>
+<span id="cb19-22"><a href="#cb19-22"></a></span>
+<span id="cb19-23"><a href="#cb19-23"></a>L <span class="op">=</span> <span class="dv">4</span>     <span class="co"># Use 4 for 32-bit address and 8 for 64-bit address</span></span>
+<span id="cb19-24"><a href="#cb19-24"></a>content[offset:offset <span class="op">+</span> L] <span class="op">=</span> (ret).to_bytes(L,byteorder<span class="op">=</span><span class="st">&#39;little&#39;</span>)</span>
+<span id="cb19-25"><a href="#cb19-25"></a><span class="co">##################################################################</span></span>
+<span id="cb19-26"><a href="#cb19-26"></a></span>
+<span id="cb19-27"><a href="#cb19-27"></a><span class="co"># Write the content to a file</span></span>
+<span id="cb19-28"><a href="#cb19-28"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;badfile&#39;</span>, <span class="st">&#39;wb&#39;</span>) <span class="im">as</span> f:</span>
+<span id="cb19-29"><a href="#cb19-29"></a>  f.write(content)</span></code></pre></div>
+<p>You will need to change the <code>exploit.py</code> code to:</p>
+<ul>
+<li>Write the correct sequence of shellcode bytes, at line 5.
+(Currently, the variable <code>shellcode</code> just contains
+do-nothing, “no-op” instructions – these are a bit like writing
+semicolons without a statement in C, or <code>pass</code> statements in
+Python.)</li>
+<li>Alter the <code>start</code> variable at line 15. This specifies at
+exactly what offset in <code>badfile</code> the shellcode bytes are
+inserted.</li>
+<li>Alter the <code>ret</code> variable at line 20 and the
+<code>offset</code> variable at line 21. <code>offset</code> specifies a
+place in <code>badcode</code> where we want to insert an “address to
+return to”, and <code>ret</code> is that address.</li>
+</ul>
+<p>Running <code>exploit.py</code> will generate a file
+<code>badfile</code>. Then run the vulnerable program
+<code>stack</code>.</p>
+<p>Here is what we’re ultimately aiming for: if you manage to implement
+the exploit correctly, you should be able to get a root shell by
+creating <code>badfile</code> and running the <code>stack-L1</code>
+program:</p>
+<pre><code>$ ./exploit.py # create the badfile
+$ ./stack-L1   # launch the attack by running the vulnerable program
+# &lt;---- Bingo! You’ve got a root shell!</code></pre>
+<p>However, working out what values to insert in our
+<code>exploit.py</code> script at <code>start</code>, <code>ret</code>
+and <code>offset</code> will take some experimentation, which we’ll look
+at in the following section. (By the way: if you do get the exploit
+working – try running the command <code>id</code> to confirm you are
+root. If you’ve successfully become root, the <code>id</code> command
+will say that your userid is 0)</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Easier and harder exercises</p>
+</div>
+<p>The following section gives some suggestions on how to identify the
+values that should go in the <code>XXX</code> parts of
+<code>exploit.py</code>.</p>
+<p>You may want to work through that section, and then try a fairly easy
+exercise – can you craft a <code>badfile</code> which will give you root
+access when <code>./stack-L1-dbg</code> is run?</p>
+<p>Then try customizing the values in <code>exploit.py</code> so that
+you can exploit <code>./stack-L1</code>. It will require slightly
+different values to <code>./stack-L1-dbg</code>. How can you find
+them?</p>
+<p>Your lab facilitator may have some hints.</p>
+</div>
+<h3 id="hints-on-inserting-your-shellcode">3.3. Hints on inserting your
+shellcode</h3>
+<p>It can be helpful to try and orient yourself while using GDB, and
+work out where different parts of the stack are. In this section, we
+show some commands you can run to find their locations.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Overall memory layout</p>
+</div>
+<p>It can be helpful to get an overall picture of how memory is laid out
+in the vulnerable program – we outline two ways of doing it.</p>
+<p>While you have the <code>stack-L1-dbg</code> program stopped at a
+breakpoint in GDB, open another terminal session and <code>ssh</code>
+into the VM so you can run <code>ps -af | grep stack-L1-dbg</code>.</p>
+<p>You should see something like the following:</p>
+<pre><code>$ ps -af | grep stack-L1-dbg
+vagrant     1355    1340  0 02:43 pts/1    00:00:00 gdb ./stack-L1-dbg
+vagrant     1357    1355  0 02:43 pts/1    00:00:00 /home/vagrant/lab04-code/code/stack-L1-dbg
+vagrant     1362    1246  0 02:44 pts/0    00:00:00 grep --color=auto stack-L1-dbg</code></pre>
+<p>Here, the second line shows the (currently stopped)
+<code>stack-L1-dbg</code> process; the second column is the <em>process
+ID</em>. If you run <code>cat /proc/<em>process_id</em>/maps</code>
+(replacing <em>process_id</em> with the process ID of the
+<code>stack-L1-dbg</code> process), you should get output like the
+following:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb22-1"><a href="#cb22-1"></a>56555000-56558000 r-xp 00000000 fc:03 393228          /home/vagrant/lab04-code/code/stack-L1-dbg</span>
+<span id="cb22-2"><a href="#cb22-2"></a>56558000-56559000 r-xp 00002000 fc:03 393228          /home/vagrant/lab04-code/code/stack-L1-dbg</span>
+<span id="cb22-3"><a href="#cb22-3"></a>56559000-5655a000 rwxp 00003000 fc:03 393228          /home/vagrant/lab04-code/code/stack-L1-dbg</span>
+<span id="cb22-4"><a href="#cb22-4"></a>5655a000-5657c000 rwxp 00000000 00:00 0               [heap]</span>
+<span id="cb22-5"><a href="#cb22-5"></a>f7dd5000-f7fba000 r-xp 00000000 fc:03 1847105         /usr/lib32/libc-2.31.so</span>
+<span id="cb22-6"><a href="#cb22-6"></a>f7fba000-f7fbb000 ---p 001e5000 fc:03 1847105         /usr/lib32/libc-2.31.so</span>
+<span id="cb22-7"><a href="#cb22-7"></a>f7fbb000-f7fbd000 r-xp 001e5000 fc:03 1847105         /usr/lib32/libc-2.31.so</span>
+<span id="cb22-8"><a href="#cb22-8"></a>f7fbd000-f7fbe000 rwxp 001e7000 fc:03 1847105         /usr/lib32/libc-2.31.so</span>
+<span id="cb22-9"><a href="#cb22-9"></a>f7fbe000-f7fc1000 rwxp 00000000 00:00 0</span>
+<span id="cb22-10"><a href="#cb22-10"></a>f7fcb000-f7fcd000 rwxp 00000000 00:00 0</span>
+<span id="cb22-11"><a href="#cb22-11"></a>f7fcd000-f7fd0000 r--p 00000000 00:00 0               [vvar]</span>
+<span id="cb22-12"><a href="#cb22-12"></a>f7fd0000-f7fd1000 r-xp 00000000 00:00 0               [vdso]</span>
+<span id="cb22-13"><a href="#cb22-13"></a>f7fd1000-f7ffb000 r-xp 00000000 fc:03 1847101         /usr/lib32/ld-2.31.so</span>
+<span id="cb22-14"><a href="#cb22-14"></a>f7ffc000-f7ffd000 r-xp 0002a000 fc:03 1847101         /usr/lib32/ld-2.31.so</span>
+<span id="cb22-15"><a href="#cb22-15"></a>f7ffd000-f7ffe000 rwxp 0002b000 fc:03 1847101         /usr/lib32/ld-2.31.so</span>
+<span id="cb22-16"><a href="#cb22-16"></a>fffdd000-ffffe000 rwxp 00000000 00:00 0               [stack]</span></code></pre></div>
+<p>This gives you a picture of the process’s virtual memory<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> – memory addresses are in the
+leftmost column, with permissions for each memory segment
+(e.g. <strong>r</strong>ead, <strong>w</strong>rite and
+e<strong>x</strong>ecute) in the second column. In the output above, the
+actual program instructions of <code>stack-L1-dbg</code> – the “text
+segment” – are in the addresses <code>0x56555000</code> to
+<code>0x5655a000</code> (lines 1–3). Back in GDB, if you ask for the
+memory address of the instructions of the <code>main</code> routine, you
+should get an address in that range:</p>
+<pre><code>(gdb) print main
+$1 = {int (int, char **)} 0x565562e0 &lt;main&gt;</code></pre>
+<p>The <em>stack</em> is in the range of addresses from
+<code>0xfffdd000</code> to <code>0xffffe000</code>.</p>
+<p>For convenience, GDB also provides another way of getting the same
+information. The GDB “<code>info proc</code>” command extracts
+information from the <code>/proc</code> filesystem automatically in much
+the same way we just did manually. Typing <code>help info proc</code>
+tells you more about the command:</p>
+<pre><code>(gdb) help info proc
+Show /proc process information about any running process.
+Specify any process id, or use the program being debugged by default.
+Specify any of the following keywords for detailed info:
+  mappings -- list of mapped memory regions.
+  stat     -- list a bunch of random process info.
+  status   -- list a different bunch of random process info.
+  all      -- list all available /proc info.</code></pre>
+<p>And typing <code>info proc mappings</code> should display output
+similar to what we got from the
+<code>cat /proc/<em>process_id</em>/maps</code> command.</p>
+</div>
+<p>A good way to start is to open the vulnerable program in GDB, put a
+breakpoint within the <code>bof</code> function, and then run the
+program. If we’re stopped somewhere in the <code>bof</code> function,
+then if we issue the <code>backtrace</code> command, we can get some
+basic information about the stack frames currently on the stack:</p>
+<pre><code>(gdb) backtrace
+#0  bof (str=0xffffd2e3 &quot;\n\212\027\377\367\bRUV\001&quot;) at stack.c:17
+#1  0x565563ee in dummy_function (str=0xffffd2e3 &quot;\n\212\027\377\367\bRUV\001&quot;) at stack.c:46
+#2  0x56556382 in main (argc=1, argv=0xffffd5a4) at stack.c:34</code></pre>
+<p>(If you see something very different – make sure you’re running GDB
+against <code>stack-L1-dbg</code>, and not <code>stack-L1</code>. The
+latter program is missing the debug symbols that have been inserted into
+<code>stack-L1-dbg</code>, and thus will be less easy to analyse using
+GDB.)</p>
+<p>This says there are 3 stack frames on the stack. Stack frame #2
+represents our position in the <code>main</code> function. We’ve just
+executed an instruction sitting at location <code>0x56556382</code> in
+memory,<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> which corresponds to
+<code>stack.c</code> line 34 (i.e., the call to
+<code>dummy_function(str)</code>).</p>
+<p>Similarly, stack frame #1 represents our position in
+<code>dummy_function</code>, and stack frame #0 is the current stack
+frame.</p>
+<p>We can get more information about a stack frame using the
+<code>info frame</code> command. For instance, issuing the GDB command
+<code>info frame 0</code> should result in output like the
+following:</p>
+<pre><code>(gdb) info frame 0
+Stack frame at 0xffffcec0:
+ eip = 0x565562c2 in bof (stack.c:17); saved eip = 0x565563ee
+ called by frame at 0xffffd2d0
+ source language c.
+ Arglist at 0xffffce3c, args: str=0xffffd2e3 &quot;\n\212\027\377\367\bRUV\001&quot;
+ Locals at 0xffffce3c, Previous frame&#39;s sp is 0xffffcec0
+ Saved registers:
+  ebx at 0xffffceb4, ebp at 0xffffceb8, eip at 0xffffcebc</code></pre>
+<p>This tells us:</p>
+<ul>
+<li><p>Looking at the first line of output,
+<code>Stack frame at 0xffffcec0</code>:</p>
+<p>The current stack frame, for <code>bof</code>, is at location
+<code>0xffffcec0</code>. (The stack frames for
+<code>dummy_function</code> and <code>main</code>, if we inspect them,
+will be at higher addresses in memory. Recall that the stack grows from
+<em>high</em> memory addresses to <em>low</em> ones.)</p></li>
+<li><p>Looking at the second line of output,
+<code>eip = 0x565562c2 in bof   (stack.c:17); saved eip = 0x565563ee</code>:</p>
+<p>This tells us about the value of the <code>eip</code> register. On
+Intel processors, this is the “Extended Instruction Pointer” register –
+it keeps track of what instruction is currently being executed.</p>
+<p><code>eip = 0x565562c2 in bof (stack.c:17)</code> tells us that we’re
+currently executing the instruction at location <code>0x565562c2</code>
+in memory, and that it corresponds to <code>stack.c</code> line 17.</p>
+<p><code>saved eip = 0x565563ee</code> tells us about the bit of the
+stack frame that says what code to execute after the current function
+returns. Presently, the stack frame is going to return to location
+<code>0x565563ee</code> – the spot in <code>dummy_function</code> where
+we’ve just executed the call to <code>bof()</code>.</p></li>
+<li><p>Looking at the last line of output,
+<code>eip at 0xffffcebc</code>:</p>
+<p>This tells us the location we need to overwrite, if we want to jump
+to somewhere <em>other</em> than <code>dummy_function</code>.</p>
+<p>Memory location <code>0xffffcebc</code> is the part of the current
+stack frame which stores the “next instruction to execute” after
+<code>bof</code> returns.</p></li>
+</ul>
+<p>Let’s examine the Instruction Pointer a little. Make sure you’re
+stopped in the middle of the <code>bof</code> function: issue the GDB
+commands <code>run</code> (this will ask you if you want to restart the
+program; answer yes) and <code>next</code> to get there.</p>
+<p>Issue the GDB command <code>print $eip</code> to show the current
+value of the Instruction Pointer, and you should see something like the
+following:</p>
+<pre><code>(gdb) print $eip
+$8 = (void (*)()) 0x565562c2 &lt;bof+21&gt;</code></pre>
+<p>What does this mean?</p>
+<ul>
+<li><code>(void (*)())</code> says that we should think of the
+<code>eip</code> register as holding a pointer to a function taking no
+arguments and returning void.</li>
+<li><code>0x565562c2</code> is the location in memory of the address
+currently being executed.</li>
+<li><code>&lt;bof+21&gt;</code> says it’s 21 instructions past the start
+of <code>bof</code>. (If you like, you can confirm this by issuing the
+GDB command <code>print   bof</code> – that will tell you where the
+<em>first</em> instruction in <code>bof</code> is located – and checking
+that it’s equal to <em>address_in_eip</em> <span class="math inline">\(-\)</span> 21.</li>
+</ul>
+<p>Now let’s do the same for the <em>saved</em> <code>eip</code>.</p>
+<div style="border: solid 2pt blue; background-color: hsla(241, 100%,50%, 0.1); padding: 1em; border-radius: 5pt; margin-top: 1em;">
+<div class="block-caption">
+<p>Convenience variables in GDB</p>
+</div>
+<p>Sometimes while debugging in GDB, it’s handy to be able to hang onto
+some value because it will be useful to refer to it in a later step.</p>
+<p>GDB lets us define <em>convenience variables</em> (see the GDB
+documentation on them <a href="https://sourceware.org/gdb/onlinedocs/gdb/Convenience-Vars.html">here</a>).
+These variables aren’t part of the program being debugged; they exist
+purely within GDB, and have no effect on the execution of the program.
+They’re more like a piece of GDB-specific “scratch paper” on which you
+might write down notes for later.</p>
+<p>Convenience variables start with a dollar sign (“<code>$</code>”).
+You can <em>set</em> a convenience variable with a command like:</p>
+<pre><code>(gdb) set $myvar = 0x2020</code></pre>
+<p>and thereafter use the variable in any GDB command. For instance, the
+following will print the value of <code>$myvar</code>:</p>
+<pre><code>(gdb) print/x $myvar
+$9 = 0x2020</code></pre>
+<p>(The “<code>/x</code>” after the “print” command instructs GDB to
+print the result in hexadecimal notation, rather than decimal, and is
+useful for printing the value of pointers.)</p>
+</div>
+<p>We know the saved <code>eip</code> is stored in memory location
+<code>0xffffcebc</code>. Let’s see where that <em>currently</em> points.
+We’ll use GDB’s “convenience variables” to make our commands a bit
+easier to read.</p>
+<pre><code>(gdb) set $saved_eip = 0xffffcebc
+#     ^ store the location for later
+(gdb) print (size_t *) $saved_eip
+#     ^ we can tell GDB to treat $saved_eip as a pointer to size_t*
+$10 = (size_t *) 0xffffcebc
+(gdb) print/x (* ((size_t *) $saved_eip))
+#     ^ now we *dereference* the $saved_eip location,
+#       displaying (in hex) the address it holds.
+$11 = 0x565563ee</code></pre>
+<p>We know it’s okay to treat <code>$saved_eip</code> as a “pointer to
+<code>size_t</code>”, because a <code>size_t</code> is big enough to
+hold any address in memory.<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> GDB tells us that the
+current contents of <code>$saved_eip</code> is <code>0x565563ee</code> –
+and that is indeed the address GDB has said we’re going to jump back
+to.</p>
+<p>We can issue the command <code>print (void (*)()) 0x565563ee</code>
+to confirm where that address is – GDB will tell us that it’s the same
+as <code>&lt;dummy_function+62&gt;</code>. (We cast it to the type
+“pointer to a function taking no arguments and returning
+<code>void</code>”, so that GDB knows to interpret it as the address of
+executable code.)</p>
+<p>So, we’ve confirmed that the saved <code>eip</code> register does
+says that once the current function has finished executing, we’re to
+jump back into somewhere in <code>dummy_function</code> (specifically,
+the 62nd instruction after the start of the function).</p>
+<p>So, how can we overwrite the saved <code>eip</code>? We’ll need to
+know</p>
+<ol type="a">
+<li>where the <code>buffer[BUF_SIZE]</code> local variable is sitting in
+memory. This is where the contents of <code>badfile</code> will get
+written.</li>
+<li>how far past that location the saved <code>eip</code> is. If we
+adjust the contents of <code>badfile</code> carefully, we should be able
+to overwrite the saved <code>eip</code> with the address of some other
+function.</li>
+</ol>
+<p>We can get item (a) by issuing the command
+<code>print &amp;buffer</code>. The output should be something like:</p>
+<pre><code>(gdb) print &amp;buffer
+$12 = (char (*)[100]) 0xffffce4c</code></pre>
+<p>So the address of the saved <code>eip</code>, minus the address of
+<code>buffer</code>, tells us the spot in <code>badfile</code> that
+should contain the address of our malicious shellcode.</p>
+<p>To start with, you might want to focus on overwriting the saved
+<code>eip</code> with a function of your choosing and get that working,
+before trying to force execution of your shellcode.</p>
+<p>For instance, can you overwrite the saved <code>eip</code> so that
+when the <code>bof</code> function finishes, execution will – instead of
+jumping to instruction <code>&lt;bof+21&gt;</code> – jump to the start
+of <code>bof</code> again, or the start of <code>dummy_function</code>?
+In <code>exploit.py</code>, change the value of <code>ret</code> to the
+location of the function you want to jump to, and change
+<code>offset</code> to the distance between <code>buffer</code> and the
+saved <code>eip</code>. You can then use GDB to step through execution
+of <code>stack-L1-dbg</code> and confirm whether this worked.</p>
+<p>Then, try to get your shellcode executed. In <code>exploit.py</code>,
+change the value of <code>shellcode</code> so that it holds the
+shellcode instructions to execute. You’ll then need to decide where in
+<code>buffer</code> your shellcode should be inserted (leaving it at 0
+to start with is fine); work out what the start address of your
+shellcode is going to be; and ensure that <code>ret</code> contains that
+address.</p>
+<h2 id="credits">Credits</h2>
+<p>The code for the programs in this lab is adapted from the Set-UID lab
+at <a href="https://web.ecs.syr.edu/~wedu/seed/Labs/Set-UID/Set-UID.pdf" class="uri">https://web.ecs.syr.edu/~wedu/seed/Labs/Set-UID/Set-UID.pdf</a>
+and is copyright Wenliang Du, Syracuse University.</p>
+<!--
+
+also
+
+https://seedsecuritylabs.org/Labs_20.04/Files/Buffer_Overflow_Setuid/Buffer_Overflow_Setuid.pdf
+
+-->
+<p><br><br></p>
+<!-- vim: syntax=markdown tw=92 :
+-->
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Also called <a href="https://en.wikipedia.org/wiki/Assembly_language">assembly</a>,
+assembler language, assembler or symbolic machine code.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>A small, named memory cell used by the processor. See <a href="#registers-and-the-stack">“Registers and the stack”</a>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>You can replicate this by saving the assembly code as a
+file <code>sploit.s</code>, and inserting the lines:<br />
+<br />
+<code>section .text</code><br />
+  <code>global _start</code><br />
+    <code>_start:</code><br />
+<br />
+at the start. Compile it with the command
+<code>nasm -f elf32 sploit.s -o   sploit.o</code>, then issue the
+command <code>objdump -d sploit.o</code> to see the disassembled
+shellcode.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>The man page for <a href="https://linux.die.net/man/5/proc">proc</a> explains the format of
+the listing – search within the man page for the text
+“<code>/proc/[pid]/maps</code>” to locate the relevant documentation.
+<span style="display: block; height: 0.5rem;"><br></span> Most of the
+permissions (“r”, “w” and “x”) should be self-explanatory. For our
+purposes, you don’t need to know that the “p” means. (But if you’re
+interested – it indicates a <a href="https://en.wikipedia.org/wiki/Copy-on-write">copy-on-write</a>
+memory segment.)<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>A little math tells us that (<em>location_in_main</em>
+<span class="math inline">\(-\)</span> <em>start_of_main</em>) = <span class="math inline">\((0x56556382 - 0x565562e0)\)</span> = 162; we’re
+162 instructions past the start of the <code>main</code> function. If we
+wanted, we could view the precise assembly language instructions being
+executed, by issuing the GDB command <code>layout asm</code>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Technically, it would be more appropriate to treat
+<code>$saved_eip</code> as a “pointer to <code>intptr_t</code>” or as a
+“pointer to a function pointer” – but “<code>size_t</code>” is much
+easier to read.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>
